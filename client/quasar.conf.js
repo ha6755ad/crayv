@@ -19,7 +19,8 @@ module.exports = function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
     boot: [
-      
+      'globalMixins',
+      'lodash',
       'i18n',
       'axios',
     ],
@@ -41,11 +42,27 @@ module.exports = function (/* ctx */) {
 
       'roboto-font', // optional, you are not bound to it
       'material-icons', // optional, you are not bound to it
+      'material-icons-outlined',
+      'material-icons-round',
+      'material-icons-sharp',
+      'mdi-v5',
+      'ionicons-v4',
+      'eva-icons',
+      'fontawesome-v5',
+      'themify',
+      'line-awesome',
     ],
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
+      transpileDependencies: ['feathers-vuex'],
+
+      env: {
+        VUE_APP_FEATHERS_URL: JSON.stringify(process.env.VUE_APP_FEATHERS_URL),
+      },
+
+      devtool: 'source-map',
 
       // transpile: false,
 
@@ -64,8 +81,8 @@ module.exports = function (/* ctx */) {
       // extractCSS: false,
 
       // https://quasar.dev/quasar-cli/handling-webpack
-      extendWebpack (cfg) {
-cfg.module.rules.push({
+      extendWebpack(cfg) {
+        cfg.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
@@ -78,7 +95,7 @@ cfg.module.rules.push({
     devServer: {
       https: false,
       port: 8080,
-      open: true // opens browser window automatically
+      open: false // opens browser window automatically
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
@@ -93,7 +110,11 @@ cfg.module.rules.push({
       importStrategy: 'auto',
 
       // Quasar plugins
-      plugins: []
+      plugins: [
+        'Dialog',
+        'Notify',
+        'Loading',
+      ]
     },
 
     // animations: 'all', // --- includes all animations
@@ -183,7 +204,7 @@ cfg.module.rules.push({
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration
       nodeIntegration: true,
 
-      extendWebpack (/* cfg */) {
+      extendWebpack(/* cfg */) {
         // do something with Electron main process Webpack cfg
         // chainWebpack also available besides this extendWebpack
       }

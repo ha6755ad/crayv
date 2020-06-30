@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import {Notify} from 'quasar'
 
-import routes from './routes'
+import Routes from './routes';
 
 Vue.use(VueRouter)
 
@@ -14,9 +15,11 @@ Vue.use(VueRouter)
  * with the Router instance.
  */
 
-export default function (/* { store, ssrContext } */) {
+export default function ({store, ssrContext}) {
+  const routes = Routes({store, ssrContext});
+
   const Router = new VueRouter({
-    scrollBehavior: () => ({ x: 0, y: 0 }),
+    scrollBehavior: () => ({x: 0, y: 0}),
     routes,
 
     // Leave these as they are and change in quasar.conf.js instead!
@@ -24,7 +27,61 @@ export default function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> publicPath
     mode: process.env.VUE_ROUTER_MODE,
     base: process.env.VUE_ROUTER_BASE
-  })
+  });
+
+  Router.beforeEach((to, from, next) => {
+    store.dispatch('auth/authenticate')
+      .then(() => {
+        // console.log('authenticated');
+        if (to.meta.requiresAuth) {
+          if (store.state.auth.user) {
+            // console.log('pass');
+            next();
+          } else {
+            // console.log('not pass', store.state.auth.user);
+            Notify.create({
+              type: 'negative',
+              message: 'Page is restricted',
+              timeout: 10000,
+              actions: [
+                {
+                  icon: 'close', color: 'white', handler: () => {
+                    /* ... */
+                  }
+                }
+              ]
+            });
+            next('/login');
+          }
+        } else {
+          next();
+        }
+      })
+      .catch(() => {
+        // console.log('not authenticated');
+        if (to.meta.requiresAuth) {
+          if (store.state.auth.user) {
+            next();
+          } else {
+            Notify.create({
+              type: 'negative',
+              message: 'Page is restricted. Please login or register.',
+              timeout: 10000,
+              actions: [
+                {
+                  icon: 'close', color: 'white', handler: () => {
+                    /* ... */
+                  }
+                }
+              ]
+            });
+            next('/login');
+          }
+        } else {
+          next();
+        }
+      });
+  });
 
   return Router
 }
