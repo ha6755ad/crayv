@@ -26,7 +26,7 @@ export default function ({store, ssrContext}) {
       ]
 
     }
-  ]
+  ];
 
   // Always leave this as last one
   if (process.env.MODE !== 'ssr') {

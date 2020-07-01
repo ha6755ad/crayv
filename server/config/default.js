@@ -75,7 +75,7 @@ module.exports = {
       'dstHost': process.env.REDIS_SSH_DST_HOST || process.env.SSH_DST_HOST,
       'dstPort': process.env.REDIS_SSH_DST_PORT || 6379,
       'localHost': process.env.REDIS_DB_HOST || 'localhost',
-      'localPort': process.env.REDIS_DB_PORT || 6380,
+      'localPort': process.env.REDIS_PORT || process.env.REDIS_DB_PORT || 6379,
     }
   },
 };

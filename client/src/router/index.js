@@ -1,10 +1,10 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import {Notify} from 'quasar'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import {Notify} from 'quasar';
 
 import Routes from './routes';
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 /*
  * If not building with SSR mode, you can
@@ -83,5 +83,5 @@ export default function ({store, ssrContext}) {
       });
   });
 
-  return Router
+  return Router;
 }

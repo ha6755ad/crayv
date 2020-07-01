@@ -50,7 +50,7 @@ module.exports = function (/* ctx */) {
       'eva-icons',
       'fontawesome-v5',
       'themify',
-      'line-awesome',
+      'line-awesome'
     ],
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
@@ -87,7 +87,7 @@ module.exports = function (/* ctx */) {
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
           exclude: /node_modules/
-        })
+        });
       },
     },
 
@@ -113,7 +113,7 @@ module.exports = function (/* ctx */) {
       plugins: [
         'Dialog',
         'Notify',
-        'Loading',
+        'Loading'
       ]
     },
 
@@ -131,9 +131,9 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: `ir-template-client`,
-        short_name: `ir-template-client`,
-        description: `ir-template-client`,
+        name: 'ir-template-client',
+        short_name: 'ir-template-client',
+        description: 'ir-template-client',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
@@ -209,5 +209,5 @@ module.exports = function (/* ctx */) {
         // chainWebpack also available besides this extendWebpack
       }
     }
-  }
-}
+  };
+};
