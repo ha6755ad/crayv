@@ -28,10 +28,10 @@ module.exports = (options = {}) => {
             logger.info(pathContext + ' => context.data: ' + JSON.stringify(context.data));
             break;
           case 'error':
-            logger.info(pathContext + ' => context.params: ' + JSON.stringify(context.params));
-            logger.info(pathContext + ' => context.arguments: ' + JSON.stringify(context.arguments));
-            logger.info(pathContext + ' => context.data: ' + JSON.stringify(context.data));
-            logger.info(pathContext + ' => context.result: ' + JSON.stringify(context.result));
+            logger.error(pathContext + ' => context.params: ' + JSON.stringify(context.params));
+            logger.error(pathContext + ' => context.arguments: ' + JSON.stringify(context.arguments));
+            logger.error(pathContext + ' => context.data: ' + JSON.stringify(context.data));
+            logger.error(pathContext + ' => context.result: ' + JSON.stringify(context.result));
             logger.error('FATAL: ' + pathContext + ' => errorHook => context.error: ' + JSON.stringify(context.error));
             break;
           default:

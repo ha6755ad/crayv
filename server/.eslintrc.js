@@ -1,14 +1,12 @@
 module.exports = {
   root: true,
   env: {
-    es6: true,
     node: true,
-    mocha: true
+    es6: true
   },
-  parserOptions: {
-    ecmaVersion: 2018
-  },
-  extends: "eslint:recommended",
+  'extends': [
+    'eslint:recommended'
+  ],
   rules: {
     indent: [2, 2, {SwitchCase: 1}],
     "linebreak-style": [
@@ -19,9 +17,11 @@ module.exports = {
       "error",
       "single"
     ],
-    semi: [
-      "error",
-      "always"
-    ]
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
   },
-};
+  parserOptions: {
+    parser: 'babel-eslint',
+    ecmaVersion: 2018
+  }
+}
