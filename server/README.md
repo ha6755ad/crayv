@@ -1,6 +1,6 @@
 # server
 
-> ir-auth
+> ir-template
 
 ## About
 

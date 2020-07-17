@@ -1,6 +1,6 @@
 {
   "name": "ir-template",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "scripts": {
     "docker-build": "docker system prune -af;docker-compose build --pull --parallel --force-rm && ./updateVersion.sh && ver=$(awk 'FNR <= 1' version) && docker tag ionrev/ir-template-server ionrev/ir-template-server:${ver} && docker tag ionrev/ir-template-client ionrev/ir-template-client:${ver} && docker push ionrev/ir-template-server && docker push ionrev/ir-template-client && git add . && git commit -m ${ver} && git push",
     "d-build": "docker system prune -af;docker-compose build --pull --parallel --force-rm",
