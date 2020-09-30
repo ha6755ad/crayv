@@ -30,7 +30,8 @@ node_modules
 .lock-wscript
 
 # IDEs and editors (shamelessly copied from @angular/cli's .gitignore)
-/.idea
+.idea
+**/.idea
 .project
 .classpath
 .c9/
@@ -111,4 +112,10 @@ $RECYCLE.BIN/
 # Others
 lib/
 data/
+/server/.nyc_output/
+**/package-lock.json
+**/.quasar.env.json
+/server/.npmrc
+/export/.npmrc
+/client/.npmrc
 /client/src/store/store-flag.d.ts

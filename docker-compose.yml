@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   server:
-    image: ionrev/server:latest
+    image: ionrev/ir-template-server:latest
     build:
       context: ./server/
       dockerfile: Dockerfile
@@ -12,7 +12,7 @@ services:
       - server/docker/server.env
 
   client:
-    image: ionrev/client:latest
+    image: ionrev/ir-template-client:latest
     build:
       context: ./client/
       dockerfile: Dockerfile
@@ -22,3 +22,13 @@ services:
       - server
     env_file:
       - client/docker/client.env
+
+  lib:
+    image: ionrev/ir-template-lib:latest
+    build:
+      context: ./export/
+      dockerfile: Dockerfile
+    ports:
+      - '3333:3333'
+    env_file:
+      - export/docker/export.env
