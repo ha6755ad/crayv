@@ -34,7 +34,7 @@
 
     Note: You will need `Environment` variables for the server as follows:
     
-    ```NODE_ENV=development;host=0.0.0.0;port=3030;APP_SECRET=<generate secret via: feathers-plus generate secret> ;TUNNEL_MONGO=true;MONGO_DB_HOST=localhost;MONGO_DB_PORT=27018;MONGO_DB_USERNAME=training-todo-<name>;MONGO_DB_PASSWORD=training-todo-<name>;MONGO_DB_DATABASE=training-todo-<name>;MONGO_DB_KEEPALIVE=true;SSH_USERNAME=ec2-user;SSH_HOST=54.212.240.247;SSH_PORT=22;SSH_DST_HOST=10.0.1.66;SSH_DST_PORT=27017;SSH_KEY_PASSPHRASE=<passphrase>;SSH_PRIVATE_KEY=<path to id_rsa.pem>;TUNNEL_REDIS=true;REDIS_DB=1;REDIS_PASSWORD=<ask for redis password>;REDIS_PORT=6380```
+    ```NODE_ENV=development;HOST=0.0.0.0;PORT=3030;APP_SECRET=<generate secret via: feathers-plus generate secret> ;TUNNEL_MONGO=true;MONGO_DB_HOST=localhost;MONGO_DB_PORT=27018;MONGO_DB_USERNAME=training-todo-<name>;MONGO_DB_PASSWORD=training-todo-<name>;MONGO_DB_DATABASE=training-todo-<name>;MONGO_DB_KEEPALIVE=true;SSH_USERNAME=ec2-user;SSH_HOST=54.212.240.247;SSH_PORT=22;SSH_DST_HOST=10.0.1.66;SSH_DST_PORT=27017;SSH_KEY_PASSPHRASE=<passphrase>;SSH_PRIVATE_KEY=<path to id_rsa.pem>;TUNNEL_REDIS=true;REDIS_DB=1;REDIS_PASSWORD=<ask for redis password>;REDIS_PORT=6380```
 
     Note: Update your environment variables with specifics for your situation `< stuff >`, you will also need a database setup and give you id_rsa.pub to IT for access to the development environment.
     
