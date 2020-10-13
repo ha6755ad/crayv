@@ -34,15 +34,14 @@ const servicePlugins = requireModule
 
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
-    modules: {
-      // example
-    },
-
     state: {},
     getters: {},
     mutations: {},
     actions: {},
 
+    modules: {
+      // example
+    },
     plugins: [...servicePlugins, auth],
 
     // enable strict mode (adds overhead!)

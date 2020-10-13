@@ -1,5 +1,7 @@
-export default function () {
+export default function state() {
   return {
-    //
+    test: 'test',
+    new_test: 'new test',
+    todos: [],
   };
 }
