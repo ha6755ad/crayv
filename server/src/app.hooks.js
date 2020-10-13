@@ -1,12 +1,15 @@
 // Application hooks that run for every service
 const ServiceLogger = require('./hooks/service-logger');
 
-
+const restQueryUnstringify = require('./hooks/rest-query-unstringify');
 
 
 module.exports = {
   before: {
-    all: [ServiceLogger({LEVEL: 'warning'})],
+    all: [
+      restQueryUnstringify(),
+      ServiceLogger({LEVEL: 'warning'}),
+    ],
     find: [],
     get: [],
     create: [],
@@ -17,7 +20,7 @@ module.exports = {
 
   after: {
     all: [
-      ServiceLogger({LEVEL: 'info'})
+      ServiceLogger({LEVEL: 'info'}),
     ],
     find: [],
     get: [],
@@ -29,7 +32,7 @@ module.exports = {
 
   error: {
     all: [
-      ServiceLogger({LEVEL: 'info'})
+      ServiceLogger({LEVEL: 'info'}),
     ],
     find: [],
     get: [],
