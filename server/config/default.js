@@ -7,6 +7,12 @@ module.exports = {
     default: 500,
     max: 1000
   },
+  s3: {
+    bucket: process.env.AWS_BUCKET_NAME,
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    signedUrlExpires: 900
+  },
   authentication: {
     entity: 'user',
     service: 'users',
@@ -28,12 +34,6 @@ module.exports = {
       usernameField: 'email',
       passwordField: 'password'
     },
-  },
-  s3: {
-    bucket: process.env.AWS_BUCKET_NAME,
-    accessKeyId: process.env.AWS_ACCESS_KEY,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    signedUrlExpires: 900
   },
   redis: {
     secret: process.env.REDIS_PASSWORD,
