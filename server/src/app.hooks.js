@@ -1,26 +1,42 @@
 // Application hooks that run for every service
+const { softDelete, paramsFromClient, iff } = require('feathers-hooks-common');
+const { 'paramsFromClient': fGraphParams } = require('feathers-graph-populate');
+
+const removeFastjoin = require('./hooks/remove_fastjoin');
+
 const ServiceLogger = require('./hooks/service-logger');
 
-const restQueryUnstringify = require('./hooks/rest-query-unstringify');
+
+const createdBy = require('./hooks/created-by');
+const updatedBy = require('./hooks/updated-by');
 
 
 module.exports = {
   before: {
     all: [
-      restQueryUnstringify(),
-      ServiceLogger({LEVEL: 'warning'}),
+      paramsFromClient('disableSoftDelete', 'verify_methods'),
+      iff(
+        context => !['authentication', 'file-uploader', 'app-tokens'].includes(context.path),
+        [
+          softDelete()
+        ]
+      ),
+      fGraphParams('$populateParams'),
+      // beforeHook,
+      removeFastjoin(),
+      // paramsFromClient('$populateParams')
     ],
     find: [],
     get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: []
+    create: [createdBy(), updatedBy()],
+    update: [updatedBy()],
+    patch: [updatedBy()],
+    remove: [updatedBy()]
   },
 
   after: {
     all: [
-      ServiceLogger({LEVEL: 'info'}),
+      ServiceLogger({ LEVEL: 'info' })
     ],
     find: [],
     get: [],
@@ -32,7 +48,7 @@ module.exports = {
 
   error: {
     all: [
-      ServiceLogger({LEVEL: 'info'}),
+      ServiceLogger({ LEVEL: 'info' })
     ],
     find: [],
     get: [],

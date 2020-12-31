@@ -55,7 +55,7 @@ module.exports = function (/* ctx */) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history'
       transpileDependencies: ['feathers-vuex'],
 
       env: {
@@ -113,7 +113,9 @@ module.exports = function (/* ctx */) {
       plugins: [
         'Dialog',
         'Notify',
-        'Loading'
+        'Loading',
+        'LocalStorage',
+        'SessionStorage'
       ]
     },
 

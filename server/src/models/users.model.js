@@ -5,11 +5,14 @@
 module.exports = function (app) {
   const modelName = 'users';
   const mongooseClient = app.get('mongooseClient');
-  const schema = new mongooseClient.Schema({
-
+  const { Schema } = mongooseClient;
+  const schema = new Schema({
+    name: String,
     email: { type: String, unique: true, lowercase: true, required: true },
     password: { type: String, required: true },
-
+    orders: [{type: Schema.Types.ObjectId, ref: 'crayv-orders'}],
+    carts: [{type: Schema.Types.ObjectId, ref: 'crayv-carts'}],
+    vendors: [{type: Schema.Types.ObjectId, ref: 'crayv-vendors'}],
     theme: {
       '--q-color-primary': { type: String, required: false, match: /^#([A-Fa-f0-9]{8}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/ },
       '--q-color-secondary': { type: String, required: false, match: /^#([A-Fa-f0-9]{8}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/ },

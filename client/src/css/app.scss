@@ -7,3 +7,525 @@ input:required + div.q-field__label::after,
   content: " *";
   color: red;
 }
+
+.pointer {
+  cursor: pointer;
+}
+
+.text-shade-4 {
+  color: rgba(0,0,0,.4);
+}
+
+.bg-shade-4 {
+  background: rgba(0,0,0,.4);
+}
+.bg-shade-5 {
+  background: rgba(0,0,0,.5);
+}
+.bg-shade-6 {
+  background: rgba(0,0,0,.6);
+}
+.bg-shade-7 {
+  background: rgba(0,0,0,.7);
+}
+.bg-shade-8 {
+  background: rgba(0,0,0,.8);
+}
+
+.bg-light-4 {
+  background: rgba(255,255,255,.4);
+}
+.bg-light-5 {
+  background: rgba(255,255,255,.5);
+}
+.bg-light-6 {
+  background: rgba(255,255,255,.6);
+}
+.bg-light-8 {
+  background: rgba(255,255,255,.8);
+}
+.bg-light-8-5 {
+  background: rgba(255,255,255,.85);
+}
+.bg-light-9 {
+  background: rgba(255,255,255,.9);
+}
+
+.__mid-position {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%)
+}
+
+.bg-overlay {
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  position: absolute;
+  z-index: 0;
+}
+
+
+
+.__logo_box {
+  //background: linear-gradient(-75deg, var(--q-color-primary), white, var(--q-color-secondary));
+  background: linear-gradient(-75deg, $primary, $background, $accent, $background, $secondary);
+  //background: -webkit-linear-gradient(left, #33235B, #D62229, #E97639, #792042, #33235B);
+  //background: linear-gradient(left, #33235B, #D62229, #E97639, #792042, #33235B);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+
+
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+}
+
+.bg-primary-secondary {
+  background: linear-gradient(16deg, $primary 60%, $secondary);
+}
+
+.bg-primary-secondary-inv {
+  background: linear-gradient(-16deg, $primary 60%, $secondary);
+}
+
+.bg-secondary-primary {
+  background: linear-gradient(16deg, $secondary 60%, $primary);
+}
+
+.bg-secondary-primary-inv {
+  background: linear-gradient(-16deg, $secondary 60%, $primary);
+}
+
+.bg-primary-accent {
+  background: linear-gradient(16deg, $primary 60%, $accent);
+}
+
+.bg-dark-primary {
+  background: linear-gradient(16deg, $dark 60%, $primary);
+}
+
+.bg-dark-primary-inv {
+  background: linear-gradient(-16deg, $dark 60%, $primary);
+}
+
+.bg-ir-grey {
+  background: $ir-grey;
+}
+
+.bg-accent-primary {
+  background: linear-gradient(16deg, $accent 60%, $primary);
+}
+
+.bg-secondary-accent {
+  background: linear-gradient(16deg, $secondary 60%, $accent);
+}
+
+.bg-background-accent {
+  background: linear-gradient(16deg, $background 60%, $accent);
+}
+
+.bg-background-primary {
+  background: linear-gradient(16deg, $background 60%, $primary);
+}
+
+.bg-white-primary {
+  background: linear-gradient(16deg, white 60%, $primary);
+}
+
+.bg-background-secondary {
+  background: linear-gradient(16deg, $background 60%, $secondary);
+}
+
+.bg-background-accent-inv {
+  background: linear-gradient(-16deg, $background 60%, $accent);
+}
+
+.bg-secondary-accent-inv {
+  background: linear-gradient(-16deg, $secondary 60%, $accent);
+}
+
+.bg-accent-secondary {
+  background: linear-gradient(16deg, $accent 60%, $secondary);
+}
+
+.__underline {
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  transition: width .3s ease-out;
+  background: $dark;
+}
+
+.__tool {
+  height: 100%;
+  width: 100%;
+  border-radius: 4px;
+  color: white;
+  transform: translate(0, -20%);
+  padding: 2px;
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 100%;
+  box-shadow: 1px 3px 7px rgba(0,0,0,.4);
+}
+
+.__one-liner {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+}
+
+.fill_size {
+  height: 100%;
+  width: 100%;
+}
+
+.text-dark {
+  color: #1d1d1d
+}
+
+.bg-dark {
+  background: #1d1d1d
+}
+
+.text-light {
+  color: #fafafa
+}
+
+.bg-light {
+  background: #fafafa
+}
+
+.bg-background {
+  background: #eeeeee
+}
+
+.t-r-a {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  border-radius: inherit;
+  z-index: 2
+}
+
+.t-r {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  z-index: 2
+}
+
+.t-r-f {
+  position: fixed;
+  background: rgba(0,0,0,.2);
+  color: white;
+  top: 3px;
+  right: 3px;
+  z-index: 200;
+}
+
+.t-l-a {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  border-radius: inherit;
+  z-index: 2
+}
+
+.t-l {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  z-index: 2
+}
+
+.t-l-f {
+  position: fixed;
+  background: rgba(0,0,0,.2);
+  color: white;
+  top: 3px;
+  left: 3px;
+  z-index: 200;
+}
+
+.b-r {
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  z-index: 2
+}
+
+.b-r-a {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  z-index: 2
+}
+
+.b-r-f {
+  position: fixed;
+  color: white;
+  bottom: 3px;
+  right: 3px;
+  z-index: 200;
+}
+
+.b-l-f {
+  position: fixed;
+  color: white;
+  bottom: 3px;
+  left: 3px;
+  z-index: 200;
+}
+
+.b-l {
+  position: absolute;
+  bottom: 3px;
+  left: 3px;
+  z-index: 2
+}
+
+.b-l-a {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  z-index: 2
+}
+
+.text-xxxl {
+  font-size: 4vw
+}
+
+.text-xxl {
+  font-size: 3vw
+}
+
+.text-xl {
+  font-size: 2.3vw
+}
+
+.text-lg {
+  font-size: 1.7vw
+}
+
+.text-md {
+  font-size: 1.5vw
+}
+
+.text-sm {
+  font-size: 1.2vw
+}
+
+.text-xs {
+  font-size: 1vw
+}
+
+.text-xxs {
+  font-size: .75vw
+}
+
+.text-xxxs {
+  font-size: .6vw
+}
+
+@media screen and (max-width: 1330px){
+  .text-mb-xxxl {
+    font-size: 4.5vw !important;
+  }
+
+  .text-mb-xxl {
+    font-size: 3.4vw !important
+  }
+
+  .text-mb-xl {
+    font-size: 2.65vw !important
+  }
+
+  .text-mb-lg {
+    font-size: 2.2vw !important
+  }
+
+  .text-mb-md {
+    font-size: 1.75vw !important
+  }
+
+  .text-mb-sm {
+    font-size: 1.45vw !important
+  }
+
+  .text-mb-xs {
+    font-size: 1.2vw !important;
+  }
+
+  .text-mb-xxs {
+    font-size: 1vw !important
+  }
+  .text-mb-xxxs {
+    font-size: .75vw !important;
+  }
+}
+
+
+@media screen and (max-width: 1023px){
+  .text-mb-xxxl {
+    font-size: 6vw !important;
+  }
+
+  .text-mb-xxl {
+    font-size: 4.7vw !important
+  }
+
+  .text-mb-xl {
+    font-size: 4vw !important
+  }
+
+  .text-mb-lg {
+    font-size: 3.2vw !important
+  }
+
+  .text-mb-md {
+    font-size: 2.4vw !important
+  }
+
+  .text-mb-sm {
+    font-size: 2vw !important
+  }
+
+  .text-mb-xs {
+    font-size: 1.65vw !important;
+  }
+
+  .text-mb-xxs {
+    font-size: 1.2vw !important
+  }
+  .text-mb-xxxs {
+    font-size: 1vw !important;
+  }
+}
+
+@media screen and (max-width: 799px){
+  .text-mb-xxxl {
+    font-size: 8vw !important;
+  }
+
+  .text-mb-xxl {
+    font-size: 6vw !important
+  }
+
+  .text-mb-xl {
+    font-size: 4.6vw !important
+  }
+
+  .text-mb-lg {
+    font-size: 3.8vw !important
+  }
+
+  .text-mb-md {
+    font-size: 3vw !important
+  }
+
+  .text-mb-sm {
+    font-size: 2.4vw !important
+  }
+
+  .text-mb-xs {
+    font-size: 2vw !important;
+  }
+
+  .text-mb-xxs {
+    font-size: 1.5vw !important
+  }
+  .text-mb-xxxs {
+    font-size: 1.2vw !important;
+  }
+}
+
+@media screen and (max-width: 599px){
+  .text-mb-xxxl {
+    font-size: 11vw !important;
+  }
+
+  .text-mb-xxl {
+    font-size: 7vw !important
+  }
+
+  .text-mb-xl {
+    font-size: 5vw !important
+  }
+
+  .text-mb-lg {
+    font-size: 4.25vw !important
+  }
+
+  .text-mb-md {
+    font-size: 3.65vw !important
+  }
+
+  .text-mb-sm {
+    font-size: 3.2vw !important
+  }
+
+  .text-mb-xs {
+    font-size: 2.65vw !important;
+  }
+
+  .text-mb-xxs {
+    font-size: 2.25vw !important
+  }
+  .text-mb-xxxs {
+    font-size: 1.85vw !important;
+  }
+}
+
+@media screen and (max-width: 450px){
+  .text-mb-xxxl {
+    font-size: 15vw !important;
+  }
+
+  .text-mb-xxl {
+    font-size: 10vw !important
+  }
+
+  .text-mb-xl {
+    font-size: 7.5vw !important
+  }
+
+  .text-mb-lg {
+    font-size: 5.8vw !important
+  }
+
+  .text-mb-md {
+    font-size: 4.25vw !important
+  }
+
+  .text-mb-sm {
+    font-size: 3.65vw !important
+  }
+
+  .text-mb-xs {
+    font-size: 3vw !important;
+  }
+
+  .text-mb-xxs {
+    font-size: 2.7vw !important
+  }
+  .text-mb-xxxs {
+    font-size: 2.3vw !important;
+  }
+}
+

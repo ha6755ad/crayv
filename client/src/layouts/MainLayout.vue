@@ -1,100 +1,247 @@
 <template>
-  <q-layout view="hHh Lpr fff">
+  <q-layout view="HHh LpR FFF">
     <q-header elevated>
-      <q-toolbar>
-        <q-btn flat
-               dense
-               round
-               icon="menu"
-               aria-label="Menu"
-               @click="leftDrawerOpen = !leftDrawerOpen"/>
-
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+      <q-toolbar class="bg-primary-secondary">
+        <div class="row items-center" style="width: 100%">
+        <q-btn
+          v-show="user && user._id"
+          flat
+          dense
+          round
+          icon="menu"
+          aria-label="Menu"
+          @click="leftDrawerOpen = !leftDrawerOpen"
+        />
+        <img src="https://ha6755ad-images.s3-us-west-1.amazonaws.com/crayv/crayv_light.svg" style="height: 40px" class="q-mx-sm">
+      <q-space></q-space>
+        <div class="flex items-center">
+          <template v-if="!user || !user._id">
+            <div class="text-0-9 q-mr-sm text-weight-medium text-uppercase pointer" @click="login(false)">Login</div>
+            <q-separator dark vertical/>
+            <div class="text-0-9 q-ml-sm text-weight-medium text-uppercase pointer" @click="login(true)">Signup</div>
+            <q-dialog v-model="loginDialog">
+              <q-card style="width: 600px; max-width: 100vw">
+                <q-btn v-show="!registering" size="sm" flat label="sign up" class="t-r" @click="registering=true"/>
+                <q-btn v-show="registering" size="sm" flat label="login" class="t-r" @click="registering=false"/>
+                <template v-if="registering">
+                  <register></register>
+                </template>
+                <template v-else>
+                  <login></login>
+                </template>
+              </q-card>
+            </q-dialog>
+          </template>
+          <template v-else>
+            <div class="text-0-9 q-ml-sm text-weight-medium text-uppercase pointer"
+                 @click="$store.dispatch('auth/logout')">Logout
+            </div>
+          </template>
+          <q-btn round flat class="q-mx-sm" icon="mdi-cart" @click="cartDrawer = !cartDrawer"></q-btn>
+        </div>
+        </div>
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen"
-              show-if-above
-              bordered
-              content-class="bg-grey-1">
-      <q-list>
-        <q-item-label header class="text-grey-8">
-          Essential Links
+    <q-drawer
+      v-model="leftDrawerOpen"
+      show-if-above
+      bordered
+      content-class="bg-grey-1"
+    >
+      <q-list separator>
+        <q-item>
+          <vendor-picker
+            set-context
+            v-model="currVendor">
+          </vendor-picker>
+        </q-item>
+        <q-item-label
+          header
+          class="text-grey-8"
+        >
+          Your Crayv
         </q-item-label>
-        <EssentialLink v-for="link in essentialLinks"
-                       :key="link.title"
-                       v-bind="link"/>
+        <EssentialLink
+          v-for="link in personalLinks"
+          :key="link.title"
+          v-bind="link"
+        />
+        <q-item-label
+          header
+          class="text-grey-8"
+        >
+          Vendor Admin
+        </q-item-label>
+        <EssentialLink
+          v-for="link in vendorLinks"
+          :key="link.title"
+          v-bind="link"
+        />
       </q-list>
     </q-drawer>
 
+    <div class="__cart" :style="{transform: cartDrawer ? 'none' : 'translate(100%, 0)'}"
+         v-if="user && user._id">
+      <checkout-drawer @close="cartDrawer = false"/>
+    </div>
+
     <q-page-container>
-      <router-view/>
+      <router-view v-bind="attrs"/>
     </q-page-container>
+
+    <q-footer>
+      <div class="row items-center justify-center bg-dark text-light" style="height: 30px">
+        <div>&copy; Crayv 2020</div>
+      </div>
+    </q-footer>
   </q-layout>
 </template>
 
 <script>
   import EssentialLink from 'components/EssentialLink.vue';
+  import {mapGetters} from 'vuex';
+  import VendorPicker from 'components/common/pickers/VendorPicker';
+  import CheckoutDrawer from 'components/checkout/CheckoutDrawer';
+  import Register from 'components/auth/Register';
+  import Login from 'components/auth/Login';
 
   export default {
     name: 'MainLayout',
 
     components: {
+      Register,
+      CheckoutDrawer,
+      Login,
+      VendorPicker,
       EssentialLink
     },
-
+    mounted() {
+      // this.setVendor();
+      this.pageWidth = window.innerWidth;
+      window.addEventListener('resize', () => {
+        this.pageWidth = window.innerWidth;
+      });
+      let vendorContext = this.$q.sessionStorage.getItem('vendorContext');
+      if(!this.lget(vendorContext, '_id')) vendorContext = this.$q.localStorage.getItem('vendorContext');
+      let id = this.lget(vendorContext, '_id');
+      if(id && String(id) !== String(this.lget(this.vendorContext, '_id', '*'))){
+        this.$store.dispatch('setVendorContext', vendorContext);
+      }
+    },
     data() {
       return {
+        pageWidth: 1400,
+        cartDrawer: false,
+        registering: false,
+        loginDialog: false,
+        vendorTry: 0,
+        currVendor: null,
         leftDrawerOpen: false,
-        essentialLinks: [
+        personalLinks: [
           {
-            title: 'Docs',
-            caption: 'quasar.dev',
-            icon: 'school',
-            link: 'https://quasar.dev'
-          },
-          {
-            title: 'Github',
-            caption: 'github.com/quasarframework',
-            icon: 'code',
-            link: 'https://github.com/quasarframework'
-          },
-          {
-            title: 'Discord Chat Channel',
-            caption: 'chat.quasar.dev',
-            icon: 'chat',
-            link: 'https://chat.quasar.dev'
-          },
-          {
-            title: 'Forum',
-            caption: 'forum.quasar.dev',
-            icon: 'record_voice_over',
-            link: 'https://forum.quasar.dev'
-          },
-          {
-            title: 'Twitter',
-            caption: '@quasarframework',
-            icon: 'rss_feed',
-            link: 'https://twitter.quasar.dev'
-          },
-          {
-            title: 'Facebook',
-            caption: '@QuasarFramework',
-            icon: 'public',
-            link: 'https://facebook.quasar.dev'
-          },
-          {
-            title: 'Quasar Awesome',
-            caption: 'Community Quasar projects',
-            icon: 'favorite',
-            link: 'https://awesome.quasar.dev'
+            title: 'Profile',
+            caption: 'Your personal information',
+            icon: 'mdi-account-box',
+            link: '/profile'
           }
+        ],
+        vendorLinks: [
+          {
+            title: 'Product Catalog',
+            caption: 'create/edit products',
+            icon: 'mdi-format-list-text',
+            link: '/catalog'
+          },
+          {
+            title: 'Product Lineups',
+            caption: 'manage product offerings',
+            icon: 'mdi-group',
+            link: '/lineups'
+          },
+          {
+            title: 'Subscriptions',
+            caption: 'manage subscriptions',
+            icon: 'mdi-shape-circle-plus',
+            link: '/subscriptions'
+          },
+          {
+            title: 'Schedule',
+            caption: 'availability and events',
+            icon: 'mdi-calendar',
+            link: '/schedule'
+          },
+          {
+            title: 'Vendor Account',
+            caption: 'account and settings',
+            icon: 'mdi-cog',
+            link: '/account'
+          },
         ]
       };
+    },
+    watch: {
+      user: {
+        immediate: true,
+        handler(newVal, oldVal) {
+          if ((newVal?._id) && (!oldVal?._id)) {
+            this.leftDrawerOpen = true;
+          } else if (oldVal?._id && !newVal?._id) {
+            // this.$router.push('/')
+            this.leftDrawerOpen = false;
+          }
+        }
+      },
+    },
+    computed: {
+      ...mapGetters('auth', { user: 'user' }),
+      attrs() {
+        return {
+          appId: 'follow-something',
+          appName: 'follow',
+          groupsIn: [],
+          currVendor: this.currVendor
+        };
+      },
+      // stateVendors() {
+      //   return this.findVendors({
+      //     // query: {
+      //     //   owner: this.person._id
+      //     // }
+      //   }).data
+      // },
+    },
+    methods: {
+
+      login(val) {
+        this.registering = val;
+        this.loginDialog = true;
+      },
+
+      // setVendor() {
+      //   if (this.stateVendors && this.stateVendors.length) {
+      //     console.log('MainLayout >> methods >> setVendor >> if >> true >> stateVendors[0]', this.stateVendors[0])
+      //     if (!this.currVendor) this.currVendor = this.stateVendors[0]
+      //     this.$store.dispatch('setVendorContext', this.stateVendors[0])
+      //   }
+      // }
     }
   };
 </script>
+
+<style scoped lang="scss">
+  .__cart {
+    border-radius: 5px 0 0 5px;
+    box-shadow: -5px 0 5px rgba(0,0,0,.3);
+    background: white;
+    z-index: 19;
+    position: fixed;
+    top: 60px;
+    bottom: 50px;
+    right: 0;
+    width: 600px;
+    max-width: 100vw;
+    overflow-y: scroll;
+    transition: transform .2s ease-in;
+  }
+</style>

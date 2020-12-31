@@ -30,9 +30,7 @@
       },
     },
     computed: {
-      ...mapGetters('auth', {
-        stateUser: 'user'
-      }),
+      ...mapGetters('auth', { stateUser: 'user' }),
     },
     methods: {}
   };

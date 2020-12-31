@@ -3,6 +3,7 @@ import Vue from 'vue';
 Vue.prototype.$lfind = require('lodash.find');
 
 Vue.prototype.$lget = require('lodash.get');
+Vue.prototype.lget = require('lodash.get');
 
 Vue.prototype.$lisEmpty = require('lodash.isempty');
 

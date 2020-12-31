@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import {FeathersVuex} from 'feathers-vuex';
+import { LocalStorage, SessionStorage } from 'quasar';
 
 import auth from './store.auth';
 
@@ -9,6 +10,8 @@ import auth from './store.auth';
 
 Vue.use(Vuex);
 Vue.use(FeathersVuex);
+
+import currency from './modules/currency';
 
 const requireModule = require.context(
   // The path where the service modules live
@@ -34,13 +37,41 @@ const servicePlugins = requireModule
 
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
-    state: {},
-    getters: {},
-    mutations: {},
-    actions: {},
+    state: {
+      vendorContext: null
+    },
+    getters: {
+      vendorContext(state){
+        return state.vendorContext;
+      }
+    },
+    mutations: {
+      SET_VENDOR_CONTEXT(state, payload){
+        state.vendorContext = payload;
+        try {
+          LocalStorage.set('vendorContext', payload);
+        } catch(e) {
+          console.log('error setting local storage vendorId', e);
+        } finally {
+          console.log('set local storage', payload);
+        }
+        try {
+          SessionStorage.set('vendorContext', payload);
+        } catch(e) {
+          console.log('error setting session storage vendor', e);
+        } finally {
+          console.log('set session storage', payload);
+        }
+      },
+    },
+    actions: {
+      setVendorContext(context, payload){
+        context.commit('SET_VENDOR_CONTEXT', payload);
+      }
+    },
 
     modules: {
-      // example
+      currency
     },
     plugins: [...servicePlugins, auth],
 

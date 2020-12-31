@@ -3,8 +3,41 @@ import VueRouter from 'vue-router';
 import {Notify} from 'quasar';
 
 import Routes from './routes';
+import profileUtils from '../plugins/profile-utils';
+import defaults from '../plugins/defaults';
+import validators from '../plugins/validators';
+import recurrenceHandlers from '../plugins/recurrence';
+import isAllowed from '../plugins/isAllowed';
+import uuid from '../plugins/uuid';
+import fingerprint from '../plugins/fingerprint';
+import sanitize from 'src/plugins/sanitize';
+import productUtils from 'src/plugins/product-utils';
+import stripeUtils from '../plugins/stripe-utils';
+import iconPlugin from '@quasar/quasar-ui-qiconpicker';
+import VueGeolocation from 'vue-browser-geolocation';
+import dateUtils from '../plugins/dateUtils';
+import qNotify from '../plugins/qNotify';
+
+
 
 Vue.use(VueRouter);
+Vue.use(VueGeolocation);
+Vue.use(defaults);
+Vue.use(validators);
+Vue.use(profileUtils);
+Vue.use(recurrenceHandlers);
+Vue.use(isAllowed);
+Vue.use(uuid);
+Vue.use(fingerprint);
+Vue.use(sanitize);
+Vue.use(productUtils);
+Vue.use(stripeUtils);
+Vue.use(iconPlugin);
+Vue.use(dateUtils);
+Vue.use(qNotify);
+
+
+
 
 /*
  * If not building with SSR mode, you can

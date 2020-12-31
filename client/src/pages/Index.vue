@@ -1,7 +1,8 @@
 <template>
   <q-page class="flex flex-center">
-    <img alt="Quasar logo"
-         src="~assets/quasar-logo-full.svg">
+    <img
+      src="https://ha6755ad-images.s3-us-west-1.amazonaws.com/crayv_standard.svg"
+    >
   </q-page>
 </template>
 

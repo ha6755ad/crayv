@@ -1,0 +1,41 @@
+#colorSelectorRound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  // Vars
+
+  // Support
+
+  // Module
+  & {
+    //
+  }
+
+  // Facets
+
+  // States
+}
+
+h1 {
+  font-weight: normal;
+}
+
+pre {
+  min-width: 275px;
+  padding: 15px 30px;
+  background: #f8f8f8;
+  color: #525252;
+  font-size: 15px;
+  font-weight: bold;
+  line-height: 1.6;
+  margin: 0;
+}
+
+@media (max-width: 420px) {
+  h1 {
+    font-size: 1.4em;
+  }
+}
+
+

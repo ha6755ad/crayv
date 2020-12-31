@@ -1,3 +1,16 @@
+const serverHost = process.env.HOST || 'localhost';
+const serverPort = process.env.PORT || 3030;
+const serverUrl = process.env.SERVER_URL || 'http://' + serverHost + ':' + serverPort;
+const clientUrl = process.env.CLIENT_URL || 'http://localhost:8080';
+
+const STORAGE_TYPES = {
+  's3': 's3',
+  'local-private': 'local-private',
+  'local-public': 'local-public',
+  'google-cloud': 'google-cloud',
+  'others': 'others'
+};
+
 module.exports = {
   host: process.env.HOST || 'localhost',
   port: process.env.PORT || 3030,
@@ -12,6 +25,48 @@ module.exports = {
     accessKeyId: process.env.AWS_ACCESS_KEY,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     signedUrlExpires: 900
+  },
+  'sms': {
+    'default': 'twilio',
+    'from': process.env.FROM_NUMBER,
+    'verifyResetUrl': process.env.SMS_URL || clientUrl || serverUrl,
+    'identifyUserProps': ['_id', 'username', 'email', 'phone.number.e164'],
+    'shortTokenLen': process.env.SMS_SHORTTOKEN_LENGTH || 6,
+    'shortTokenDigits': process.env.SMS_SHORTTOKEN_DIGITS || true,
+    'twilio': {
+      'apiKey': process.env.TWILIO_API_KEY,
+      'domain': process.env.TWILIO_DOMAIN,
+      'sid': process.env.TWILIO_SID,
+      'authToken': process.env.TWILIO_AUTH_TOKEN,
+      'bulkSms': {
+        'notifyServiceSid': process.env.TWILIO_NOTIFY_SERVICE_SID
+      }
+    },
+  },
+  'stripe': {
+    'STRIPE_SECRET_KEY': process.env.STRIPE_SECRET_KEY || 'STRIPE_SECRET_KEY'
+  },
+  'mailer': {
+    'default': 'ses',
+    'from': process.env.FROM_EMAIL,
+    'verifyResetUrl': process.env.MAILER_URL || clientUrl || serverUrl,
+    'helpEmail': process.env.HELP_EMAIL || 'help@MyCompany.com',
+    'logo': process.env.MAILER_LOGO || 'https://ha6755ad-images.s3-us-west-1.amazonaws.com/legacy/legacy_coin.png',
+    'mailgun': {
+      'host': process.env.MAILGUN_HOST,
+      'apiKey': process.env.MAILGUN_API_KEY,
+      'domain': process.env.MAILGUN_DOMAIN
+    },
+    'sendgrid': {
+      'host': process.env.SENDGRID_HOST,
+      'apikey': process.env.SENDGRID_API_KEY
+    },
+    'ses': {
+      'host': process.env.SES_HOST,
+      'port': process.env.SES_PORT,
+      'user': process.env.SES_SMTP_USER,
+      'pass': process.env.SES_SMTP_PASS
+    }
   },
   authentication: {
     entity: 'user',
@@ -52,6 +107,32 @@ module.exports = {
       dstPort: process.env.REDIS_SSH_DST_PORT || 6379,
       localHost: process.env.REDIS_DB_HOST || 'localhost',
       localPort: process.env.REDIS_DB_PORT || 6380,
+    }
+  },
+  'mailgun': {
+    'apiKey': process.env.MAILGUN_API_KEY || '33b8266164bbff41e301d600f1713ad1-3939b93a-eceddde6',
+    'domain': process.env.MAILGUN_DOMAIN || 'sandboxd5991780fa8c4835865c326bee6a24e5.mailgun.org'
+  },
+  uploads: {
+    privateFolder: '../private-files',
+    services: {
+      's3': true,
+      'local-private': true,
+      'local-public': true,
+      'google-cloud': false
+    },
+    defaultFileService: 'local-public',
+    blockDeleteDocumentWhenDeleteFileFailed: false,
+    blockUpdateDocumentWhenReplaceFileFailed: false,
+    enums: {
+      STORAGE_TYPES,
+      UPLOAD_SERVICES: {
+        [STORAGE_TYPES['local-private']]: 'upload-local-private',
+        [STORAGE_TYPES['local-public']]: 'upload-local-public',
+        [STORAGE_TYPES.s3]: 'uploads-s3',
+        [STORAGE_TYPES['google-cloud']]: 'uploads-google'
+      },
+      UPLOAD_PUBLIC_FILE_KEY: Symbol.for('public-file')
     }
   },
   mongo: {
