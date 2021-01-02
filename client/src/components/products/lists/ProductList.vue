@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; min-height: 200px">
+  <div style="width: 100%;">
     <div class="q-pa-md" v-if="title || subtitle">
       <div :class="titleClass">
         {{title}}
@@ -10,23 +10,16 @@
     </div>
   <load-and-paginate
     :query-adders="queryAdders"
-    :paginator="true"
-    load-service="crayv-products"
+    :load-service="loadService"
     :load-watch="loadWatch"
     :load-on-mount="!loadWatch"
     :search="search"
-    search-placeholder="Search Products..."
+    :search-placeholder="searchPlaceholder"
+    :paginator="paginator"
   >
     <template v-slot:list="scope">
-      <q-list separator>
-        <q-item dense v-if="editing" clickable @click="addDialog = true">
-          <q-item-section avatar>
-            <q-btn dense flat icon="mdi-plus-circle" size="sm" color="dark"></q-btn>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Add New</q-item-label>
-          </q-item-section>
-        </q-item>
+      <q-list separator v-if="!select">
+        <add-list-item v-if="editing" @add="addDialog = true"></add-list-item>
         <q-item v-for="(item, i) in scope.items" :key="`product-${i}`">
           <product-item
             :flat="flat"
@@ -34,9 +27,45 @@
             :editing="editing"
             @add="handleInput"
             :active="isSelected(item)"
-          ></product-item>
+          >
+            <!--          TODO: this slot not working-->
+            <template v-if="$scopedSlots.side" v-slot:side>
+              <slot name="side" :item="item" :index="i"></slot>
+            </template>
+          </product-item>
         </q-item>
       </q-list>
+      <q-select
+        label="Search Products..."
+        v-else
+        :options="scope.items"
+        behavior="menu"
+        :multiple="multiple"
+        :value="activeItems"
+        use-input
+        @input-value="searchInput = $event"
+      >
+        <template v-slot:no-option v-if="editing">
+          <add-list-item @add="addDialog = true"></add-list-item>
+        </template>
+        <template v-slot:before-options v-if="editing">
+          <add-list-item @add="addDialog = true"></add-list-item>
+        </template>
+        <template v-slot:selected-item="{ opt, index }">
+          <q-chip dark removable @remove="removeItem(index, opt)">
+            <default-avatar :value="opt" avatar-path="images"></default-avatar>
+            {{lget(opt, 'name')}}
+          </q-chip>
+        </template>
+        <template v-slot:option="{ opt, index }">
+          <product-item :value="opt" @add="handleInput" :editing="editing">
+<!--          TODO: this slot not working-->
+            <template v-if="$scopedSlots.side" v-slot:side>
+              <slot name="side" :item="opt" :index="index"></slot>
+            </template>
+          </product-item>
+        </template>
+      </q-select>
     </template>
   </load-and-paginate>
 
@@ -54,12 +83,18 @@
   import ProductItem from 'components/products/card/ProductItem';
   import {SelectMixin} from 'src/mixins/SelectMixin';
   import ProductForm from 'components/products/forms/ProductForm';
+  import AddListItem from 'components/common/atoms/search/AddListItem';
+  import DefaultAvatar from 'components/common/atoms/avatars/DefaultAvatar';
   export default {
     name: 'ProductList',
     mixins: [SelectMixin],
-    components: { ProductForm, ProductItem, LoadAndPaginate },
+    components: { DefaultAvatar, AddListItem, ProductForm, ProductItem, LoadAndPaginate },
     props: {
+      searchPlaceholder: { type: String, default: 'Search Products...'},
+      paginator: { type: Boolean, default: true },
+      select: Boolean,
       title: String,
+      sideSlot: Boolean,
       subtitle: String,
       titleClass: {
         type: String,
@@ -77,17 +112,24 @@
         required: false
       },
       emitValue: Boolean,
-      multiple: Boolean,
+      multiple: {type: Boolean, default: true },
       editing: Boolean,
       search: Boolean,
       showInactive: {
         type: Boolean,
         default: false
       },
-      queryIn: Object
+      queryIn: Object,
+      value: {
+        required: true
+      }
+    },
+    mounted(){
+
     },
     data(){
       return {
+        searchInput: '',
         addDialog: false
       };
     },
@@ -96,6 +138,9 @@
     },
     computed: {
       ...mapGetters('auth', { user: 'user' }),
+      loadService(){
+        return 'crayv-products';
+      },
       queryAdders(){
         let activeObj = { active: !this.showInactive };
         return this.queryIn ? {...this.queryIn, ...activeObj} : activeObj;

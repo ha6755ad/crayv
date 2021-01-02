@@ -11,7 +11,6 @@
       <q-input class="q-mt-xs"
                id="name"
                v-model="form.name"
-               :rules="$vRuleCheck('name')"
                :error="$vErrorCheck('name')"
                :error-message="$vErrorMessage('name')"
                label="Name"></q-input>
@@ -20,7 +19,6 @@
                type="email"
                @input="emailInput"
                :value="form.email"
-               :rules="$vRuleCheck('email')"
                :error="$vErrorCheck('email')"
                :error-message="$vErrorMessage('email')"
                label="Email"></q-input>
@@ -64,7 +62,6 @@
       </q-slide-transition>
       <q-input :type="passType"
                v-model="form.password"
-               :rules="$vRuleCheck('password')"
                :error="$vErrorCheck('password')"
                :error-message="$vErrorMessage('password')"
                label="Password"
@@ -81,7 +78,6 @@
       <q-input type="password"
                v-model="confirmPassword"
                @input="passwordCheck"
-               :rules="$vRuleCheck('confirmPassword')"
                :error="$vErrorCheck('confirmPassword')"
                :error-message="$vErrorMessage('confirmPassword')"
                label="Confirm Password"></q-input>

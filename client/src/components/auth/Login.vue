@@ -12,7 +12,6 @@
                  :value="form.email"
                  class="required"
                  label="Email"
-                 :rules="$vRuleCheck('email')"
                  :error="$vErrorCheck('email')"
                  :error-message="$vErrorMessage('email')"
                  required>
@@ -26,7 +25,6 @@
                  class="required"
                  label="Password"
                  v-on="$listeners"
-                 :rules="$vRuleCheck('password')"
                  :error="$vErrorCheck('password')"
                  :error-message="$vErrorMessage('password')"
                  :append-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
@@ -39,10 +37,11 @@
           </template>
         </q-input>
 
-        <div class="q-pa-md row">
+        <div class="q-px-md row">
           <q-space/>
-          <q-btn color="white"
-                 text-color="black"
+          <q-btn color="primary"
+                 push
+                 text-color="white"
                  @click="login"
                  label="Login">
           </q-btn>

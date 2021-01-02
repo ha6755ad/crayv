@@ -12,16 +12,11 @@ module.exports = function (app) {
     active: { type: Boolean, default: true },
     createdBy: { type: Schema.Types.ObjectId, ref: 'users' },
     updatedBy: { type: Schema.Types.ObjectId, ref: 'users' },
-    marketplace: { type: Schema.Types.ObjectId, ref: 'crayv-marketplaces' },
+    marketplace: { type: Schema.Types.ObjectId, ref: 'crayv-marketplaces', required: true },
     name: String,
-    avatar: { type: Common.Images },
-    img: { type: Common.Images },
     settings: { type: Common.VendorSettings },
-    syncProducts: Boolean,
-    products: [{ type: Schema.Types.ObjectId, ref: 'crayv-products' }],
     disallowedProducts: [{ type: Schema.Types.ObjectId, ref: 'crayv-products' }],
     pendingProducts: [{type: Schema.Types.ObjectId, ref: 'crayv-products'}],
-    productGroups: [{ type: Schema.Types.ObjectId, ref: 'crayv-product-groups' }],
     productLineups: [{ type: Schema.Types.ObjectId, ref: 'crayv-product-lineups' }],
     promotions: [{ type: Schema.Types.ObjectId, ref: 'crayv-promotions' }]
   }, {

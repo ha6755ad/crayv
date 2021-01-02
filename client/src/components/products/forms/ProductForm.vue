@@ -13,8 +13,18 @@
         <div class="row justify-end">
           <q-checkbox label="Active" v-model="form.active"></q-checkbox>
         </div>
-        <q-input label="Product Name" v-model="form.name"/>
-        <q-input type="textarea" filled label="Product Description" v-model="form.description"/>
+        <q-input
+          :error-message="$vErrorMessage('name')"
+          :error="$vErrorCheck('name')"
+          label="Product Name"
+          v-model="form.name"
+        />
+        <q-input
+          :error-message="$vErrorMessage('description')"
+          :error="$vErrorCheck('description')"
+          type="textarea" filled
+          label="Product Description"
+          v-model="form.description"/>
 
         <div class="row justify-center">
           <multi-image-upload v-model="form.images"></multi-image-upload>

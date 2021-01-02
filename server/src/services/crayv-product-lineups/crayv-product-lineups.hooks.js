@@ -2,23 +2,16 @@ const { populate } = require('feathers-graph-populate');
 const { relateOtm,  removeOtm, relateMtm, removeMtm } = require('../../hooks/relate');
 // const lget = require('lodash.get');
 
-const relateVendor = async context => {
+const relateVendorSettings = async context => {
   let config = {
-    herePath: 'vendor',
+    herePath: 'vendorSettings',
     therePath: 'productLineups',
-    thereService: 'crayv-vendors'
+    thereService: 'crayv-vendor-settings'
   };
-  await relateOtm(context, config);
+  if(context.method === 'remove') await removeMtm(config);
+  else await relateMtm(config);
 };
 
-const unrelateVendor = async context => {
-  let config = {
-    herePath: 'vendor',
-    therePath: 'productLineups',
-    thereService: 'crayv-vendors'
-  };
-  await removeOtm(context, config);
-};
 
 const relateProducts = async context => {
   let config = {
@@ -26,8 +19,8 @@ const relateProducts = async context => {
     therePath: 'productLineups',
     thereService: 'crayv-products',
   };
-  if(context.method === 'remove') await removeMtm(context, config);
-  else await relateMtm(context, config);
+  if(context.method === 'remove') await removeMtm(config);
+  else await relateMtm(config);
 };
 
 const relateProductGroups = async context => {
@@ -36,8 +29,8 @@ const relateProductGroups = async context => {
     therePath: 'productLineups',
     thereService: 'crayv-products',
   };
-  if(context.method === 'remove') await removeMtm(context, config);
-  else await relateMtm(context, config);
+  if(context.method === 'remove') await removeMtm(config);
+  else await relateMtm(config);
 };
 
 
@@ -64,8 +57,8 @@ module.exports = {
     find: [],
     get: [],
     create: [],
-    update: [relateProductGroups, relateProducts],
-    patch: [relateProductGroups, relateProducts],
+    update: [relateProductGroups, relateProducts, relateVendorSettings],
+    patch: [relateProductGroups, relateProducts, relateVendorSettings],
     remove: []
   },
 
@@ -73,10 +66,10 @@ module.exports = {
     all: [populate({populates, namedQueries})],
     find: [],
     get: [],
-    create: [relateVendor, relateProductGroups, relateProducts],
-    update: [relateVendor, relateProductGroups, relateProducts],
-    patch: [relateVendor, relateProductGroups, relateProducts],
-    remove: [unrelateVendor, relateProductGroups, relateProducts]
+    create: [relateVendorSettings, relateProductGroups, relateProducts],
+    update: [relateVendorSettings, relateProductGroups, relateProducts],
+    patch: [relateVendorSettings, relateProductGroups, relateProducts],
+    remove: [relateVendorSettings, relateProductGroups, relateProducts]
   },
 
   error: {
@@ -84,8 +77,8 @@ module.exports = {
     find: [],
     get: [],
     create: [],
-    update: [relateProductGroups, relateProducts],
-    patch: [relateProductGroups, relateProducts],
+    update: [relateProductGroups, relateProducts, relateVendorSettings],
+    patch: [relateProductGroups, relateProducts, relateVendorSettings],
     remove: []
   }
 };

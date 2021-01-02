@@ -15,7 +15,9 @@ input:required + div.q-field__label::after,
 .text-shade-4 {
   color: rgba(0,0,0,.4);
 }
-
+.bg-shade-2 {
+  background: rgba(0,0,0,.2);
+}
 .bg-shade-4 {
   background: rgba(0,0,0,.4);
 }

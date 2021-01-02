@@ -19,6 +19,7 @@ module.exports = function (app) {
     vendorLocations: [{type: String}],
     type: {type: String, enum: ['global', 'deal', null]}, //TODO: add more type scenarios
     products: [{type: Schema.Types.ObjectId, ref: 'crayv-products'}],
+    productGroups: [{type: Schema.Types.ObjectId, ref: 'crayv-product-groups'}],
     excludeProducts: [{type: Schema.Types.ObjectId, ref: 'crayv-products'}],
     allProducts: Boolean,
     name: String,

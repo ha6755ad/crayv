@@ -90,7 +90,7 @@ export const loadPaginatedMixin = {
       let list = this.$store.getters[`${this.loadService}/find`]({
         query: { ...query, ...getterAdders }
       }).data;
-      console.log('returning list', {...query, ...getterAdders}, list);
+      // console.log('returning list', {...query, ...getterAdders}, list);
       if (list) {
         return list;
       } else return [];

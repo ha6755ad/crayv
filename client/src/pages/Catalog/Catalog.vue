@@ -20,7 +20,8 @@
   import {mapGetters} from 'vuex';
   import TabStepper from 'components/common/atoms/tabs/TabStepper';
   import ProductList from 'components/products/lists/ProductList';
-  import ProductGroupGrid from 'components/product-groups/lists/ProductGroupGrid';
+  import ProductGroupList from 'components/product-groups/lists/ProductGroupList';
+  import LineupList from 'components/lineups/lists/LineupList';
 
   export default {
     name: 'Catalog',
@@ -45,6 +46,7 @@
             component: ProductList,
             attrs: {
               title: 'Products',
+              value: null,
               subtitle: 'Add and manage products',
               loadWatch: this.lget(this.vendorContext, 'products', []),
               search: true,
@@ -56,7 +58,7 @@
           },
           {
             label: 'Product Groups',
-            component: ProductGroupGrid,
+            component: ProductGroupList,
             attrs: {
               title: 'Product Groups',
               subtitle: 'You can use product groups to sell packages, or simply to manage products and lineups more easily by grouping',
@@ -65,11 +67,22 @@
               editing: true,
               queryIn: {
                 _id: { $in: this.lget(this.vendorContext,'productGroups', [])}
-              }
+              },
             }
           },
           {
-            label: 'Product Lineups'
+            label: 'Product Lineups',
+            component: LineupList,
+            attrs: {
+              title: 'Product Lineups',
+              subtitle: 'Manage your customer facing offerings',
+              loadWatch: this.lget(this.vendorContext, 'lineups', []),
+              search: true,
+              editing: true,
+              queryIn: {
+                _id: { $in: this.lget(this.vendorContext, 'lineups', []) }
+              },
+            }
           }
         ];
       },

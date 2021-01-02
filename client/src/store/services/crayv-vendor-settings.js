@@ -12,15 +12,11 @@ class CrayvVendorSettings extends BaseModel {
   // Define default properties here
   static instanceDefaults () {
     return {
+      marketplace: null,
       name: '',
-      avatar: null,
-      img: null,
-      vendorSettings: [],
-      recommendProducts: [],
       settings: {},
-      syncProducts: true,
-      products: [],
-      productGroups: [],
+      pendingProducts: [],
+      disallowedProducts: [],
       productLineups: [],
       promotions: []
     };

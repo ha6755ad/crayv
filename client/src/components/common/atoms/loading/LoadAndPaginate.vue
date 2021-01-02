@@ -25,11 +25,13 @@
   import BtnPaginator from 'components/common/atoms/pagination/BtnPaginator';
   import {loadPaginatedMixin} from 'src/mixins/LoadPaginatedMixin';
   import SearchItem from 'components/common/atoms/search/SearchItem';
+  const lisequal = require('lodash.isequal');
 
   export default {
     mixins: [loadPaginatedMixin],
     components: { SearchItem, BtnPaginator },
     props: {
+      searchInputIn: String,
       paginator: {
         type: Boolean,
         default: false
@@ -67,7 +69,10 @@
       }
     },
     mounted() {
-      if (this.loadOnMount) this.reloadItems(0);
+      if (this.loadOnMount) {
+        console.log('load on mount', this.loadService);
+        this.reloadItems(0);
+      }
     },
     data() {
       return {
@@ -77,11 +82,20 @@
       };
     },
     watch: {
+      searchInputIn: {
+        immediate: true,
+        handler(newVal, oldVal){
+          if(typeof newVal === 'string' || typeof oldVal === 'string'){
+            this.searchInput = newVal;
+          }
+        }
+      },
       loadWatch: {
         immediate: true,
         handler(newVal, oldVal) {
-          if ((newVal || newVal === 0) && newVal !== oldVal) {
+          if ((newVal || newVal === 0) && !lisequal(newVal, oldVal)) {
             // YOU CAN PASS IN A NUMBER IF YOU WANT TO MANAGE SKIP PAGE WITH THIS
+            console.log('load on watch', this.loadService);
             if ((typeof newVal === 'number' && newVal > -1)) {
               this.reloadItems(newVal);
             } else this.reloadItems(0);

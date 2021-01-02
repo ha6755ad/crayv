@@ -9,6 +9,7 @@ const CrayvCartLines = require('./crayv-cart-lines/crayv-cart-lines.service');
 const CrayvPromotions = require('./crayv-promotions/crayv-promotions.service');
 const CrayvMarketplaces = require('./crayv-marketplaces/crayv-marketplaces.service.js');
 const CrayvVendorSettings = require('./crayv-vendor-settings/crayv-vendor-settings.service.js');
+const currencyExchange = require('./currency-exchange/currency-exchange.service');
 const fileUploader = require('./file-uploader/file-uploader.service');
 const uploads = require('./uploads/uploads.service');
 
@@ -26,6 +27,7 @@ module.exports = function (app) {
   app.configure(CrayvPromotions);
   app.configure(CrayvMarketplaces);
   app.configure(CrayvVendorSettings);
+  app.configure(currencyExchange);
   app.configure(fileUploader);
   app.configure(uploads);
   app.configure(users);

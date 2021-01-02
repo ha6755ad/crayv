@@ -13,24 +13,30 @@ module.exports = function (app) {
     createdBy: { type: Schema.Types.ObjectId, ref: 'users' },
     updatedBy: { type: Schema.Types.ObjectId, ref: 'users' },
     name: String,
-    host: { type: Schema.Types.ObjectId, ref: 'bw-pods'},
     description: String,
+    host: { type: Schema.Types.ObjectId },
+    tags: [String],
+    privacy: { type: String, enum: Common.privacyEnum, default: 'public' },
     avatar: { type: Common.Images },
-    image: { type: Common.Images },
+    images: [{ type: Common.Images }],
     vendorSettings: [{ type: Schema.Types.ObjectId, ref: 'crayv-vendor-settings' }],
     recommendProducts: [{
       description: String,
       id: { type: Schema.Types.ObjectId, ref: 'crayv-products' }
     }],
+    currency: { type: String, default: 'usd' },
+    currencies: [String],
     settings: {
       stripe_account: {type: String},
-      approvals: [{type: String, enum: ['vendor', 'admin']}]
+      approvals: {type: String, enum: ['vendor', 'admin']}
     },
+
     pricing: {
       flatFee: Number,
+      flatFeeType: {type: String, enum: ['transaction', 'subscription'], default: 'transaction'},
       flatFeeRecurrence: {type: Common.RRULE},
       percentageFee: Number,
-      feeType: {type: String, enum: ['percentage', 'flat', 'option']}
+      feeType: {type: String, enum: ['percentage', 'flat', 'combo', 'option']}
     },
     roles: {
       superadmin: [{type: Schema.Types.ObjectId, ref: 'users'}],

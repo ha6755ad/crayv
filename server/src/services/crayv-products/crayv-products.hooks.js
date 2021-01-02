@@ -10,7 +10,7 @@ const vendorResolvers = {
     // eslint-disable-next-line no-unused-vars
     products: $select => async (product, context) => {
       if(product.vendorId) {
-        const vendor = await context.app.service('crayv-vendors').get(product.vendorId);
+        const vendor = await context.app.service('crayv-vendors').get(product.vendorId, { query: { $select: ['_id', 'name', 'description', 'avatar', 'img', 'productLineups', 'roles', 'owner', 'ownerModel']}});
         if(vendor) {
           lset(product, '_fastjoin.vendor', vendor);
         } else lset(product, '_fastjoin.vendor', null);
@@ -41,23 +41,25 @@ const namedQueries = {
 
 };
 
-const findPrice = async (product, app) => {
-  return await app.service('crayv-product-price').create(product, {
-    query: {
-      quantity: 1
-    }
-  }).then(res => {
-    // console.log('got line price', res);
-    return res;
-  }).catch(err => {
-    console.log('error getting line price', err);
-    return null;
-  });
+const findPrice = async (product = {}) => {
+  return async context => {
+    return await context.app.service('crayv-product-price').create(product, {
+      query: {
+        quantity: 1
+      }
+    }).then(res => {
+      // console.log('got line price', res);
+      return res;
+    }).catch(err => {
+      console.log('error getting line price', err);
+      return null;
+    });
+  };
 };
 
 const attachPriceGet = async context => {
   let product = context.result;
-  await findPrice(product, context.app)
+  await findPrice(product)
     .then(price => {
       // console.log('attaching price get', price);
       lset(context.result, 'priceObj', lget(price, ['list', 0], {total: 0}));
@@ -71,7 +73,7 @@ const attachPriceFind = async context => {
     // The first iteration uses an already resolved Promise
     // so, it will immediately continue.
     await promise;
-    const priceObj = await findPrice(product, context.app);
+    const priceObj = await findPrice(product);
     lset(product, 'priceObj', lget(priceObj, ['list', 0], { total: lget(product, 'price.basePrice', 0) }));
     // console.log('ot price', priceObj, product);
   }, Promise.resolve());
@@ -84,8 +86,8 @@ const relateVendor = async context => {
     therePath: 'products',
     thereService: 'crayv-vendors'
   };
-  if(context.method === 'remove') await removeOtm(context, config);
-  else await relateOtm(context, config);
+  if(context.method === 'remove') await removeOtm(config);
+  else await relateOtm(config);
 };
 
 // const noDuplicatePromos = context => {

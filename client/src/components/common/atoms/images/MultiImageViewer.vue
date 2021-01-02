@@ -6,12 +6,12 @@
 <!--        </div>-->
       </q-img>
     <template v-if="multiLength > 1">
-      <q-btn size="sm" round flat
-             class="__right-arrow text-dark" @click="forward">
-        <q-icon name="mdi-menu-right-outline" size="25px"/>
+      <q-btn size="xs" round flat
+             class="__right-arrow text-dark bg-shade-2 text-white" @click.stop="forward">
+        <q-icon name="mdi-menu-right" size="25px"/>
       </q-btn>
-      <q-btn size="sm" round flat class="__left-arrow text-dark" @click="backward">
-        <q-icon name="mdi-menu-left-outline" size="25px"/>
+      <q-btn size="xs" round flat class="__left-arrow text-dark bg-shade-2 text-white" @click.stop="backward">
+        <q-icon name="mdi-menu-left" size="25px"/>
       </q-btn>
     </template>
   </q-card>
@@ -41,7 +41,7 @@
     },
     computed: {
       multiLength(){
-        return this.value && Array.isArray(this.value[this.avatarPath]) ? this.value.length : 0;
+        return this.value && Array.isArray(this.value[this.avatarPath]) ? this.value[this.avatarPath].length : 0;
       },
       contentSlot(){
         if(this.$slots.content) return true;

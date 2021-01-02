@@ -1,64 +1,94 @@
 <template>
-  <q-card class="bg-light" style="height: 100%; width: 100%; overflow: hidden">
-    <q-card-section>
-      <div class="row justify-center">
-        <template v-for="(image, i) in imageGen">
-          <div :key="`wrapper-${i}`" v-if="imgTab === i" style="width: 75%; overflow: hidden" class="__img_wrapper">
-            <img style="width: 100%; object-fit: cover" :key="`image-${i}`" :src="getAvatar(image, null, 'large', imgTab)">
-            <template v-if="imageGen && imageGen.length > 1">
-              <q-btn :key="`right-${i}`" size="xs" round flat
-                     class="__right-arrow text-dark" @click="imgTab < imageGen.length - 1 ? imgTab++ : imgTab = 0">
-                <q-icon name="mdi-menu-right-outline" size="25px"/>
-              </q-btn>
-              <q-btn :key="`left-${i}`" size="xs" round flat class="__left-arrow text-dark" @click="imgTab > 0 ? imgTab-- : imgTab = imageGen.length - 1">
-                <q-icon name="mdi-menu-left-outline" size="25px"/>
-              </q-btn>
-            </template>
-          </div>
-        </template>
+  <q-card flat class="bg-light __p_group_grid" style="border-radius: inherit; overflow: hidden" @click.stop="$emit('add', value)">
+
+    <div class="t-l flex items-center">
+      <q-btn dense push size="sm" color="positive" icon="mdi-checkbox-marked-outline" v-if="active"></q-btn>
+    </div>
+
+    <div class="flex items-center bg-shade-4 t-r text-white">
+      <q-btn
+        dense
+        flat
+        size="sm"
+        v-if="canEdit"
+        icon="mdi-pencil-box-outline"
+        @click="editDialog = !editDialog"
+      ></q-btn>
+    <q-btn flat dense size="sm" icon="mdi-arrow-expand" @click="fullDialog = true"></q-btn>
+    </div>
+
+    <div style="width: 100%; height: 100%">
+      <multi-image-viewer
+        flat
+        style-in="border-radius: inherit inherit 0 0"
+        :value="images"
+      ></multi-image-viewer>
+    </div>
+    <div class="__bottom_sec q-pa-sm">
+      <div class="text-sm text-mb-sm text-weight-medium __one-liner">
+        {{ value.name }}
       </div>
-    </q-card-section>
-    <div class="__bottom_sec">
-      <div class="text-1-5 text-weight-bold text-white __title">{{lineupIn.name}}</div>
-      <div class="text-1-2 text-weight-light text-white">
-        <v-clamp autoresize :max-lines="2">{{lineupIn.description}}</v-clamp>
+      <div class="text-xs text-mb-xs text-weight-light">
+        <v-clamp autoresize :max-lines="2">{{ value.description }}</v-clamp>
       </div>
-      <div class="__action_row row items-center">
-        <q-space/>
-        <div class="text-white text-0-9 text-weight-bold">{{productList.length}}{{productList.length &&
-          productList.length === 1 ? ' item' : ' items'}}
+      <div class="absolute-bottom q-pa-sm row items-center">
+        <div style="display: flex; flex-direction: column; justify-content: flex-end">
+          <q-icon :name="$getCurrencyIcon(lget(value, 'price.currency'))"/>
+          <div class="text-xs text-mb-sm text-green text-weight-bold" v-html="priceDisplay"></div>
+        </div>
+        <q-space></q-space>
+        <div class="text-xxs text-mb-xxs text-weight-bold">
+          {{ productList ? productList.length : 0 }}{{
+            productList && productList.length !== 1 ? ' items' : ' item'
+          }}
         </div>
       </div>
     </div>
-    <q-btn class="t-r" round size="sm" v-if="canEdit" icon="mdi-pencil-box-outline" color="secondary"
-           @click="editDialog = !editDialog"/>
-    <q-dialog maximized v-model="editDialog">
-      <q-card style="height: 100%; width: 100%">
-        <q-btn class="t-r" round flat icon="mdi-close" @click="editDialog = false"/>
-        <product-group-form v-bind="$attrs" :lineup-in="lineupIn"/>
+
+    <q-dialog position="left" :maximized="$q.screen.lt.sm" transition-hide="slide-left" transition-show="slide-right" v-model="editDialog">
+      <q-card style="width: 600px; max-width: 100vw; height: 100vh">
+        <q-btn class="t-r-f bg-dark text-light" dense flat size="sm" icon="mdi-close" @click="editDialog = false"/>
+        <product-group-form :value="value"></product-group-form>
       </q-card>
     </q-dialog>
+
+    <q-dialog :maximized="$q.screen.lt.md" transition-show="slide-up" transition-hide="slide-down" v-model="fullDialog">
+      <q-card style="width: 2500px; max-width: 100vw; height: 100vh">
+        <q-btn class="t-r-f bg-dark text-light" dense flat size="sm" icon="mdi-close" @click="fullDialog = false"/>
+        <product-group-viewer :value="value"></product-group-viewer>
+      </q-card>
+    </q-dialog>
+
   </q-card>
 </template>
 
 <script>
+  // import { models } from 'feathers-vuex';
   import VClamp from 'vue-clamp';
   import {mapGetters} from 'vuex';
   import ProductGroupForm from 'components/products/forms/ProductGroupForm';
+  import MultiImageViewer from 'components/common/atoms/images/MultiImageViewer';
+  import ProductGroupViewer from 'components/product-groups/cards/ProductGroupViewer';
 
   export default {
     name: 'ProductGroupCard',
-    components: { ProductGroupForm, VClamp },
+    components: { ProductGroupViewer, MultiImageViewer, ProductGroupForm, VClamp },
     props: {
-      lineupIn: Object
+      active: Boolean,
+      value: Object
     },
     data() {
       return {
         imgTab: 0,
-        editDialog: false
+        editDialog: false,
+        fullDialog: false
       };
     },
+    watch: {
+
+    },
     computed: {
+      ...mapGetters('auth', {user: 'user'}),
       ...mapGetters('crayv-products', {
         findProducts: 'find'
       }),
@@ -68,74 +98,59 @@
       ...mapGetters('crayv-vendors', {
         getVendor: 'get'
       }),
-      // ...mapGetters('people', {getPerson: 'get'}),
-      lineupVendor() {
-        return this.getVendor(this.lineupIn.vendor.vendorId);
+      sellType(){
+        return this.lget(this.value, 'type', 'a-la-carte');
       },
-      canEdit() {
-        return true;
-        // return this.$store.state.auth.user._id === this.lineupVendor.owner || this.getPerson(this.$store.state.auth.user.hasPerson).inGroups.includes(this.lineupVendor.owner)
+      product(){
+        if(this.sellType === 'a-la-carte'){
+          return this.lget(this.productList, [this.imgTab]);
+        } else return this.value;
       },
-      lineupProducts() {
-        return this.findProducts({
-          query: {
-            _id: {
-              $in: this.lineupIn.products.map(a => a.productId)
-            }
-          }
-        }).data;
+      totalPrice(){
+        return this.lget(this.product, 'priceObj.total', this.lget(this.product, 'price.basePrice', 0));
       },
-      imageGen() {
-        return this.lineupIn?.images?.length ? this.lineupIn.images : [].concat.apply([], this.lineupProducts.map(a => a.images));
+      basePrice(){
+        return this.lget(this.product, 'price.basePrice', 0);
+      },
+      priceDisplay() {
+        let base = this.basePrice;
+        let total = this.totalPrice;
+        let exp = this.lget(this.product, 'priceObj.exp', null);
+        if (base > total) {
+          return `<div><div><span class="text-grey-6" style="text-decoration: line-through">${this.$dollarString(base, '', 2)}</span> <span>${this.$dollarString(total, '', 2)}</span></div><div class="text-xxs text-mb-xxs absolute-bottom text-weight-light text-primary q-pa-sm">${exp ? 'Expires: ' + this.getDateFormat(exp, 'ddd MMM-DD YYYY') : ''}</div></div>`;
+        } else return `<span>${this.$dollarString(total, '', 2)}</span>`;
       },
       productList() {
-        return [].concat.apply([], this.allChildrenLineups(this.lineupIn).map(a => a.products));
-      }
+        return this.lget(this.value, '_fastjoin.products', []);
+      },
+      images() {
+        let productImages = this.$flattenArray(this.lget(this.value, '_fastjoin.products', []).map(a => a.images));
+        let pgImages = this.lget(this.value, 'images', []);
+        let list = [...pgImages, ...productImages];
+        return { avatar: list };
+      },
+      // ...mapGetters('people', {getPerson: 'get'}),
+      canEdit() {
+        let vendor = this.lget(this.value, '_fastjoin.vendor');
+        let userId = this.lget(this.user, '_id');
+        return vendor.owner === userId || this.$isSuperAdmin(vendor) || this.$isAdmin(vendor);
+        // return this.$store.state.auth.user._id === this.lineupVendor.owner || this.getPerson(this.$store.state.auth.user.hasPerson).inGroups.includes(this.lineupVendor.owner)
+      },
     },
-    methods: {
-      allChildrenLineups(startLineup) {
-        let list = [startLineup];
-        let getChildren = (lineup) => {
-          if (lineup.children) {
-            let children = this.findLineups({
-              query: { _id: { $in: lineup.children } }
-            });
-            if (children?.length) children.forEach(c => {
-              list.push(c);
-              if (c.children?.length) getChildren(c);
-            });
-          }
-        };
-        getChildren(startLineup);
-        return list;
-      }
-    }
+    methods: {}
   };
 </script>
 
 <style scoped lang="scss">
+  .__p_group_grid {
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 60% 40%;
+  }
+
   .__bottom_sec {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 30%;
-    background: rgba(0, 0, 0, .6);
-    padding: 2%;
-    min-height: 100px;
-
-    .__title {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .__action_row {
-      height: 20%;
-      max-height: 45px;
-      min-height: 30px;
-      align-self: baseline;
-    }
 
   }
 

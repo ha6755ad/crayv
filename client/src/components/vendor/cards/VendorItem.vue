@@ -7,7 +7,7 @@
 
     <q-item clickable @click="$emit('add', value)">
       <q-item-section avatar>
-        <default-avatar :value="value" avatar-path="images" square></default-avatar>
+        <default-avatar :value="value" square></default-avatar>
       </q-item-section>
       <q-item-section>
         <q-item-label class="text-xxs text-mb-xs text-weight-medium">{{lget(value, 'name', 'Untitled')}}</q-item-label>

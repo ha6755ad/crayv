@@ -49,14 +49,14 @@ export default function (/* { ssrContext } */) {
       SET_VENDOR_CONTEXT(state, payload){
         state.vendorContext = payload;
         try {
-          LocalStorage.set('vendorContext', payload);
+          LocalStorage.set('vendorId', payload._id);
         } catch(e) {
           console.log('error setting local storage vendorId', e);
         } finally {
           console.log('set local storage', payload);
         }
         try {
-          SessionStorage.set('vendorContext', payload);
+          SessionStorage.set('vendorId', payload._id);
         } catch(e) {
           console.log('error setting session storage vendor', e);
         } finally {

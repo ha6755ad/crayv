@@ -147,6 +147,7 @@ const ProductOption = new Schema({
 
 const productOrder = new Schema({
   product: { type: Schema.Types.ObjectId, ref: 'products' },
+  productModel: {type: String, enum: ['crayv-products', 'crayv-product-groups']},
   quantity: Number,
   name: String,
   description: String,
@@ -195,10 +196,6 @@ const productOrder = new Schema({
 }, {timestamps: true});
 
 const ProductSettings = new Schema({
-  productTypes: [{
-    name: { type: String },
-    description: { type: String }
-  }],
   taxes: [{
     areaIds: [{type: String }], //'*' for all
     sales: {percentage: Number, flat: Number, notes: String},

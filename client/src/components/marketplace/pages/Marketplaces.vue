@@ -21,8 +21,11 @@
 </template>
 
 <script>
-  import TabStepper from 'components/common/atoms/tabs/TabStepper';
-  import MarketPlaceForm from 'components/ir-commerce/marketplace/MarketPlaceForm';
+  import { mapGetters } from 'vuex';
+  import TabStepper from '../../common/atoms/tabs/TabStepper';
+  import MarketPlaceForm from '../MarketPlaceForm';
+  import MarketPlaceList from '../lists/MarketPlaceList';
+
   export default {
     name: 'MarketplaceAdmin',
     components: { TabStepper },
@@ -35,8 +38,24 @@
       };
     },
     computed: {
+      ...mapGetters({vendorContext: 'vendorContext'}),
       tabs(){
         return [
+          {
+            label: 'Explore',
+            icon: 'mdi-telescope',
+            component: MarketPlaceList,
+            attrs: {
+              title: 'Explore Marketplaces',
+              subtitle: 'Join marketplaces to expand your product reach',
+              search: true,
+              editing: false,
+              queryIn: {
+                privacy: 'public',
+                vendorSettings: { $nin: this.lget(this.vendorContext, 'vendorSettings', []) }
+              },
+            }
+          },
           {
             label: 'Settings',
             icon: 'mdi-cog-outline',

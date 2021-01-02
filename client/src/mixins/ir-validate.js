@@ -1,5 +1,6 @@
 const lget = require('lodash.get');
 const lset = require('lodash.set');
+const lisequal = require('lodash.isequal');
 
 const validators = {
   notEmpty: {
@@ -105,9 +106,21 @@ export const vCheck = {
     $vErrorList() {
       let errorList = [];
       let list = this.vErrors ? Object.keys(this.vErrors) : [];
+      let errors = this.vErrors;
+
+      const pushErr = key => {
+        if(lget(errors, key)) {
+          if (lget(errors, key) && typeof lget(errors, key) === 'object') {
+            Object.keys(lget(errors, key)).forEach(k => {
+              pushErr(`${key}.${k}`);
+            });
+          } else errorList.push(lget(errors, key));
+        }
+      };
+
       list.forEach(key => {
-        if(this.vErrors[key]) {
-          errorList.push(this.vErrors[key]);
+        if(errors[key]) {
+          pushErr(key);
         }
       });
       return errorList;
@@ -116,30 +129,28 @@ export const vCheck = {
   methods: {
     $vRefreshErrors(newVal, oldVal){
       // console.log('refresh errors', newVal, oldVal);
-      if (newVal && Object.keys(newVal)) {
-        this.$vCheck(newVal);
+      let equal = lisequal(newVal, oldVal);
+      if (oldVal && !equal && newVal) {
 
         const layerDeep = (val, oVal, path) => {
           // console.log('layerdeep', val, oVal, path);
           Object.keys(val).forEach(key => {
-            let newPath = path ? path + key : key;
+            let newPath = path ? `${path}.${key}` : key;
             let getVal = lget(val, key, '');
-            if (JSON.stringify(getVal) !== JSON.stringify(lget(oVal, key, ''))) {
+            if (!lisequal(getVal, lget(oldVal, 'key'))) {
               // console.log('see change');
               if (getVal && typeof getVal === 'object' && !Array.isArray(getVal)) {
-                console.log('another layer', key);
                 layerDeep(getVal, lget(oVal, key), newPath);
               } else {
-                // console.log('return dirty', newPath);
                 lset(this.vDirty, newPath, true);
                 // console.log('set dirty', this.vDirty);
               }
             }
           });
         };
-
         layerDeep(newVal, oldVal);
-
+        let errs = this.$vCheck(newVal);
+        console.log('errs', errs);
       }
     },
     $vErrorCheck(prop){
@@ -158,15 +169,26 @@ export const vCheck = {
       let dirty = this.vDirty ? Object.assign({}, this.vDirty) : {};
       if(lget(dirty, prop)){
         let err = lget(this.vErrors, prop, false);
-        return err ? [err] : [];
-      } else return [];
+        return err ? [err] : true;
+      } else return true;
     },
     $vGetErrorList(errors) {
       let errorList = [];
       let list = errors ? Object.keys(errors) : [];
+
+      const pushErr = key => {
+        if(lget(errors, key)) {
+          if (lget(errors, key) && typeof lget(errors, key) === 'object') {
+            Object.keys(lget(errors, key)).forEach(k => {
+              pushErr(`${key}.${k}`);
+            });
+          } else errorList.push(lget(errors, key));
+        }
+      };
+
       list.forEach(key => {
         if(errors[key]) {
-          errorList.push(errors[key]);
+          pushErr(key);
         }
       });
       return errorList;
@@ -196,34 +218,50 @@ export const vCheck = {
 
       let errors = {};
       let key_list = Object.keys(valid);
+
       key_list.forEach(key => {
-        let methods = valid[key].v;
+        let keyProp = lget(valid, key);
+        let methods = lget(keyProp, 'v');
         if (Array.isArray(methods)) {
           methods.forEach(method => {
-            let fieldObj = { value: form[key], name: valid[key].name ? valid[key].name : key };
+            let fieldObj = { value: form[key], name: lget(keyProp, 'name', key)};
             let v = method.split(':');
+            console.log('v', v, methods, method);
             let prop = v[0];
             let arg = v[1];
-            let check = validators[prop].method(fieldObj, arg);
-            if (!check) errors[key] = validators[prop].err(fieldObj, arg);
+            console.log('prop', prop, validators[prop]);
+            let validator = lget(validators, prop);
+            let check = validator ? validator['method'](fieldObj, arg) : null;
+            console.log('check', check, fieldObj, arg);
+            if (!check) lset(errors, key, validator['err'](fieldObj, arg));
+            else {
+              console.log('check success - removing error for ', key);
+              lset(errors, key,  null);
+            }
           });
         } else {
-          let fieldObj = { value: form[key], name: valid[key].name ? valid[key].name : key };
-          let prop = lget(valid, [key, 'v', 'check']);
-          let arg = lget(valid, [key, 'v', 'arg']);
+
+          let fieldObj = { value: lget(form, key), name: lget(keyProp, 'name', key) };
+          console.log('got field obj', fieldObj, key, form);
+
+          let prop = lget(methods, 'check');
+          let arg = lget(methods, 'arg');
 
           //For format functions remember that the field value is at .value
 
-          let format = lget(valid, [key, 'v', 'format']);
-          let error = lget(valid, [key, 'v', 'error']);
-          let check = validators[prop].method(fieldObj, arg, format);
+          let format = lget(methods, 'format');
+          let error = lget(methods, 'error');
+          console.log('prop', methods, key, prop, validators[prop]);
+          let validator = lget(validators, prop);
+
+          let check = validator ? validator['method'](fieldObj, arg, format) : true;
           // console.log('not array', 'key', key, 'prop', prop, 'arg', arg, 'format', format, 'error', error, 'check', check);
           if (!check){
-            // console.log('ggot err', validators[prop].err(fieldObj, arg, error));
-            errors[key] = validators[prop].err(fieldObj, arg, error);
+            console.log('ggot err', validators[prop].err(fieldObj, arg, error), fieldObj, arg);
+            lset(errors, key, validator['err'](fieldObj, arg, error));
           } else {
-            // console.log('check success - removing error for ', key);
-            errors[key] = null;
+            console.log('check success - removing error for ', key);
+            lset(errors, key,  null);
           }
         }
       });

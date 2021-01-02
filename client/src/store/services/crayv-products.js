@@ -30,6 +30,7 @@ class CrayvProducts extends BaseModel {
       subscriptions: [],
       price: {
         basePrice: null,
+        currency: 'usd'
       },
       bom: {},
     };

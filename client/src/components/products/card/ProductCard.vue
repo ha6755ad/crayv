@@ -1,10 +1,9 @@
 <template>
-  <div id="product-corner-details-card"
-   class="q-pa-sm">
+  <div id="product-corner-details-card">
     <q-dialog v-model="imgOverlay" :style="{width: $q.screen.width <= 800 ? '100%' : '50%'}">
       <q-card>
         <q-img
-          :src="getAvatar(productIn, 'images', 'large', 0, defaultImg)">
+          :src="getAvatar(value, 'images', 'large', 0, defaultImg)">
           <q-btn round
                  dark
                  icon="mdi-close"
@@ -17,7 +16,7 @@
 
 
     <q-img
-      :src="getAvatar(productIn, 'images', 'medium', 0, defaultImg)"
+      :src="getAvatar(value, 'images', 'medium', 0, defaultImg)"
       @click="imgOverlay = true"
       class="text-white"
       :style="{height: '100%'}">
@@ -32,7 +31,7 @@
       </div>
     </q-img>
 
-    <div class="container1">
+    <div class="container1 q-pa-sm">
       <!--        <div class="top"></div>-->
 
       <div class="q-px-sm">
@@ -110,7 +109,7 @@
       },
       addIcon: {
         type: String,
-        default: 'fas fa-cart-plus'
+        default: 'mdi-cart-plus'
       },
       addText: {
         type: String,
@@ -183,7 +182,7 @@
         type: String,
         default: '#7c8ee0'
       },
-      productIn: {
+      value: {
         type: Object,
         required: false,
       },
@@ -235,7 +234,7 @@
         return this.user;
       },
       product() {
-        return this.productIn;
+        return this.value;
       },
       vendor() {
         return this.getVendor(this.lget(this.product, 'vendor.vendorId'));
@@ -275,12 +274,12 @@
       buyClick() {
         this.buyClicked = 'clicked';
         this.alt = false;
-        this.$emit('clicked', this.productIn, this.Quantity);
+        this.$emit('clicked', this.value, this.Quantity);
       },
       altClick() {
         this.buyClicked = 'clicked';
         this.alt = true;
-        this.$emit('altClicked', this.productIn, this.Quantity);
+        this.$emit('altClicked', this.value, this.Quantity);
       },
       editProduct(product) {
         // console.log(product);
@@ -370,6 +369,7 @@
   grid-template-rows: 1fr minmax(100px, 30%);
   position: relative;
   border-radius: 10px;
+  overflow: hidden;
   // Vars
 
   // Support

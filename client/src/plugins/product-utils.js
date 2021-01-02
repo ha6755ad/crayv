@@ -54,6 +54,7 @@ export default async () => {
     });
     return {
       product: lget(product, '_id'),
+      productModel: product.products ? 'crayv-product-groups' : 'crayv-products',
       quantity: quantity,
       name: lget(product, 'name'),
       description: lget(product, 'description'),

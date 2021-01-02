@@ -7,13 +7,15 @@
       use-input
       @focus="stateItems && stateItems.length ? '' : loadItems()"
       @keyup.enter="runSearch(searchInput)"
-      @input="handleInput"
+      @input="newInput"
       @input-value="newSearchInput"
       :options="lget(me, optionValue) ? stateItems.filter(a => a[optionValue] !== me[optionValue]) : stateItems"
       :option-label="$attrs.optionLabel"
       :multiple="multiple"
       :hide-selected="hideSelected"
-      v-model="selected">
+      :value="activeItems"
+      :emit-value="emitValue"
+      >
 
       <template v-slot:no-option>
         <q-item clickable @click="$emit('empty')">
@@ -36,16 +38,18 @@
       </template>
 
       <template v-slot:selected-item="scope" v-if="chip">
-        <q-chip removable @remove="multiple ? rmvItem(scope.opt, scope.index) : rmvItem(scope.opt)">
-          <default-avatar v-if="optionAvatar" :value="scope.opt" :avatar-path="optionAvatar" :name-path="optionLabel"></default-avatar>
-          {{lget(scope, ['opt', optionLabel], lget(scope, ['opt', backupLabel]))}}
+        <q-chip removable @remove="multiple ? removeItem(scope.opt, scope.index) : removeItem(scope.opt)">
+          <default-avatar v-if="optionAvatar" :value="activeItem" :avatar-path="optionAvatar"
+                          :name-path="optionLabel"></default-avatar>
+          {{ lget(activeItem, [optionLabel], lget(activeItem, [backupLabel])) }}
         </q-chip>
       </template>
 
-      <template v-slot:option="{opt, toggleOption}" v-if="!hideOptions">
-        <q-item clickable @click="toggleOption(opt)">
+      <template v-slot:option="{opt}" v-if="!hideOptions">
+        <q-item clickable @click="newInput(opt)">
           <q-item-section avatar v-if="optionAvatar">
-            <default-avatar v-if="optionAvatar" :value="opt" :avatar-path="optionAvatar" :name-path="optionLabel"></default-avatar>
+            <default-avatar v-if="optionAvatar" :value="opt" :avatar-path="optionAvatar"
+                            :name-path="optionLabel"></default-avatar>
           </q-item-section>
           <q-item-section>
             <q-item-label>{{ $attrs.prefix }}&nbsp;{{ opt[optionLabel] }}</q-item-label>
@@ -54,7 +58,9 @@
             </q-item-label>
           </q-item-section>
           <q-item-section side>
-            <q-btn v-if="multiple && selected && selected.length && emitValue ? selected.map(a => lget(a, optionValue)).includes(opt[optionValue]) : lget(selected, optionValue) === lget(opt, optionValue)" dense flat icon="mdi-checkbox-marked-outline" color="green-6"></q-btn>
+            <q-btn
+              v-if="multiple && selected && selected.length && emitValue ? selected.map(a => lget(a, optionValue)).includes(opt[optionValue]) : lget(selected, optionValue) === lget(opt, optionValue)"
+              dense flat icon="mdi-checkbox-marked-outline" color="green-6"></q-btn>
           </q-item-section>
         </q-item>
       </template>
@@ -68,11 +74,12 @@
 
   import {loadPaginatedMixin} from 'src/mixins/LoadPaginatedMixin';
   import DefaultAvatar from 'components/common/atoms/avatars/DefaultAvatar';
+  import {SelectMixin} from 'src/mixins/SelectMixin';
 
   export default {
     name: 'SearchQuery',
     components: { DefaultAvatar },
-    mixins: [loadPaginatedMixin],
+    mixins: [loadPaginatedMixin, SelectMixin],
     props: {
       beforeMessage: String,
       behavior: String,
@@ -98,6 +105,7 @@
     },
     data() {
       return {
+        searchQuery: true,
         searchInput: '',
         items: null,
         selected: null
@@ -114,43 +122,31 @@
           }
         }
       },
-      value: {
+      activeIds: {
         immediate: true,
         async handler(newVal) {
-          if (this.emitValue) {
-            let list = this.stateItems ? this.stateItems.map(a => String(a[this.optionValue])) : [];
-            if (this.multiple) {
-              let load = false;
-              if (this.stateItems && this.stateItems.length) {
-                newVal.forEach(id => {
-                  if (!list.indexOf(String(id)) > -1) {
-                    load = true;
-                  }
-                });
-              } else load = true;
-              if (load) {
-                await this.$store.dispatch(`${this.service}/find`, {
-                  query: {
-                    _id: { $in: newVal }
-                  }
-                }).then(res => {
-                  console.log('res', res);
-                  this.selected = res.data.map(a => a.clone());
-                });
-              } else this.selected = this.stateItems.filter(b => {
-                return newVal.map(a => String(a)).includes(String(b[this.optionValue]));
-              });
-            } else if (!list.indexOf(String(newVal)) > -1) {
-              await this.$store.dispatch(`${this.service}/get`, newVal).then(res => {
-                this.selected = res.clone();
-              });
-            } else this.selected = newVal;
-          } else this.selected = newVal;
+          let list = this.stateItems ? this.stateItems.map(a => String(a[this.optionValue])) : [];
+
+          let load = false;
+          if (this.stateItems && this.stateItems.length) {
+            newVal.forEach(id => {
+              if (!list.indexOf(String(id)) > -1) {
+                load = true;
+              }
+            });
+          } else load = true;
+          if (load) {
+            await this.$store.dispatch(`${this.service}/find`, {
+              query: {
+                _id: { $in: newVal }
+              }
+            });
+          }
         }
       }
     },
     computed: {
-      filterByName(){
+      filterByName() {
         return this.optionLabel ? this.optionLabel : 'name';
       },
       queryAdders() {
@@ -169,7 +165,7 @@
       }
     },
     methods: {
-      async runSearch(val){
+      async runSearch(val) {
         this.loadItems(val)
           .then(() => {
             this.$refs.select.hidePopup();
@@ -180,27 +176,9 @@
         this.searchInput = val;
         this.$refs.select.showPopup();
       },
-      rmvItem(val, i){
-        console.log('rmvItem', val, i);
-        if(typeof i === 'number'){
-          this.selected.splice(i, 1);
-          this.handleInput();
-        } else {
-          this.selected = null;
-          this.handleInput();
-        }
-      },
-      handleInput() {
-        let val = this.selected;
-        if (this.emitValue) {
-          if (this.multiple) {
-            val = this.selected.map(a => a[this.optionValue]);
-          } else val = this.selected[this.optionValue];
-        }
+      newInput(val) {
+        this.handleInput(val);
         this.$refs.select.updateInputValue('');
-        setTimeout(() => {
-          this.$emit('input', val);
-        }, 50);
       }
     }
   };

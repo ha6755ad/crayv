@@ -1,6 +1,5 @@
 <template>
   <div>
-    <q-btn label="patchy" @click="patchy"/>
     <template>
       <q-card flat style="height: 100%; width: 100%">
         <q-card-section>
@@ -111,15 +110,6 @@
       ...mapActions('vendor', {getVendor: 'get'}),
       ...mapActions('stripe-external-account', {addBank: 'create'}),
       ...mapActions('crayv-vendors', {getVendor: 'get'}),
-      patchy(){
-        this.stateVendors.forEach(v => {
-          if(v.name === 'Fat Cats'){
-            let ve = v.clone();
-            ve.stripe.accounts = [];
-            ve.save();
-          }
-        });
-      },
       createAccount(val) {
         this.addAccount([val.account, {query: {vendor: this.vendor._id, steps: val.completedStep}}])
           .then(res => {

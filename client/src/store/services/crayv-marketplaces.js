@@ -15,15 +15,18 @@ class CrayvMarketplaces extends BaseModel {
       name: '',
       description: '',
       avatar: null,
-      image: null,
+      images: [],
       vendorSettings: [],
       recommendProducts: [],
       settings: {
         stripe_account: null,
         approvals: 'admin'
       },
+      currency: 'usd',
+      currencies: [],
       pricing: {
         flatFee: 0,
+        flatFeeType: 'subscription',
         flatFeeRecurrence: null,
         percentageFee: 0,
         feeType: 'option'

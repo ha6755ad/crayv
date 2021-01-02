@@ -52,7 +52,7 @@
 
     <q-dialog v-model="productDialog">
       <q-card style="width: 380px; max-width: 80vw">
-        <corner-card :product-in="lget(cartLine, 'fullProduct', null)"></corner-card>
+        <corner-card :value="lget(cartLine, 'fullProduct', null)"></corner-card>
       </q-card>
     </q-dialog>
   </div>

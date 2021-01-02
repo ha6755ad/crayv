@@ -1,15 +1,14 @@
 <template>
   <div style="display: flex">
-    <q-btn v-if="tab - 1 > 0" flat @click="tab = 0"  :label="1"/>
-    <q-btn flat v-if="tab > 0" @click="tab > 0 ? tab-- : ''" label="..."/>
-    <div :class="tab === (i) ? 'active' : ''"
-         v-for="(page, i) in showPages.list" :key="`page-${i}`"
+    <q-btn size="sm" v-if="tab - 1 > 0" flat @click="tab = 0"  :label="1"/>
+    <q-btn size="sm" flat v-if="tab > 0" @click="tab > 0 ? tab-- : ''" label="..."/>
+    <div v-for="(page, i) in showPages.list" :key="`page-${i}`"
          v-show="shouldItShow(page)">
-      <q-btn class="pagination" @click="tab = page - 1" flat :label="page"/>
+      <q-btn :class="tab === (i) ? `bg-${color} text-dark` : ''" size="sm" class="pagination" @click="tab = page - 1" flat :label="page"/>
     </div>
     <q-btn flat v-if="pages - 1 > tab" @click="(tab + 1) < pages ? tab++ : ''" label="..."/>
-    <q-btn v-if="tab + 2 < pages" flat @click="tab = pages - 1" :label="pages"/>
-    <q-btn-dropdown  flat>
+    <q-btn dense v-if="tab + 2 < pages" flat @click="tab = pages - 1" :label="pages"/>
+    <q-btn-dropdown size="sm" dense flat>
       <q-list separator>
         <q-item>
           <q-input dense :hint="pages + ' pages'" style="width: 80px" v-if="true" v-model.number="searchFilter" autofocus>
@@ -34,6 +33,10 @@
   export default {
     name: 'BtnPaginator',
     props: {
+      color: {
+        type: String,
+        default: 'ir-blue-grey-1'
+      },
       value: Number,
       pages: Number,
       showCount: {
@@ -114,10 +117,6 @@
 </script>
 
 <style scoped lang="scss">
-.active {
-  background-color: rgb(215,215,215);
-  border-radius: .5em;
-}
 .pagination {
   font-size: 1em;
   font-weight: inherit;

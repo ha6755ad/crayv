@@ -16,6 +16,8 @@ module.exports = function (app) {
       appName: String,
       eventId: String
     }],
+    type: [{type: String, enum: ['a-la-carte', 'package', 'combo']}],
+    price: { type: Common.Pricing },
     lineups: [{type: Schema.Types.ObjectId, ref: 'crayv-lineups'}],
     images: [{type: Common.Images}],
     vendorId: {type: Schema.Types.ObjectId, ref: 'crayv-vendors'},
@@ -29,7 +31,7 @@ module.exports = function (app) {
         price: Common.Pricing
       }
     }],
-    subscriptions: [{ type: Schema.Types.ObjectId, ref: 'subscriptions' }],
+    subscriptions: [{ type: Schema.Types.ObjectId, ref: 'crayv-subscriptions' }],
     deleted: {type: Boolean, default: false},
     createdBy: {type: Schema.Types.ObjectId, ref: 'users'},
     updatedBy: {type: Schema.Types.ObjectId, ref: 'users'}

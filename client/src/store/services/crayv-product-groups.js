@@ -25,7 +25,12 @@ class CrayvProductGroups extends BaseModel {
       parent: null,
       children: [],
       settings: {},
-      subscriptions: []
+      subscriptions: [],
+      type: 'a-la-carte',
+      price: {
+        basePrice: 0,
+        currency: 'usd'
+      }
     };
   }
 }

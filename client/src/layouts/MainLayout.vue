@@ -3,42 +3,43 @@
     <q-header elevated>
       <q-toolbar class="bg-primary-secondary">
         <div class="row items-center" style="width: 100%">
-        <q-btn
-          v-show="user && user._id"
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="leftDrawerOpen = !leftDrawerOpen"
-        />
-        <img src="https://ha6755ad-images.s3-us-west-1.amazonaws.com/crayv/crayv_light.svg" style="height: 40px" class="q-mx-sm">
-      <q-space></q-space>
-        <div class="flex items-center">
-          <template v-if="!user || !user._id">
-            <div class="text-0-9 q-mr-sm text-weight-medium text-uppercase pointer" @click="login(false)">Login</div>
-            <q-separator dark vertical/>
-            <div class="text-0-9 q-ml-sm text-weight-medium text-uppercase pointer" @click="login(true)">Signup</div>
-            <q-dialog v-model="loginDialog">
-              <q-card style="width: 600px; max-width: 100vw">
-                <q-btn v-show="!registering" size="sm" flat label="sign up" class="t-r" @click="registering=true"/>
-                <q-btn v-show="registering" size="sm" flat label="login" class="t-r" @click="registering=false"/>
-                <template v-if="registering">
-                  <register></register>
-                </template>
-                <template v-else>
-                  <login></login>
-                </template>
-              </q-card>
-            </q-dialog>
-          </template>
-          <template v-else>
-            <div class="text-0-9 q-ml-sm text-weight-medium text-uppercase pointer"
-                 @click="$store.dispatch('auth/logout')">Logout
-            </div>
-          </template>
-          <q-btn round flat class="q-mx-sm" icon="mdi-cart" @click="cartDrawer = !cartDrawer"></q-btn>
-        </div>
+          <q-btn
+            v-show="user && user._id"
+            flat
+            dense
+            round
+            icon="menu"
+            aria-label="Menu"
+            @click="leftDrawerOpen = !leftDrawerOpen"
+          />
+          <img src="https://ha6755ad-images.s3-us-west-1.amazonaws.com/crayv/crayv_light.svg" style="height: 40px"
+               class="q-mx-sm">
+          <q-space></q-space>
+          <div class="flex items-center">
+            <template v-if="!user || !user._id">
+              <div class="text-0-9 q-mr-sm text-weight-medium text-uppercase pointer" @click="login(false)">Login</div>
+              <q-separator dark vertical/>
+              <div class="text-0-9 q-ml-sm text-weight-medium text-uppercase pointer" @click="login(true)">Signup</div>
+              <q-dialog v-model="loginDialog">
+                <q-card style="width: 600px; max-width: 100vw">
+                  <q-btn v-show="!registering" size="sm" flat label="sign up" class="t-r" @click="registering=true"/>
+                  <q-btn v-show="registering" size="sm" flat label="login" class="t-r" @click="registering=false"/>
+                  <template v-if="registering">
+                    <register></register>
+                  </template>
+                  <template v-else>
+                    <login></login>
+                  </template>
+                </q-card>
+              </q-dialog>
+            </template>
+            <template v-else>
+              <div class="text-0-9 q-ml-sm text-weight-medium text-uppercase pointer"
+                   @click="$store.dispatch('auth/logout')">Logout
+              </div>
+            </template>
+            <q-btn round flat class="q-mx-sm" icon="mdi-cart" @click="cartDrawer = !cartDrawer"></q-btn>
+          </div>
         </div>
       </q-toolbar>
     </q-header>
@@ -116,17 +117,19 @@
       VendorPicker,
       EssentialLink
     },
-    mounted() {
+    async mounted() {
       // this.setVendor();
       this.pageWidth = window.innerWidth;
       window.addEventListener('resize', () => {
         this.pageWidth = window.innerWidth;
       });
-      let vendorContext = this.$q.sessionStorage.getItem('vendorContext');
-      if(!this.lget(vendorContext, '_id')) vendorContext = this.$q.localStorage.getItem('vendorContext');
-      let id = this.lget(vendorContext, '_id');
-      if(id && String(id) !== String(this.lget(this.vendorContext, '_id', '*'))){
-        this.$store.dispatch('setVendorContext', vendorContext);
+      let vendorId = this.$q.sessionStorage.getItem('vendorId');
+      if (!vendorId) vendorId = this.$q.localStorage.getItem('vendorId');
+      if (vendorId && String(vendorId) !== String(this.lget(this.vendorContext, '_id', '*'))) {
+        await this.$store.dispatch('crayv-vendors/get', vendorId)
+          .then(res => {
+            this.$store.dispatch('setVendorContext', res);
+          });
       }
     },
     data() {
@@ -147,6 +150,12 @@
           }
         ],
         vendorLinks: [
+          {
+            title: 'Marketplaces',
+            caption: 'Manage and join marketplaces',
+            icon: 'mdi-earth',
+            link: '/marketplaces'
+          },
           {
             title: 'Product Catalog',
             caption: 'create/edit products',
@@ -192,9 +201,25 @@
           }
         }
       },
+      stateVendor: {
+        immediate: true,
+        deep: true,
+        handler(newVal){
+          if(newVal){
+            this.$store.dispatch('setVendorContext', newVal);
+          }
+        }
+      }
     },
     computed: {
       ...mapGetters('auth', { user: 'user' }),
+      ...mapGetters('crayv-vendors', { getVendor: 'get'}),
+      ...mapGetters({vendorContext: 'vendorContext'}),
+      stateVendor(){
+        let id = this.lget(this.vendorContext, '_id');
+        if(id) return this.getVendor(id);
+        else return null;
+      },
       attrs() {
         return {
           appId: 'follow-something',
@@ -232,7 +257,7 @@
 <style scoped lang="scss">
   .__cart {
     border-radius: 5px 0 0 5px;
-    box-shadow: -5px 0 5px rgba(0,0,0,.3);
+    box-shadow: -5px 0 5px rgba(0, 0, 0, .3);
     background: white;
     z-index: 19;
     position: fixed;

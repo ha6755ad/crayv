@@ -1,7 +1,7 @@
 <template>
   <q-card :style="{height: height, width: width}">
     <q-img style="height: 100%; width: 100%" :src="getAvatar(value, null, 'large', idx)">
-      <q-btn color="white" round flat size="sm" class="t-r" icon="mdi-delete" @click="removeImage" v-if="value && value.length > 1">
+      <q-btn color="white" round flat size="sm" class="t-r" icon="mdi-delete" @click.stop="removeImage" v-if="value && value.length > 1">
         <q-tooltip content-class="bg-light text-dark">Remove Image</q-tooltip>
       </q-btn>
       <q-btn v-if="value && value.length > 1"
@@ -13,7 +13,7 @@
       <div style="height: 100%; width: 100%" class="flex flex-center">
         <q-slide-transition>
           <template v-if="!adding">
-            <q-btn @click="adding = true" color="white" flat icon="mdi-image" :label="addLabel"/>
+            <q-btn @click.stop="adding = true" color="white" flat icon="mdi-image" :label="addLabel"/>
           </template>
         </q-slide-transition>
         <q-slide-transition>

@@ -7,7 +7,7 @@
             <product-group-card :lineup-in="stateLineup"></product-group-card>
           </template>
           <template v-if="productModel === 'products'">
-            <product-card :product-in="stateProduct"></product-card>
+            <product-card :value="stateProduct"></product-card>
           </template>
         </q-card-section>
       </div>

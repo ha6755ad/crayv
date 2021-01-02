@@ -1,7 +1,7 @@
 <template>
   <q-card :flat="flat" :dark="dark" style="width: 100%">
     <div class="flex items-center t-r">
-    <q-btn v-if="editing" size="sm" flat dense icon="mdi-pencil-box" @click="editDialog = true"></q-btn>
+      <q-btn v-if="editing" size="sm" flat dense icon="mdi-pencil-box" @click="editDialog = true"></q-btn>
       <q-btn v-if="active" size="sm" flat dense icon="mdi-checkbox-marked-outline" color="positive"></q-btn>
     </div>
 
@@ -10,25 +10,29 @@
         <default-avatar :value="value" avatar-path="images" square></default-avatar>
       </q-item-section>
       <q-item-section>
-        <q-item-label class="text-xxs text-mb-xs text-weight-medium">{{lget(value, 'name', 'Untitled')}}</q-item-label>
+        <q-item-label class="text-xxs text-mb-xs text-weight-medium">{{ lget(value, 'name', 'Untitled') }}
+        </q-item-label>
         <q-item-label class="text-xxxs text-mb-xxx" caption>
           <div class="__one-liner">
-            {{lget(value, 'description', 'Untitled')}}
+            {{ lget(value, 'description', 'Untitled') }}
           </div>
         </q-item-label>
       </q-item-section>
       <q-item-section side>
-        <div style="display: flex; flex-direction: column; justify-content: flex-end">
-          <q-icon :name="$getCurrencyIcon(lget(value, 'price.currency'))"/>
-          <div class="text-xs text-mb-sm text-green text-weight-bold" v-html="priceDisplay"></div>
-        </div>
+        <slot name="side">
+          <div style="display: flex; flex-direction: column; justify-content: flex-end">
+            <q-icon :name="$getCurrencyIcon(lget(value, 'price.currency'))"/>
+            <div class="text-xs text-mb-sm text-green text-weight-bold" v-html="priceDisplay"></div>
+          </div>
+        </slot>
       </q-item-section>
     </q-item>
 
-    <q-dialog position="right" :maximized="$q.screen.lt.sm" transition-hide="slide-right" transition-show="slide-left" v-model="editDialog">
+    <q-dialog position="right" :maximized="$q.screen.lt.sm" transition-hide="slide-right" transition-show="slide-left"
+              v-model="editDialog">
       <q-card style="width: 600px; max-width: 100vw">
         <q-btn class="t-r-f bg-dark text-light" dense flat size="sm" icon="mdi-close" @click="editDialog = false"/>
-          <product-form @input="editDialog = false" :value="value"></product-form>
+        <product-form @input="editDialog = false" :value="value"></product-form>
       </q-card>
     </q-dialog>
   </q-card>
@@ -37,6 +41,7 @@
 <script>
   import DefaultAvatar from 'components/common/atoms/avatars/DefaultAvatar';
   import ProductForm from 'components/products/forms/ProductForm';
+
   export default {
     name: 'ProductItem',
     components: { ProductForm, DefaultAvatar },
@@ -47,19 +52,19 @@
       dark: Boolean,
       editing: Boolean
     },
-    data(){
+    data() {
       return {
         editDialog: false
       };
     },
     computed: {
-      product(){
+      product() {
         return this.value;
       },
-      totalPrice(){
+      totalPrice() {
         return this.lget(this.product, 'priceObj.total', this.lget(this.product, 'price.basePrice', 0));
       },
-      basePrice(){
+      basePrice() {
         return this.lget(this.product, 'price.basePrice', 0);
       },
       priceDisplay() {
