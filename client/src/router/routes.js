@@ -27,7 +27,8 @@ export default function ({store, ssrContext}) {
         },
         {
           path: '/account',
-          component: () => import('pages/Account/Account.vue')
+          name: 'vendor-account',
+          component: () => import('../components/vendor/pages/VendorSettings')
         },
         {
           path: '/marketplaces',

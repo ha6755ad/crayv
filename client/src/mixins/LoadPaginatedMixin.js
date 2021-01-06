@@ -80,7 +80,7 @@ export const loadPaginatedMixin = {
           let nameObj = {};
           nameObj[this.filterName] = nameSearch;
           let tagObj = {};
-          let patternExp =  new RegExp('^' + text, 'igm');
+          let patternExp =  new RegExp(text, 'igm');
           tagObj[this.useTagPath] = { $in: patternExp };
           query.$or = [nameObj, tagObj];
         } else {
@@ -130,7 +130,7 @@ export const loadPaginatedMixin = {
           let nameObj = {};
           nameObj[this.filterName] = nameSearch;
           let tagObj = {};
-          let patternExp =  new RegExp('^' + text, 'igm');
+          let patternExp =  new RegExp(text, 'igm');
           tagObj[this.useTagPath] = { $in: [ patternExp ] };
           query.$or = [nameObj, tagObj];
         } else {

@@ -47,6 +47,7 @@
     "lodash.unionwith": "^4.6.0",
     "lodash.upperfirst": "^4.3.1",
     "mapbox-gl": "^2.0.1",
+    "qs": "^6.9.4",
     "quasar": "^1.0.0",
     "rrule": "^2.6.6",
     "socket.io-client": "^2.3.0",

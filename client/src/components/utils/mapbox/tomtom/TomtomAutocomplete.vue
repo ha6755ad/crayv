@@ -7,11 +7,12 @@
     <div>
       <q-select
         ref="addressSelect"
-        :label="$attrs.label ? $attrs.label : 'Start typing to search...'"
+        :label="label"
+        :placeholder="normalizedAddress ? '' : placeholder"
         borderless
         :style="{ ...{'max-width': '90vw', width: '100%'}, ...$attrs.inputStyle }"
         hide-bottom-space
-        :bg-color="$attrs.bgColor ? $attrs.bgColor : 'grey-2'"
+        :bg-color="$attrs.bgColor ? $attrs.bgColor : 'white'"
         :options="options"
         :outlined="outlined"
         clearable
@@ -44,6 +45,7 @@
     name: 'TomtomAutocomplete',
     props: {
       dark: Boolean,
+      label: String,
       placeholder: {
         type: String,
         required: false,
@@ -96,6 +98,8 @@
         input: null,
         obj: null,
         options: [null],
+        geoLoading: false,
+        addresses: [],
         normalizedAddress: {
           formatted: '',
           address1: '',
@@ -119,7 +123,7 @@
           }
         }
       },
-      addresses: {
+      options: {
         immediate: true,
         handler(newVal) {
           if (newVal.length) {
@@ -164,27 +168,16 @@
             }
           }).catch(err => {
             this.$errNotify(err.message);
-            console.log('tomtom-autocomplete >> set input err', err);
+            // console.log('tomtom-autocomplete >> set input err', err);
           });
           //eslint-disable-next-line-no-console
-          console.log('setInput input', '>' + this.input + '<');
+          // console.log('setInput input', '>' + this.input + '<');
         }
       },
 
       geocode(val) {
         // TODO: need to parse formated_adress by name and not index ...
-        //   _.each(address_components, function(k, v1) {
-        //   _.each(address_components[v1].types, function(k2, v2){
-        //     components[address_components[v1].types[v2]] = address_components[v1].long_name
-        //   });
-        // });
-        // eslint-disable-next-line no-console
-        // console.log('val:', val);
-        // this.findgeocoded({
-        //   query: val.address.freeformAddress,
-        // }).then(response => {
-        //eslint-disable-next-line-no-console
-        console.log('geo es', val);
+
         let mappedAddress = val ? val : null;
         if (mappedAddress) {
           this.normalizedAddress = {
@@ -201,11 +194,11 @@
           };
         }
         this.$emit('input', this.normalizedAddress);
-      // // eslint-disable-next-line no-console
-      // console.log(response)
-      // }).catch(err => {
-      //   this.$emit('error', err);
-      // });
+        // // eslint-disable-next-line no-console
+        // console.log(response)
+        // }).catch(err => {
+        //   this.$emit('error', err);
+        // });
 
       }
     }

@@ -55,10 +55,10 @@ export const SelectMixin = {
       } else return [];
     },
     activeItems() {
-     return this.selectService ? this.stateActiveItems : this.localActiveItems;
+      return this.selectService ? this.stateActiveItems : this.localActiveItems;
     },
     activeItem() {
-      return this.lget(this.activeItems, [0]);
+      return this.multiple ? this.lget(this.activeItems, [0]) : this.activeItems;
     },
     activeIds() {
       if (this.value) {

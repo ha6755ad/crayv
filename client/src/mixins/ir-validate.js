@@ -226,16 +226,16 @@ export const vCheck = {
           methods.forEach(method => {
             let fieldObj = { value: form[key], name: lget(keyProp, 'name', key)};
             let v = method.split(':');
-            console.log('v', v, methods, method);
+            // console.log('v', v, methods, method);
             let prop = v[0];
             let arg = v[1];
-            console.log('prop', prop, validators[prop]);
+            // console.log('prop', prop, validators[prop]);
             let validator = lget(validators, prop);
             let check = validator ? validator['method'](fieldObj, arg) : null;
-            console.log('check', check, fieldObj, arg);
+            // console.log('check', check, fieldObj, arg);
             if (!check) lset(errors, key, validator['err'](fieldObj, arg));
             else {
-              console.log('check success - removing error for ', key);
+              // console.log('check success - removing error for ', key);
               lset(errors, key,  null);
             }
           });

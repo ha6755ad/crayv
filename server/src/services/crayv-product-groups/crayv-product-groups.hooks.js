@@ -105,8 +105,8 @@ const relateVendor = async context => {
     therePath: 'productGroups',
     thereService: 'crayv-vendors'
   };
-  if(context.method === 'remove') await removeOtm(config);
-  else await relateOtm(config);
+  if(context.method === 'remove') await removeOtm()(config);
+  else await relateOtm()(config);
 };
 
 const relateProducts = async context => {
@@ -116,8 +116,8 @@ const relateProducts = async context => {
     thereService: 'crayv-products',
     hereMapId: 'id',
   };
-  if(context.method === 'remove') await removeMtm(config);
-  else await relateMtm(config);
+  if(context.method === 'remove') await removeMtm()(config);
+  else await relateMtm()(config);
 };
 
 module.exports = {

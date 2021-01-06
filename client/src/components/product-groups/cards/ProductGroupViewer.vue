@@ -34,7 +34,7 @@
     },
     data(){
       return {
-        tab: 0
+        tab: 0,
       };
     },
     computed: {

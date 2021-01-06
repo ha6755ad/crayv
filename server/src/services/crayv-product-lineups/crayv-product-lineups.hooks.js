@@ -8,8 +8,8 @@ const relateVendorSettings = async context => {
     therePath: 'productLineups',
     thereService: 'crayv-vendor-settings'
   };
-  if(context.method === 'remove') await removeMtm(config);
-  else await relateMtm(config);
+  if(context.method === 'remove') await removeMtm()(config);
+  else await relateMtm()(config);
 };
 
 
@@ -19,8 +19,8 @@ const relateProducts = async context => {
     therePath: 'productLineups',
     thereService: 'crayv-products',
   };
-  if(context.method === 'remove') await removeMtm(config);
-  else await relateMtm(config);
+  if(context.method === 'remove') await removeMtm()(config);
+  else await relateMtm()(config);
 };
 
 const relateProductGroups = async context => {
@@ -29,8 +29,8 @@ const relateProductGroups = async context => {
     therePath: 'productLineups',
     thereService: 'crayv-products',
   };
-  if(context.method === 'remove') await removeMtm(config);
-  else await relateMtm(config);
+  if(context.method === 'remove') await removeMtm()(config);
+  else await relateMtm()(config);
 };
 
 

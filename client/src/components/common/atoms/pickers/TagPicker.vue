@@ -253,7 +253,7 @@
         // query.$select = [this.tagPath];
         console.log('searching', query);
         await this.axiosFeathers.get(`/${this.serviceIn}`, {
-          query: query
+          params: { query: query }
         })
           .then(res => {
             console.log('tag res', res);

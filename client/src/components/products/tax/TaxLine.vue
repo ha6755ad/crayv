@@ -37,6 +37,7 @@
   export default {
     name: 'TaxLine',
     props: {
+      addressIn: Object,
       productIn: Object,
       textClass: {
         type: String,
@@ -44,7 +45,7 @@
       }
     },
     mounted(){
-      let address = this.$getDefaultProfileAddress(this.person);
+      let address = this.lget(this.vendorSettings, 'address') ?  this.lget(this.vendorSettings, 'address.postal'): this.lget(this.user, 'address.postal');
       if(address){
         this.postal_code = this.lget(address, 'postal', null);
       }
@@ -68,6 +69,7 @@
       }
     },
     computed: {
+      ...mapGetters({ vendorContext: 'vendorContext' }),
       ...mapGetters('auth', {user: 'user'}),
       person(){
         return this.user;
@@ -86,10 +88,10 @@
       }
     },
     methods: {
-      ...mapActions('sales-tax', { getTax: 'find' }),
+      ...mapActions('crayv-sales-tax', { getTax: 'find' }),
       async getSalesTax1() {
         let sales = await this.getSalesTax();
-        console.log(sales);
+        console.log('sales tax', sales);
       },
       getSalesTax() {
         return this.getTax({

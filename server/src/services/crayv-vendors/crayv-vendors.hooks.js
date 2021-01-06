@@ -3,6 +3,25 @@ const lget = require('lodash.get');
 const lset = require('lodash.set');
 const { relateOtm, removeOtm } = require('../../hooks/relate');
 
+const { populate } = require('feathers-graph-populate');
+
+const populates = {
+  settings: {
+    service: 'crayv-vendor-settings',
+    nameAs: 'vendorSettingsList',
+    keyHere: 'vendorSettings',
+    keyThere: 'vendor',
+    asArray: true,
+    params: {}
+  }
+};
+
+const namedQueries = {
+  withSettings: {
+    settings: {}
+  }
+};
+
 const assignOwner = context => {
   let owner = lget(context, 'owner');
   let ownerModel = lget(context, 'ownerModel');
@@ -19,8 +38,8 @@ const relateOwner = async context => {
     therePath: 'vendors',
     thereService: thereService
   };
-  if(context.method === 'remove') await removeOtm(config);
-  else await relateOtm(config);
+  if(context.method === 'remove') await removeOtm()(config);
+  else await relateOtm()(config);
 };
 
 const setupAdmin = context => {
@@ -43,7 +62,7 @@ module.exports = {
   },
 
   after: {
-    all: [],
+    all: [populate({populates, namedQueries})],
     find: [],
     get: [],
     create: [relateOwner],

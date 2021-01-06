@@ -91,6 +91,8 @@
       </div>
     </div>
 
+    <tax-line></tax-line>
+
     <div class="row justify-end q-pa-sm">
       <q-btn label="Save Product" color="primary" @click="saveProduct(form)"/>
     </div>
@@ -106,11 +108,12 @@
   import {vCheck} from 'src/mixins/ir-validate';
   import MultiImageUpload from 'components/common/substance/images/MultiImageUpload';
   import ProductVariantItem from 'components/products/card/ProductVariantItem';
+  import TaxLine from 'components/products/tax/TaxLine';
 
   export default {
     name: 'ProductForm',
     mixins: [vCheck],
-    components: { ProductVariantItem, MultiImageUpload, VendorPicker, PricePicker, ProductVariantForm },
+    components: { TaxLine, ProductVariantItem, MultiImageUpload, VendorPicker, PricePicker, ProductVariantForm },
     props: {
       value: Object,
       vendorIn: Object

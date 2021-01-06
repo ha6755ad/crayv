@@ -2,7 +2,7 @@
   <q-card flat class="q-pa-md">
     <div class="text-sm text-mb-md text-weight-medium">{{form.name ? form.name : 'Create Lineup'}}</div>
     <q-input label="Lineup Name" v-model="form.name"></q-input>
-    <q-input label="Description" v-model="form.name"></q-input>
+    <q-input label="Description" v-model="form.description"></q-input>
     <q-separator dark class="q-my-md"></q-separator>
     <div class="q-pa-sm text-xxs text-mb-xs text-weight-medium">Add Product Groups</div>
     <product-group-list

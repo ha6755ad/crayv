@@ -33,7 +33,7 @@
 
 <script>
   import DefaultAvatar from 'components/common/atoms/avatars/DefaultAvatar';
-  import VendorForm from 'components/products/vendor/VendorForm';
+  import VendorForm from 'components/vendor/forms/VendorForm';
   export default {
     name: 'VendorItem',
     components: { VendorForm, DefaultAvatar },

@@ -1,6 +1,6 @@
 <template>
-  <q-page>
-    <div class="q-pa-md" v-if="title || subtitle">
+  <div>
+    <div class="q-py-md" v-if="title || subtitle">
       <div :class="titleClass">
         {{title}}
       </div>
@@ -17,7 +17,7 @@
       :load-on-mount="!loadWatch"
       :search="search"
       :search-input-in="searchInput"
-      search-placeholder="Search Product Groups..."
+      search-placeholder="Search Marketplaces..."
     >
       <template v-slot:list="scope">
         <div v-if="!select" class="row justify-end">
@@ -31,7 +31,7 @@
           </div>
         </div>
         <q-select
-          label="Search Product Groups..."
+          label="Search Marketplaces..."
           v-if="select"
           :options="scope.items"
           behavior="menu"
@@ -70,7 +70,7 @@
         <marketplace-form></marketplace-form>
       </q-card>
     </q-dialog>
-  </q-page>
+  </div>
 </template>
 
 <script>
