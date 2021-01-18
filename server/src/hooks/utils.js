@@ -29,9 +29,17 @@ const dedupData = (context, config) => {
   return context;
 };
 
+const flattenArray = (arr) => {
+  let self = this;
+  return arr.reduce(function (flat, toFlatten) {
+    return flat.concat(Array.isArray(toFlatten) ? self.$flattenArray(toFlatten) : toFlatten);
+  }, []);
+};
+
 module.exports = {
   getVoteScore,
   arrayFilterZero,
   dedupArray,
-  dedupData
+  dedupData,
+  flattenArray
 };

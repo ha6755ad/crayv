@@ -1,5 +1,5 @@
 <template>
-  <q-avatar :square="square" :size="sizeIn" :class="`${avatar ? 'bg-transparent' : dark ? bgIn ? 'bg-' + bgIn + ' text-dark' : 'bg-light' + ' text-dark' : bgIn ? 'bg-' + bgIn + ' text-light' : 'bg-dark' + ' text-light'}`" :style="{borderRadius: square ? '4px' : '', boxShadow: bordered ? `0 0 0 3px ${bgIn ? 'var(--q-color-' + bgIn + ')' : dark ? '#fafafa' : '#101010'}` : 'none'}">
+  <q-avatar :square="square" :size="sizeIn" :class="`${avatar && !bgIn ? 'bg-transparent' : dark ? bgIn ? 'bg-' + bgIn + ' text-dark' : 'bg-light' + ' text-dark' : bgIn ? 'bg-' + bgIn + ' text-light' : 'bg-dark' + ' text-light'}`" :style="{borderRadius: square ? '4px' : '', boxShadow: bordered ? `0 0 0 3px ${bgIn ? 'var(--q-color-' + bgIn + ')' : dark ? '#fafafa' : '#101010'}` : 'none'}">
     <template v-if="avatar" >
       <img :src="avatar">
     </template>

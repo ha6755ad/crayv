@@ -86,8 +86,8 @@ const relateVendor = async context => {
     therePath: 'products',
     thereService: 'crayv-vendors'
   };
-  if(context.method === 'remove') await removeOtm()(config);
-  else await relateOtm()(config);
+  if(context.method === 'remove') await removeOtm(context)(config);
+  else await relateOtm(context)(config);
 };
 
 // const noDuplicatePromos = context => {
@@ -95,6 +95,16 @@ const relateVendor = async context => {
 //   let unique = Array.from(new Set(promos));
 //   context.data.promotions = unique;
 // }
+
+const checkDuplicateTaxAreas = context => {
+  let taxSettings = lget(context, 'data.settings.taxes', []);
+  if(taxSettings){
+    if(taxSettings.some(a => a.areaIds.includes('*'))){
+      if(taxSettings.length > 1) throw new Error('You cannot include additional tax overrides if you have selected an override for all areaIds already');
+      else return context;
+    } else return context;
+  } else return context;
+};
 
 module.exports = {
   before: {
@@ -104,8 +114,8 @@ module.exports = {
     find: [],
     get: [],
     create: [authenticate('jwt')],
-    update: [authenticate('jwt')],
-    patch: [authenticate('jwt')],
+    update: [authenticate('jwt'), checkDuplicateTaxAreas],
+    patch: [authenticate('jwt'), checkDuplicateTaxAreas],
     remove: [authenticate('jwt')]
   },
 

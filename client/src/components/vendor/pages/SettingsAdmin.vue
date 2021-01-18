@@ -6,6 +6,7 @@
     </div>
     <settings-list
       :load-watch="lget(vendorContext, '_id')"
+      editing
     ></settings-list>
   </q-page>
 </template>

@@ -14,18 +14,19 @@ const relateMarketplace = async context => {
     therePath: 'vendorSettings',
     thereService: 'crayv-marketplaces'
   };
-  if(context.method === 'remove') await removeOtm()(config);
-  else await relateOtm()(config);
+  if(context.method === 'remove') await removeOtm(context)(config);
+  else await relateOtm(context)(config);
 };
 
 const relateVendor = async context => {
   let config = {
     herePath: 'vendor',
     therePath: 'vendorSettings',
-    thereService: 'crayv-vendor-settings'
+    thereService: 'crayv-vendors'
   };
-  if(context.method === 'remove') await removeOtm()(config);
-  else await relateOtm()(config);
+  if(context.method === 'remove') return await removeOtm(context)(config);
+  else return await relateOtm(config)(context)
+    .then(res => console.log('relate res', res));
 };
 
 // const checkRoles = async context => {

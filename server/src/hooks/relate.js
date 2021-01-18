@@ -1,5 +1,21 @@
 const lget = require('lodash.get');
 const lset = require('lodash.set');
+const lisEmpty = require('lodash.isempty');
+const { flattenArray } = require('./utils');
+
+const flatObjKeyList = (obj, path) => {
+  let list = [];
+  if (!lisEmpty(obj)) {
+    Object.keys(obj).forEach(key => {
+      let newPath = path ? `${path}.${key}` : key;
+      let getVal = lget(obj, key, '');
+      // console.log('see change');
+      let pathToAdd = typeof getVal === 'object' && !Array.isArray(getVal) ? flatObjKeyList(getVal, newPath) : newPath;
+      list.push(pathToAdd);
+    });
+  }
+  return flattenArray(list);
+};
 
 
 const relateOto = (
@@ -27,14 +43,17 @@ const relateOto = (
       } else {
         //removes the relationship if there is one on the thereItem - becuase there isn't one on the hereItem
         if (therePath && thereService) {
-          let query = {};
-          lset(query, therePath, id);
-          let updateObj = { $set: {} };
-          lset(updateObj, ['$set', therePath], null);
-          context.app.service(thereService).update(
-            { query: query },
-            updateObj
-          );
+          let keyList = flatObjKeyList(hereData);
+          if (keyList.includes(herePath)) {
+            let query = {};
+            lset(query, therePath, id);
+            let updateObj = { $set: {} };
+            lset(updateObj, ['$set', therePath], null);
+            context.app.service(thereService).update(
+              { query: query },
+              updateObj
+            );
+          }
         }
         return context;
       }
@@ -89,6 +108,7 @@ const relateMtm = (
     herePath,
     thereService,
     thereObj,
+    thereObjId,
     hereMapId
   } = {}) => {
   return async context => {
@@ -105,7 +125,7 @@ const relateMtm = (
         if (thereObj) lset(addToSet, therePath, thereObj);
         else lset(addToSet, therePath, id);
         if (context.method !== 'create' && context.type === 'before') {
-          let old = await context.app.service(context.path).get(context.id, { query: { select: [herePath] } });
+          let old = await context.app.service(context.path).get(context.id, { query: { $select: [herePath] } });
           let oldIds = lget(old, herePath, []);
           //you only need to look at the ids that were in the old array and are not in the new one - because new ones being added are handled by the above functiton;
           let missingIds = [];
@@ -115,13 +135,19 @@ const relateMtm = (
               missingIds ? missingIds.push(oid) : missingIds = [oid];
             }
           });
+          let query = { _id: { $in: missingIds } };
           context.params.relateMtm_res = await context.app.service(thereService).Model.updateMany(
-            { _id: { $in: missingIds } },
+            query,
             { $pull: addToSet }
           );
         } else {
+          let query = { _id: { $in: hereItemIds } };
+          //such as where therePath is an array of objects we need to check that we aren't adding a duplicate by filtering out any where thereObjId is already present
+          if(thereObjId) lset(query, therePath, {$ne: thereObjId});
+          else lset(query, therePath, { $nin: [id] });
+
           context.params.relateMtm_res = await context.app.service(thereService).Model.updateMany(
-            { _id: { $in: hereItemIds } },
+            query,
             { $addToSet: addToSet }
           );
         }
@@ -129,14 +155,17 @@ const relateMtm = (
       } else {
         //removes the relationship if there are any on the thereItems - becuase there isn't one on the hereItem
         if (therePath && thereService) {
-          let query = {};
-          lset(query, therePath, { $in: [id] });
-          let updateObj = { $pull: {} };
-          lset(updateObj, ['$pull', therePath], id);
-          context.params.removeOtm_res = context.params.relateMtm_res = await context.app.service(thereService).Model.update(
-            { query: query },
-            updateObj
-          );
+          let keyList = flatObjKeyList(hereData);
+          if (keyList.includes(herePath)) {
+            let query = {};
+            lset(query, therePath, { $in: [id] });
+            let updateObj = { $pull: {} };
+            lset(updateObj, ['$pull', therePath], id);
+            context.params.relateMtm_res = context.params.relateMtm_res = await context.app.service(thereService).Model.update(
+              { query: query },
+              updateObj
+            );
+          }
         }
         return context;
       }
@@ -178,14 +207,17 @@ const relateOtm = (
       } else {
         //removes the relationship if there are any on the thereItems - becuase there isn't one on the hereItem
         if (therePath && thereService) {
-          let query = {};
-          lset(query, therePath, { $in: [id] });
-          let updateObj = { $pull: {} };
-          lset(updateObj, ['$pull', therePath], id);
-          context.params.relateOtm_res = context.app.service(thereService).update(
-            { query: query },
-            updateObj
-          );
+          let keyList = flatObjKeyList(hereData);
+          if (keyList.includes(herePath)) {
+            let query = {};
+            lset(query, therePath, { $in: [id] });
+            let updateObj = { $pull: {} };
+            lset(updateObj, ['$pull', therePath], id);
+            context.params.relateOtm_res = context.app.service(thereService).update(
+              { query: query },
+              updateObj
+            );
+          }
         }
         return context;
       }

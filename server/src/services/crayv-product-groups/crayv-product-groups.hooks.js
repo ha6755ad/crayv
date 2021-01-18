@@ -105,8 +105,8 @@ const relateVendor = async context => {
     therePath: 'productGroups',
     thereService: 'crayv-vendors'
   };
-  if(context.method === 'remove') await removeOtm()(config);
-  else await relateOtm()(config);
+  if(context.method === 'remove') await removeOtm(context)(config);
+  else await relateOtm(context)(config);
 };
 
 const relateProducts = async context => {
@@ -116,8 +116,18 @@ const relateProducts = async context => {
     thereService: 'crayv-products',
     hereMapId: 'id',
   };
-  if(context.method === 'remove') await removeMtm()(config);
-  else await relateMtm()(config);
+  if(context.method === 'remove') await removeMtm(context)(config);
+  else await relateMtm(context)(config);
+};
+
+const checkDuplicateTaxAreas = context => {
+  let taxSettings = lget(context, 'data.settings.taxes', []);
+  if(taxSettings){
+    if(taxSettings.some(a => a.areaIds.includes('*'))){
+      if(taxSettings.length > 1) throw new Error('You cannot include additional tax overrides if you have selected an override for all areaIds already');
+      else return context;
+    } else return context;
+  } else return context;
 };
 
 module.exports = {
@@ -126,8 +136,9 @@ module.exports = {
     find: [],
     get: [],
     create: [authenticate('jwt')],
-    update: [authenticate('jwt'), relateProducts],
-    patch: [authenticate('jwt'), relateProducts],
+    update: [authenticate('jwt'), relateProducts, checkDuplicateTaxAreas
+    ],
+    patch: [authenticate('jwt'), relateProducts, checkDuplicateTaxAreas],
     remove: [authenticate('jwt')]
   },
 

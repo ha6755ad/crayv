@@ -12,8 +12,10 @@ module.exports = function (app) {
     active: { type: Boolean, default: true },
     createdBy: { type: Schema.Types.ObjectId, ref: 'users' },
     updatedBy: { type: Schema.Types.ObjectId, ref: 'users' },
+    img: { type: Common.Images },
     name: String,
     description: String,
+    vendorId: {type: Schema.Types.ObjectId, ref: 'crayv-vendors'},
     vendorSettings: [{type: Schema.Types.ObjectId, ref: 'crayv-vendor-settings'}],
     events: [{
       type: Object, contains: {

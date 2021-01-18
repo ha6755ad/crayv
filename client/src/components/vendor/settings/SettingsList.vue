@@ -26,7 +26,7 @@
         <div v-if="!select" :class="`row ${noWrap ? 'no-wrap' : ''}`" :style="noWrap ? { overflowX: 'scroll'} : {}">
           <div :class="`col-${cols} col-sm-${sm} col-md-${md} col-lg-${lg} col-xl-${xl} q-pa-sm`" v-for="(setting, i) in scope.items" :key="`pg-${i}`">
             <q-card style="height: 380px; width: 100%; border-radius: 10px">
-              <geo-card :value="setting"></geo-card>
+              <geo-card :value="setting" :editing="editing"></geo-card>
             </q-card>
           </div>
         </div>
@@ -53,7 +53,7 @@
             </q-chip>
           </template>
           <template v-slot:option="{ opt }">
-            <settings-item :value="opt" @input="handleInput"></settings-item>
+            <settings-item :value="opt" @add="handleInput"></settings-item>
           </template>
         </q-select>
       </template>

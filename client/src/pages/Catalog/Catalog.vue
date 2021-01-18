@@ -76,11 +76,11 @@
             attrs: {
               title: 'Product Lineups',
               subtitle: 'Manage your customer facing offerings',
-              loadWatch: this.lget(this.vendorContext, 'lineups', []),
+              loadWatch: this.lget(this.vendorContext, 'productLineups', []),
               search: true,
               editing: true,
               queryIn: {
-                _id: { $in: this.lget(this.vendorContext, 'lineups', []) }
+                // _id: { $in: this.lget(this.vendorContext, 'productLineups', []) }
               },
             }
           }

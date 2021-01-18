@@ -14,6 +14,7 @@ class CrayvProductLineups extends BaseModel {
   static instanceDefaults () {
     return {
       name: '',
+      img: null,
       description: '',
       deleted: false,
       active: true,

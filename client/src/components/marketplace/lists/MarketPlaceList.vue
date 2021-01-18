@@ -52,14 +52,14 @@
               {{lget(opt, 'name')}}
             </q-chip>
           </template>
-<!--          <template v-slot:option="{ opt, index }">-->
-<!--            <product-group-item :value="opt" @add="handleInput" :editing="editing">-->
-<!--              &lt;!&ndash;          TODO: this slot not working&ndash;&gt;-->
-<!--              <template v-if="$scopedSlots.side" v-slot:side>-->
-<!--                <slot name="side" :item="opt" :index="index"></slot>-->
-<!--              </template>-->
-<!--            </product-group-item>-->
-<!--          </template>-->
+          <template v-slot:option="{ opt, index }">
+            <marketplace-item :value="opt" @add="handleInput" :editing="editing" :active="activeIds.includes(opt._id)">
+              <!--          TODO: this slot not working-->
+              <template v-if="$scopedSlots.side" v-slot:side>
+                <slot name="side" :item="opt" :index="index"></slot>
+              </template>
+            </marketplace-item>
+          </template>
         </q-select>
       </template>
     </load-and-paginate>
@@ -81,10 +81,11 @@
   import MarketplaceCard from 'components/marketplace/cards/MarketPlaceCard';
   import {SelectMixin} from 'src/mixins/SelectMixin';
   import AddListItem from 'components/common/atoms/search/AddListItem';
+  import MarketplaceItem from 'components/marketplace/cards/MarketPlaceItem';
   export default {
     name: 'MarketPlaceList',
     mixins: [SelectMixin],
-    components: { AddListItem, MarketplaceCard, DefaultAvatar, MarketplaceForm, LoadAndPaginate },
+    components: { MarketplaceItem, AddListItem, MarketplaceCard, DefaultAvatar, MarketplaceForm, LoadAndPaginate },
     props: {
       select: Boolean,
       noWrap: Boolean,

@@ -21,8 +21,10 @@
     </div>
   </div>
 </template>
+
 <script>
   import BtnPaginator from 'components/common/atoms/pagination/BtnPaginator';
+
   import {loadPaginatedMixin} from 'src/mixins/LoadPaginatedMixin';
   import SearchItem from 'components/common/atoms/search/SearchItem';
   const lisequal = require('lodash.isequal');

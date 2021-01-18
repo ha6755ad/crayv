@@ -1,6 +1,6 @@
 import feathersClient, { makeServicePlugin, BaseModel } from '../../api/feathers-client';
 
-// const common = require('../schemas/common');
+const common = require('../schemas/common');
 
 class CrayvVendorSettings extends BaseModel {
   // eslint-disable-next-line no-useless-constructor
@@ -14,9 +14,9 @@ class CrayvVendorSettings extends BaseModel {
     return {
       marketplace: null,
       name: '',
-      settings: {},
-      pendingProducts: [],
-      disallowedProducts: [],
+      img: null,
+      avatar: null,
+      settings: common.VendorSettings,
       productLineups: [],
       promotions: []
     };

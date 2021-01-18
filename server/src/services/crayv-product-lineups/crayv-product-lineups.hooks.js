@@ -8,8 +8,8 @@ const relateVendorSettings = async context => {
     therePath: 'productLineups',
     thereService: 'crayv-vendor-settings'
   };
-  if(context.method === 'remove') await removeMtm()(config);
-  else await relateMtm()(config);
+  if(context.method === 'remove') await removeMtm(context)(config);
+  else await relateMtm(context)(config);
 };
 
 
@@ -19,8 +19,8 @@ const relateProducts = async context => {
     therePath: 'productLineups',
     thereService: 'crayv-products',
   };
-  if(context.method === 'remove') await removeMtm()(config);
-  else await relateMtm()(config);
+  if(context.method === 'remove') await removeMtm(context)(config);
+  else await relateMtm(context)(config);
 };
 
 const relateProductGroups = async context => {
@@ -29,8 +29,18 @@ const relateProductGroups = async context => {
     therePath: 'productLineups',
     thereService: 'crayv-products',
   };
-  if(context.method === 'remove') await removeMtm()(config);
-  else await relateMtm()(config);
+  if(context.method === 'remove') await removeMtm(context)(config);
+  else await relateMtm(context)(config);
+};
+
+const relateVendor = async context => {
+  let config = {
+    herePath: 'vendorId',
+    therePath: 'productLineups',
+    thereService: 'crayv-vendors'
+  };
+  if(context.method === 'remove') await removeOtm(context)(config);
+  else await relateOtm(context)(config);
 };
 
 
@@ -66,10 +76,10 @@ module.exports = {
     all: [populate({populates, namedQueries})],
     find: [],
     get: [],
-    create: [relateVendorSettings, relateProductGroups, relateProducts],
-    update: [relateVendorSettings, relateProductGroups, relateProducts],
-    patch: [relateVendorSettings, relateProductGroups, relateProducts],
-    remove: [relateVendorSettings, relateProductGroups, relateProducts]
+    create: [relateVendor, relateVendorSettings, relateProductGroups, relateProducts],
+    update: [relateVendor, relateVendorSettings, relateProductGroups, relateProducts],
+    patch: [relateVendor, relateVendorSettings, relateProductGroups, relateProducts],
+    remove: [relateVendor, relateVendorSettings, relateProductGroups, relateProducts]
   },
 
   error: {

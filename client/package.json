@@ -16,6 +16,7 @@
     "@feathersjs/authentication-client": "^4.5.4",
     "@feathersjs/feathers": "^4.5.3",
     "@feathersjs/socketio-client": "^4.5.4",
+    "@ionrev/iy-common-client-lib": "0.0.14",
     "@mapbox/mapbox-gl-draw": "^1.2.0",
     "@quasar/extras": "^1.8.2",
     "@quasar/quasar-ui-qiconpicker": "^1.2.7",

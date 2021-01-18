@@ -1,9 +1,22 @@
 import Vue from 'vue';
 import  { date } from 'quasar';
-const { getDateDiff, formatDate } = date;
+const { getDateDiff, formatDate, adjustDate  } = date;
 
 
 export default async () => {
+  Vue.prototype.genDateHour = (h, m) => {
+    return adjustDate(new Date(), { hours: h, minutes: m ? m : '' });
+  };
+
+  Vue.prototype.getDateFormat = (date, format) => {
+    return formatDate(date, format);
+    // console.log('date', date, format)
+  };
+
+  Vue.prototype.$buildDate = (config) => {
+    console.log('building date', config);
+    return date.buildDate(config);
+  };
 
   Vue.prototype.$ago = (date1, format) => {
     let minutes = Math.abs(getDateDiff(new Date(), date1, 'minutes'));

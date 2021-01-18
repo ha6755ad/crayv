@@ -8,6 +8,7 @@
 
 <script>
   import mapboxgl from 'mapbox-gl/dist/mapbox-gl.js';
+  import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
   import MapboxDraw from '@mapbox/mapbox-gl-draw';
   const lget = require('lodash.get');
   // const lset = require('lodash.set');
@@ -62,9 +63,6 @@
         if (this.fullScreen) {
           this.map.addControl(new mapboxgl.FullscreenControl());
         }
-        if (this.polygons && this.geoIn) {
-          this.showPolygons(this.geoIn);
-        }
         if (this.drawing) {
           this.draw = new MapboxDraw({
             displayControlsDefault: false,
@@ -97,7 +95,7 @@
         deep: true,
         immediate: true,
         handler(newVal){
-          if(newVal &&  lget(newVal, 'features', []).length){
+          if(this.showPolygons && newVal &&  lget(newVal, 'features', []).length){
             this.showPolygons(newVal);
           }
         }
@@ -320,6 +318,10 @@
     border: 1px solid gray;
     background-color: var(--q-color-secondary);
     transform: none !important;
+  }
+
+  .mapbox-gl-draw_polygon {
+    background: #1c1c1c !important
   }
 
   /*marker {*/

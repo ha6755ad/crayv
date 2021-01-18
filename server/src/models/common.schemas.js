@@ -42,7 +42,7 @@ const UniquePhone = new Schema({
   },
   canBeInternationallyDialled: { type: Boolean, required: false },
   type: { type: String, required: false },
-}, {_id: false});
+}, { _id: false });
 
 const Phone = new Schema({
   phoneType: { type: String, required: false },
@@ -68,14 +68,14 @@ const Phone = new Schema({
   },
   canBeInternationallyDialled: { type: Boolean, required: false },
   type: { type: String, required: false },
-}, {_id: false});
+}, { _id: false });
 
 const Images = new Schema({
   large: {
     _id: { type: Schema.Types.ObjectId, required: false, ref: 'file-uploader' },
     file: { type: String, required: false }
   }
-}, {_id: false});
+}, { _id: false });
 
 const Address = new Schema({
   address1: { type: String, required: false },
@@ -101,7 +101,7 @@ const Files = new Schema({
   storage: String,
   updatedAt: Date,
   uploadChannel: String,
-}, {_id: false});
+}, { _id: false });
 
 const RRULE = new Schema({
   //https://icalendar.org/rrule-tool.html
@@ -121,9 +121,9 @@ const RRULE = new Schema({
 }, { _id: false });
 
 const Pricing = new Schema({
-  currency: {type: String, enum: ['usd', 'ngn']},
+  currency: { type: String, enum: ['usd', 'ngn'] },
   basePrice: Number
-}, {_id: false});
+}, { _id: false });
 
 const ProductVariant = new Schema({
   type: { type: String, enum: ['size', 'flavor', 'custom'], default: 'custom' },
@@ -132,7 +132,7 @@ const ProductVariant = new Schema({
   settings: {
     default: Boolean,
   },
-  images: [{type: Images}],
+  images: [{ type: Images }],
   name: String,
   description: String
 });
@@ -147,17 +147,17 @@ const ProductOption = new Schema({
 
 const productOrder = new Schema({
   product: { type: Schema.Types.ObjectId, ref: 'products' },
-  productModel: {type: String, enum: ['crayv-products', 'crayv-product-groups']},
+  productModel: { type: String, enum: ['crayv-products', 'crayv-product-groups'] },
   quantity: Number,
   name: String,
   description: String,
   price: {
     basePrice: Number,
-    promotion: { total: Number, id: {type: Schema.Types.ObjectId, ref: 'promotions'} },
+    promotion: { total: Number, id: { type: Schema.Types.ObjectId, ref: 'promotions' } },
     pricePaid: Number
   },
   promos: [],
-  event: {id: String},
+  event: { id: String },
   priceObj: {
     value: Number,
     discount: Number,
@@ -172,7 +172,7 @@ const productOrder = new Schema({
       other: { flat: Number, percentage: Number, notes: String },
     }
   },
-  types: [{name: String, description: String}],
+  types: [{ name: String, description: String }],
   settings: {},
   shipping: {},
   images: [{ type: Images }],
@@ -187,40 +187,56 @@ const productOrder = new Schema({
     pricePaid: Number
   }],
   subscription: {
-    id: {type: Schema.Types.ObjectId, ref: 'subscriptions'}
+    id: { type: Schema.Types.ObjectId, ref: 'subscriptions' }
   },
   vendor: {
-    id: {type: Schema.Types.ObjectId, ref: 'vendors'},
+    id: { type: Schema.Types.ObjectId, ref: 'vendors' },
     name: { type: String }
   }
-}, {timestamps: true});
+}, { timestamps: true });
+
+const taxTypes = ['percentage', 'flat'];
+
+const taxItem = new Schema({
+  percentage: Number,
+  flat: Number,
+  use: { type: String, enum: taxTypes },
+  notes: String
+});
 
 const ProductSettings = new Schema({
+  syncSettings: { type: Boolean, default: true },
   taxes: [{
-    areaIds: [{type: String }], //'*' for all
-    sales: {percentage: Number, flat: Number, notes: String},
-    local: {percentage: Number, flat: Number, notes: String},
-    other: {percentage: Number, flat: Number, notes: String}
+    areaIds: [{ type: String }], //'*' for all
+    sales: { type: taxItem },
+    local: { type: taxItem },
+    other: { type: taxItem }
   }],
-  schedule: {type: Object},
+  schedule: {
+    days: {type: Array},
+    blackoutDates: {type: Array, contains: { year: Number, month: Number, date: Number }}
+  },
   boundaries: { type: GeoLocation }
-}, {_id: false});
+}, { _id: false });
 
+
+//TODO: need to dedup postal codes
 const VendorSettings = new Schema({
+  automateTaxes: Boolean,
+  taxExempt: Boolean,
+  syncSettings: { type: Boolean, default: true },
   taxes: [{
-    areaId: {type: String},
-    area: {
-      regions: [{ type: String }],
-      countries: [{ type: String }],
-      cities: [{ type: String }],
-      postal_codes: [{ type: String }]
-    },
-    sales: {percentage: Number, flat: Number, notes: String},
-    local: {percentage: Number, flat: Number, notes: String},
-    other: {percentage: Number, flat: Number, notes: String}
+    areaId: { type: String },
+    postal_codes: [{ type: String }],
+    cities: [{type: String}],
+    sales: { type: taxItem },
+    local: { type: taxItem },
+    other: { type: taxItem }
   }],
-  schedule: {type: Object},
-  locations: [{type: Address}],
+  schedule: {
+    days: {type: Array},
+    blackoutDates: {type: Array, contains: { year: Number, month: Number, date: Number }}
+  },
 });
 
 const privacyEnum = ['public', 'permission', 'private'];

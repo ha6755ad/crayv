@@ -17,6 +17,8 @@ const tomtomGeocode = require('./tomtom-geocode/tomtom-geocode.service');
 const tomtomReverseGeocode = require('./tomtom-reverse-geocode/tomtom-reverse-geocode.service.js');
 
 const users = require('./users/users.service.js');
+const mapboxBoundaries = require('./mapbox-boundaries/mapbox-boundaries.service.js');
+
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
   app.configure(crayvProducts);
@@ -37,4 +39,5 @@ module.exports = function (app) {
   app.configure(tomtomGeocode);
   app.configure(tomtomReverseGeocode);
   app.configure(users);
+  app.configure(mapboxBoundaries);
 };

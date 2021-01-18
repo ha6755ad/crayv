@@ -12,26 +12,26 @@
       :query-adders="queryAdders"
       :params-adders="paramsAdders"
       :paginator="true"
-      load-service="crayv-product-lineups"
+      :load-service="loadService"
       :load-watch="loadWatch"
       :load-on-mount="!loadWatch"
       :search="search"
-      search-placeholder="Search Lineups..."
+      search-placeholder="Search Product Lineups..."
       :search-input-in="searchInput"
     >
-      <template v-slot:list="slot">
+      <template v-slot:list="scope">
         <div v-if="!select && editing" class="row justify-end">
           <q-btn push size="sm" color="secondary" label="Add New" icon="mdi-plus" @click="addDialog = true"></q-btn>
         </div>
         <div v-if="!select" :class="`row ${noWrap ? 'no-wrap' : ''}`" :style="noWrap ? { overflowX: 'scroll'} : {}">
-          <div :class="`col-${cols} col-sm-${sm} col-md-${md} col-lg-${lg} col-xl-${xl} q-pa-sm`" v-for="(pg, i) in slot.items" :key="`pg-${i}`">
+          <div :class="`col-${cols} col-sm-${sm} col-md-${md} col-lg-${lg} col-xl-${xl} q-pa-sm`" v-for="(lineup, i) in scope.items" :key="`pg-${i}`">
             <q-card style="height: 380px; width: 100%; border-radius: 10px">
-
+              <lineup-card :editing="editing" :value="lineup"></lineup-card>
             </q-card>
           </div>
         </div>
         <q-select
-          label="Search Product Groups"
+          label="Search Product Lineups..."
           v-if="select"
           :options="scope.items"
           behavior="menu"
@@ -53,12 +53,12 @@
             </q-chip>
           </template>
 <!--          <template v-slot:option="{ opt, index }">-->
-<!--            <product-group-item :value="opt" @add="handleInput" :editing="editing">-->
+<!--            <lineup-it :value="opt" @add="handleInput" :editing="editing">-->
 <!--              &lt;!&ndash;          TODO: this slot not working&ndash;&gt;-->
 <!--              <template v-if="$scopedSlots.side" v-slot:side>-->
 <!--                <slot name="side" :item="opt" :index="index"></slot>-->
 <!--              </template>-->
-<!--            </product-group-item>-->
+<!--            </lineup-it>-->
 <!--          </template>-->
         </q-select>
       </template>
@@ -79,10 +79,11 @@
   import LineupForm from 'components/lineups/forms/LineupForm';
   import DefaultAvatar from 'components/common/atoms/avatars/DefaultAvatar';
   import AddListItem from 'components/common/atoms/search/AddListItem';
+  import LineupCard from 'components/lineups/cards/LineupCard';
 
   export default {
     mixins: [SelectMixin],
-    components: { AddListItem, DefaultAvatar, LineupForm, LoadAndPaginate },
+    components: { LineupCard, AddListItem, DefaultAvatar, LineupForm, LoadAndPaginate },
     props: {
       select: Boolean,
       noWrap: Boolean,
@@ -131,6 +132,9 @@
     },
     computed: {
       ...mapGetters('auth', { user: 'user' }),
+      loadService(){
+        return 'crayv-product-lineups';
+      },
       queryAdders(){
         let activeObj = { active: !this.showInactive };
         return this.queryIn ? {...this.queryIn, ...activeObj} : activeObj;

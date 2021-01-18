@@ -14,7 +14,7 @@ export const SelectMixin = {
             if (!this.activeItem) {
               if (!this.multiple) {
                 this.$store.dispatch(`${this.selectService}/get`, newVal, this.selectParamsAdders);
-              } else {
+              } else if(this.activeIds && this.selectService) {
                 let params = this.selectParamsAdders;
                 params.query = { _id: { $in: this.activeIds } };
                 this.$store.dispatch(`${this.selectService}/find`, params);

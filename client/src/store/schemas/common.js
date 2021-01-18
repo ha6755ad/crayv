@@ -25,7 +25,7 @@ const ProductVariant = {
   product: null,
   images: [],
   price: Pricing,
-    settings: { default: false },
+  settings: { default: false },
   name: '',
   description: ''
 };
@@ -39,13 +39,27 @@ const ProductOptions = {
 };
 const ProductSettings = {
   productTypes: [],
+  syncSettings: true,
   schedule: {
     days: [],
-    blackout: []
+    blackoutDates: []
   },
   boundaries: {}
 };
+
+const VendorSettings = {
+  automateTaxes: true,
+  taxExempt: false,
+  syncSettings: true,
+  taxes: [],
+  schedule: {
+    days: [],
+    blackoutDates: []
+  },
+};
+
 module.exports = {
+  VendorSettings: VendorSettings,
   ProductSettings: ProductSettings,
   ProductVariant: ProductVariant,
   ProductOptions: ProductOptions,

@@ -43,7 +43,7 @@ const relateGroupOrder = async () => {
     therePath: 'orders',
     thereService: 'crayv-group-orders'
   };
-  await relateOtm()(config);
+  await relateOtm(context)(config);
 };
 
 const removeGroupOrder = async () => {
@@ -52,7 +52,7 @@ const removeGroupOrder = async () => {
     therePath: 'orders',
     thereService: 'crayv-group-orders'
   };
-  await removeOtm()(config);
+  await removeOtm(context)(config);
 };
 
 const inactivateCart = async context => {

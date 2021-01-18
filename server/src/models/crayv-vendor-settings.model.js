@@ -20,8 +20,6 @@ module.exports = function (app) {
     address: { type: Common.Address },
     geo: { type: Common.GeoLocation },
     settings: { type: Common.VendorSettings },
-    disallowedProducts: [{ type: Schema.Types.ObjectId, ref: 'crayv-products' }],
-    pendingProducts: [{type: Schema.Types.ObjectId, ref: 'crayv-products'}],
     productLineups: [{ type: Schema.Types.ObjectId, ref: 'crayv-product-lineups' }],
     promotions: [{ type: Schema.Types.ObjectId, ref: 'crayv-promotions' }]
   }, {

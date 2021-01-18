@@ -8,13 +8,14 @@
       <q-select
         ref="addressSelect"
         :label="label"
-        :placeholder="normalizedAddress ? '' : placeholder"
+        :placeholder="!$lisEmpty(normalizedAddress) ? '' : placeholder"
         borderless
         :style="{ ...{'max-width': '90vw', width: '100%'}, ...$attrs.inputStyle }"
         hide-bottom-space
         :bg-color="$attrs.bgColor ? $attrs.bgColor : 'white'"
         :options="options"
         :outlined="outlined"
+        :hint="hint"
         clearable
         @clear="normalizedAddress = null"
         :dark="dark"
@@ -23,6 +24,9 @@
         @input-value="setInput"
         @input="geocode"
       >
+        <template v-slot:append>
+          <q-spinner size="30px" v-if="loading"></q-spinner>
+        </template>
         <template v-slot:option="{opt, toggleOption}">
           <q-item clickable @click="toggleOption(opt)">
             <q-item-section>
@@ -46,6 +50,7 @@
     props: {
       dark: Boolean,
       label: String,
+      hint: String,
       placeholder: {
         type: String,
         required: false,
@@ -128,7 +133,7 @@
         handler(newVal) {
           if (newVal.length) {
             //eslint-disable-next-line-no-console
-            console.log('got new length', this.$refs.addressSelect.isOptionSelected('2'));
+
             // this.$refs.addressSelect.showPopup()
             this.$refs.addressSelect.focus();
           }
