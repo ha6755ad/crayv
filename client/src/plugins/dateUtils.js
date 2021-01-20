@@ -1,11 +1,23 @@
 import Vue from 'vue';
 import  { date } from 'quasar';
-const { getDateDiff, formatDate, adjustDate  } = date;
+const { getDateDiff, formatDate, adjustDate, extractDate  } = date;
 
 
 export default async () => {
+  Vue.prototype.extractDate = (date, format) => {
+    return extractDate(date, format);
+  };
+
   Vue.prototype.genDateHour = (h, m) => {
     return adjustDate(new Date(), { hours: h, minutes: m ? m : '' });
+  };
+
+  Vue.prototype.parseDateHour = (hour, format) => {
+    let useFormat = format ? format : 'h:mm a';
+    let date = formatDate(new Date(), 'YY-MM-DD');
+    let dateHour = date + ' ' + hour;
+    let extractedDate = extractDate(dateHour, 'YY-MM-DD Hmm');
+    return formatDate(extractedDate, useFormat);
   };
 
   Vue.prototype.getDateFormat = (date, format) => {
@@ -14,7 +26,6 @@ export default async () => {
   };
 
   Vue.prototype.$buildDate = (config) => {
-    console.log('building date', config);
     return date.buildDate(config);
   };
 

@@ -1,5 +1,5 @@
 <template>
-  <q-card flat class="bg-light __p_group_grid" style="border-radius: inherit; overflow: hidden" @click.stop="$emit('add', value)">
+  <q-card :flat="flat" class="bg-light __p_group_grid" style="border-radius: 10px; overflow: hidden" @click.stop="$emit('add', value)">
 
     <div class="t-l flex items-center">
       <q-btn dense push size="sm" color="positive" icon="mdi-checkbox-marked-outline" v-if="active"></q-btn>
@@ -14,7 +14,7 @@
         icon="mdi-pencil-box-outline"
         @click="editDialog = !editDialog"
       ></q-btn>
-      <q-btn flat dense size="sm" icon="mdi-arrow-expand" @click="fullDialog = true"></q-btn>
+      <q-btn flat dense size="sm" icon="mdi-arrow-expand" @click="$router.push({name: 'marketplace', params: { marketplace: value.name }, query: {marketplaceId: value._id }})"></q-btn>
     </div>
 
     <div style="width: 100%; height: 100%">
@@ -75,6 +75,7 @@
     name: 'MarketplaceCard',
     components: { MarketplaceForm, DefaultAvatar, ProductGroupViewer, MultiImageViewer, VClamp },
     props: {
+      flat: Boolean,
       active: Boolean,
       value: Object
     },

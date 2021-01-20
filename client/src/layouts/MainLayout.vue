@@ -66,6 +66,7 @@
         <EssentialLink
           v-for="link in personalLinks"
           :key="link.title"
+          @click="link.click()"
           v-bind="link"
         />
         <q-item-label
@@ -77,6 +78,7 @@
         <EssentialLink
           v-for="link in vendorLinks"
           :key="link.title"
+          @click="link.click()"
           v-bind="link"
         />
       </q-list>
@@ -146,7 +148,9 @@
             title: 'Profile',
             caption: 'Your personal information',
             icon: 'mdi-account-box',
-            link: '/profile'
+            click: () => {
+              this.$router.push({name: 'profile', query: this.$route.query});
+            }
           }
         ],
         vendorLinks: [
@@ -154,37 +158,49 @@
             title: 'Marketplaces',
             caption: 'Manage and join marketplaces',
             icon: 'mdi-earth',
-            link: '/marketplaces'
+            click: () => {
+              this.$router.push({name: 'marketplaces', query: this.$route.query});
+            }
           },
           {
             title: 'Product Catalog',
             caption: 'create/edit products',
             icon: 'mdi-format-list-text',
-            link: '/catalog'
+            click: () => {
+              this.$router.push({name: 'catalog', query: this.$route.query});
+            }
           },
           {
             title: 'Product Lineups',
             caption: 'manage product offerings',
             icon: 'mdi-group',
-            link: '/lineups'
+            click: () => {
+              this.$router.push({name: 'lineups', query: this.$route.query});
+            }
           },
           {
             title: 'Subscriptions',
             caption: 'manage subscriptions',
             icon: 'mdi-shape-circle-plus',
-            link: '/subscriptions'
+            click: () => {
+              this.$router.push({name: 'subscriptions', query: this.$route.query});
+            }
           },
           {
             title: 'Schedule',
             caption: 'availability and events',
             icon: 'mdi-calendar',
-            link: '/schedule'
+            click: () => {
+              this.$router.push({name: 'schedule', query: this.$route.query});
+            }
           },
           {
             title: 'Vendor Account',
             caption: 'account and settings',
             icon: 'mdi-cog',
-            link: '/account'
+            click: () => {
+              this.$router.push({name: 'vendor-account', query: this.$route.query});
+            }
           },
         ]
       };

@@ -1,5 +1,5 @@
 <template>
-  <q-card flat class="__lineup_card">
+  <q-card :flat="flat" class="__lineup_card">
 
     <div class="t-r flex items-center">
       <q-btn
@@ -68,6 +68,7 @@
     mixins: [loadPaginatedMixin],
     components: { LineupForm, MultiImageViewer, VClamp },
     props: {
+      flat: Boolean,
       value: Object,
       editing: Boolean
     },

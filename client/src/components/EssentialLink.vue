@@ -1,9 +1,7 @@
 <template>
-  <q-item clickable
-          tag="a"
-          :href="link">
+  <q-item clickable @click="$emit('click')">
     <q-item-section v-if="icon" avatar>
-      <q-icon :name="icon"/>
+      <q-icon :name="icon"></q-icon>
     </q-item-section>
 
     <q-item-section>

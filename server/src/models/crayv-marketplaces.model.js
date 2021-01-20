@@ -12,7 +12,7 @@ module.exports = function (app) {
     active: { type: Boolean, default: true },
     createdBy: { type: Schema.Types.ObjectId, ref: 'users' },
     updatedBy: { type: Schema.Types.ObjectId, ref: 'users' },
-    name: String,
+    name: { type: String, index: true, unique: true },
     description: String,
     host: { type: Schema.Types.ObjectId },
     tags: [String],

@@ -10,7 +10,22 @@
     </div>
     <q-tab-panels animated v-model="tab">
       <q-tab-panel v-for="(page, i) in pages" :key="`page-${i}`" :name="i">
-        <component :is="page.component" v-bind="page.attrs"></component>
+        <paginate-list
+          v-bind="page.attrs"
+        >
+          <template v-if="page.item" v-slot:list-item="{item, handleInput}">
+            <component v-bind="page.itemAttrs" :is="page.item" :value="item" @add="handleInput"></component>
+          </template>
+
+          <template v-if="page.card && page.attrs.grid" v-slot:card="{item, handleInput}">
+            <component v-bind="page.cardAttrs" :is="page.card" :value="item" @add="handleInput"></component>
+          </template>
+
+          <template v-slot:form="{close}">
+            <component :is="page.form" @input="close"></component>
+          </template>
+        </paginate-list>
+
       </q-tab-panel>
     </q-tab-panels>
   </q-page>
@@ -19,13 +34,18 @@
 <script>
   import {mapGetters} from 'vuex';
   import TabStepper from 'components/common/atoms/tabs/TabStepper';
-  import ProductList from 'components/products/lists/ProductList';
-  import ProductGroupList from 'components/product-groups/lists/ProductGroupList';
-  import LineupList from 'components/lineups/lists/LineupList';
+  import ProductForm from 'components/products/forms/ProductForm';
+  import ProductItem from 'components/products/card/ProductItem';
+  import PaginateList from 'components/common/substance/lists/PaginateList';
+  import ProductGroupCard from 'components/product-groups/cards/ProductGroupCard';
+  import ProductGroupForm from 'components/products/forms/ProductGroupForm';
+  import LineupCard from 'components/lineups/cards/LineupCard';
+  import LineupForm from 'components/lineups/forms/LineupForm';
+
 
   export default {
     name: 'Catalog',
-    components: { TabStepper },
+    components: { PaginateList, ProductItem, ProductForm, TabStepper },
     data() {
       return {
         tab: 0,
@@ -43,14 +63,21 @@
         return [
           {
             label: 'Products',
-            component: ProductList,
+            item: ProductItem,
+            itemAttrs: {
+              flat: true,
+              editing: true
+            },
+            form: ProductForm,
             attrs: {
               title: 'Products',
               value: null,
+              loadService: 'crayv-products',
               subtitle: 'Add and manage products',
-              loadWatch: this.lget(this.vendorContext, 'products', []),
+              loadWatch: null,
               search: true,
-              editing: true,
+              searchPlaceholder: 'Search Products...',
+              adding: true,
               queryIn: {
                 _id: { $in: this.lget(this.vendorContext,'products', [])}
               }
@@ -58,13 +85,19 @@
           },
           {
             label: 'Product Groups',
-            component: ProductGroupList,
+            card: ProductGroupCard,
+            cardAttrs: {},
+            form: ProductGroupForm,
             attrs: {
               title: 'Product Groups',
               subtitle: 'You can use product groups to sell packages, or simply to manage products and lineups more easily by grouping',
-              loadWatch: this.lget(this.vendorContext, 'productGroups', []),
+              value: null,
+              grid: true,
+              loadService: 'crayv-product-groups',
+              loadWatch: null,
               search: true,
-              editing: true,
+              searchPlaceholder: 'Search Product Groups...',
+              adding: true,
               queryIn: {
                 _id: { $in: this.lget(this.vendorContext,'productGroups', [])}
               },
@@ -72,13 +105,21 @@
           },
           {
             label: 'Product Lineups',
-            component: LineupList,
+            card: LineupCard,
+            cardAttrs: {
+              editing: true
+            },
+            form: LineupForm,
             attrs: {
               title: 'Product Lineups',
               subtitle: 'Manage your customer facing offerings',
-              loadWatch: this.lget(this.vendorContext, 'productLineups', []),
+              loadService: 'crayv-product-lineups',
+              loadWatch: null,
+              grid: true,
+              value: null,
               search: true,
-              editing: true,
+              searchPlaceholder: 'Search Lineups...',
+              adding: true,
               queryIn: {
                 // _id: { $in: this.lget(this.vendorContext, 'productLineups', []) }
               },

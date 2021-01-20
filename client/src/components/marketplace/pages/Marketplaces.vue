@@ -1,34 +1,42 @@
 <template>
-  <q-page>
+  <q-page class="q-pa-md">
     <div class="q-pa-md text-md text-mb-lg text-weight-medium">
-      {{ lget(podIn, 'name', 'Pod') }} Marketplace
+      {{ lget(podIn, 'name', '') }} Marketplace
     </div>
 
-    <div class="q-px-sm">
-      <tab-stepper
-        :tabs="tabs"
-        v-model="tab"
-      ></tab-stepper>
-    </div>
+    <paginate-list
+      title="Explore Marketplaces"
+      subtitle="Join marketplaces to expand your product reach"
+      search
+      grid
+      load-service="crayv-marketplaces"
+      :query-in="{ privacy: 'public', vendorSettings: { $nin: this.lget(this.vendorContext, 'vendorSettings', []) }
+              }"
+      :value="null"
+    >
+      <template v-slot:card="{item, handleInput}">
+        <q-card style="width: 100%; height: 320px">
+        <marketplace-card :value="item" @add="handleInput" editing></marketplace-card>
+        </q-card>
+      </template>
 
-    <q-tab-panels animated v-model="tab">
-      <q-tab-panel v-for="(tab, i) in tabs" :key="`tab-${i}`" :name="i">
-        <component :is="tab.component" v-bind="tab.attrs"></component>
-      </q-tab-panel>
-    </q-tab-panels>
+      <template v-slot:form="{close}">
+        <marketplace-form @input="close"></marketplace-form>
+      </template>
+    </paginate-list>
 
   </q-page>
 </template>
 
 <script>
   import { mapGetters } from 'vuex';
-  import TabStepper from '../../common/atoms/tabs/TabStepper';
-  import MarketPlaceForm from '../MarketPlaceForm';
-  import MarketPlaceList from '../lists/MarketPlaceList';
+  import PaginateList from 'components/common/substance/lists/PaginateList';
+  import MarketplaceCard from 'components/marketplace/cards/MarketPlaceCard';
+  import MarketplaceForm from 'components/marketplace/MarketPlaceForm';
 
   export default {
     name: 'MarketplaceAdmin',
-    components: { TabStepper },
+    components: { MarketplaceForm, MarketplaceCard, PaginateList },
     props: {
       podIn: Object
     },
@@ -39,37 +47,7 @@
     },
     computed: {
       ...mapGetters({vendorContext: 'vendorContext'}),
-      tabs(){
-        return [
-          {
-            label: 'Explore',
-            icon: 'mdi-telescope',
-            component: MarketPlaceList,
-            attrs: {
-              title: 'Explore Marketplaces',
-              subtitle: 'Join marketplaces to expand your product reach',
-              search: true,
-              editing: false,
-              queryIn: {
-                privacy: 'public',
-                vendorSettings: { $nin: this.lget(this.vendorContext, 'vendorSettings', []) }
-              },
-            }
-          },
-          {
-            label: 'Settings',
-            icon: 'mdi-cog-outline',
-            component: MarketPlaceForm,
-            attrs: {
-              hostIn: this.podIn
-            }
-          },
-          {
-            label: 'Vendors',
-            icon: 'mdi-store'
-          }
-        ];
-      }
+
     }
   };
 </script>

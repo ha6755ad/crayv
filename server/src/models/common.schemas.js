@@ -120,6 +120,11 @@ const RRULE = new Schema({
   WKST: String, //day of the week to start weekly recurrance
 }, { _id: false });
 
+const Schedule = new Schema({
+  days: {type: Array},
+  blackoutDates: {type: Array, contains: { start: { year: Number, month: Number, date: Number, hour: Number, minute: Number }, end: { year: Number, month: Number, date: Number, hour: Number, minute: Number } }}
+});
+
 const Pricing = new Schema({
   currency: { type: String, enum: ['usd', 'ngn'] },
   basePrice: Number
@@ -212,10 +217,7 @@ const ProductSettings = new Schema({
     local: { type: taxItem },
     other: { type: taxItem }
   }],
-  schedule: {
-    days: {type: Array},
-    blackoutDates: {type: Array, contains: { year: Number, month: Number, date: Number }}
-  },
+  schedule: {type: Schedule},
   boundaries: { type: GeoLocation }
 }, { _id: false });
 
@@ -233,10 +235,7 @@ const VendorSettings = new Schema({
     local: { type: taxItem },
     other: { type: taxItem }
   }],
-  schedule: {
-    days: {type: Array},
-    blackoutDates: {type: Array, contains: { year: Number, month: Number, date: Number }}
-  },
+  schedule: {type: Schedule},
 });
 
 const privacyEnum = ['public', 'permission', 'private'];

@@ -7,10 +7,16 @@
       </q-img>
     <template v-if="multiLength > 1">
       <q-btn size="xs" round flat
-             class="__right-arrow text-dark bg-shade-2 text-white" @click.stop="forward">
+             class="__right-arrow text-dark bg-shade-2 text-white" @click.stop="forward"
+             :style="!btnPosition ? {} : btnPosition === 'top' ? { top: '150px' } : btnPosition === 'bottom' ? { bottom: '150px'} : {}"
+      >
         <q-icon name="mdi-menu-right" size="25px"/>
       </q-btn>
-      <q-btn size="xs" round flat class="__left-arrow text-dark bg-shade-2 text-white" @click.stop="backward">
+      <q-btn
+        size="xs" round flat
+        class="__left-arrow text-dark bg-shade-2 text-white" @click.stop="backward"
+        :style="!btnPosition ? {} : btnPosition === 'top' ? { top: '150px' } : btnPosition === 'bottom' ? { bottom: '150px'} : {}"
+      >
         <q-icon name="mdi-menu-left" size="25px"/>
       </q-btn>
     </template>
@@ -21,6 +27,7 @@
   export default {
     name: 'MultiImageViewer',
     props: {
+      btnPosition: String,
       flat: Boolean,
       value: [Array, String, Object],
       avatarPath: {

@@ -33,7 +33,7 @@
     <custom-tax-form></custom-tax-form>
     <div class="q-my-md q-pa-sm" style="max-height: 600px; overflow-y: scroll">
       <div class="text-xs text-mb-xs">Hours of Operation</div>
-      <schedule-picker v-model="form.schedule" @input="update('schedule', ...arguments)"></schedule-picker>
+      <schedule-picker v-model="form.schedule" @input="updateSchedule('schedule', ...arguments)"></schedule-picker>
     </div>
       </div>
     </q-slide-transition>
@@ -60,14 +60,28 @@
       }
     },
     mounted() {
-      if (this.value) this.form = this.$lmerge(common.VendorSettings, this.value);
+
     },
     data() {
       return {
-        form: common.VendorSettings
+        form: common.VendorSettings,
+        scheduleUpdates: 0
       };
     },
+    watch: {
+      value: {
+        immediate: true,
+        handler(newVal){
+          if(newVal){
+            Object.assign(this.form, Object.assign({}, newVal));
+          }
+        }
+      }
+    },
     methods: {
+      updateSchedule(){
+        this.$emit('input', this.form);
+      },
       update(key, val) {
         this.$emit('input', this.form);
         if (this.saveOnChange) {

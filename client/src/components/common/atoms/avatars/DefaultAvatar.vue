@@ -9,7 +9,7 @@
       </span>
     </template>
     <template v-else>
-      <span>{{lget(value, namePath, lget(value, backupNamePath, '!')).charAt(0)}}</span>
+      <span>{{value && (value.namePath || value.backupNamePath) ? lget(value, namePath, lget(value, backupNamePath, '!')).charAt(0) : '!' }}</span>
     </template>
     <slot name="menu"></slot>
   </q-avatar>

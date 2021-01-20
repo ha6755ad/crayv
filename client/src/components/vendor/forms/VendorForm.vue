@@ -31,7 +31,7 @@
         :id-in="form._id"
         service-in="crayv-vendors"
         @input="$lset(form, 'settings', $event)"
-        :value="lget(form, 'settings')"
+        :value="form.settings"
       ></default-vendor-settings>
     </div>
 
@@ -54,9 +54,7 @@
       value: Object
     },
     mounted() {
-      if(this.value){
-        this.form = new models.api.CrayvVendors(this.value).clone();
-      }
+
     },
     data() {
       return {
@@ -66,6 +64,16 @@
         selectedSuggestion: null,
         form: new models.api.CrayvVendors().clone()
       };
+    },
+    watch: {
+      value: {
+        immediate: true,
+        handler(newVal) {
+          if (newVal) {
+            Object.assign(this.form, Object.assign({}, newVal));
+          }
+        }
+      }
     },
     computed: {
       formImg(){

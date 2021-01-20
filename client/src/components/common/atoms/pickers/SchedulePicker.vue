@@ -7,29 +7,39 @@
           <div>Unavailable Dates</div>
           <q-btn-dropdown size="sm" flat dense color="white" push icon="mdi-plus" class="q-mx-lg">
 
-            <vue-ctk-date-time-picker
-              no-button-now
-              :noButton="false"
-              inline
-              @input="newBlackout"
-              only-date
-            ></vue-ctk-date-time-picker>
+            <q-card dark class="q-pa-md">
+              <div class="text-xs text-mb-xs text-weight-bold q-mb-lg">Choose Date Range</div>
 
+              <inline-picker
+                require-save
+                dark
+                v-model="addingBlackout"
+                @input="newBlackout"
+              ></inline-picker>
+
+            </q-card>
           </q-btn-dropdown>
         </div>
       </div>
       <div class="row items-center">
-        <template v-for="(date, i) in blackoutList">
-        <div v-if="lget(form, 'blackoutDates[0]')" :key="`date-${i}`">
-          <date-chip
-            size-in="35px"
-            hide-text
-            dark
-            :value="$buildDate(date)"
-            removable
-            @remove="form.blackoutDates.splice(i, 1)"
-          ></date-chip>
-        </div>
+        <template v-for="(range, i) in blackoutList">
+          <div class="flex items-center" v-if="lget(form, 'blackoutDates[0]')" :key="`date-${i}`">
+            <date-chip
+              size-in="35px"
+              hide-text
+              dark
+              :value="range.start"
+            ></date-chip>
+            <div class="text-md text-mb-md text-weight-bolder">-</div>
+            <date-chip
+              size-in="35px"
+              hide-text
+              dark
+              :value="range.end"
+              removable
+              @remove="form.blackoutDates.splice(i, 1)"
+            ></date-chip>
+          </div>
         </template>
       </div>
     </div>
@@ -73,7 +83,7 @@
           <div class="timeList">
             <div class="times" :style="colorTime(day, time) ? {color: '#a6f5a9'} : ''" v-for="time in times"
                  :key="time" @click="pushTime(time, index)">
-              <div class="q-pa-sm">{{ time }}</div>
+              <div class="q-pa-sm">{{ parseDateHour(time) }}</div>
               <q-icon v-if="colorTime(day, time)" name="mdi-checkbox-marked-circle-outline"
                       style="color: #b5f5b7"/>
             </div>
@@ -88,12 +98,16 @@
 <script>
 
   import DateChip from 'components/common/atoms/dates/DateChip';
-  import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
   import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
+  import InlinePicker from 'components/common/atoms/dates/InlinePicker';
+
+  const defaultBlackout = () => {
+    return { start: new Date(), end: new Date() };
+  };
 
   export default {
     name: 'SchedulePicker',
-    components: { DateChip, VueCtkDateTimePicker },
+    components: { InlinePicker, DateChip },
     props: {
       value: Object,
       hideBlackout: Boolean
@@ -103,6 +117,7 @@
     },
     data() {
       return {
+        addingBlackout: defaultBlackout(),
         interval: 60,
         form: {
           days: [],
@@ -151,16 +166,17 @@
       }
     },
     computed: {
-      blackoutList(){
+      blackoutList() {
         return this.lget(this.form, 'blackoutDates', []).sort((a, b) => {
           return this.$buildDate(a) - this.$buildDate(b);
         });
       },
-      year(){
+      year() {
         return new Date().getFullYear();
       },
       intervals() {
-        return [60, 30, 15, 10, 5];
+        //before changing these, see that pushTime function is using these fixed intervals for logic
+        return [60, 30, 15];
       },
       times() {
         let list = [];
@@ -168,7 +184,7 @@
           let intervals = this.interval ? 60 / this.interval : 1;
           for (let int = 0; int < intervals; int++) {
             let minutes = int * this.interval;
-            i < 20 ? list.push(this.getDateFormat(this.genDateHour((i + 5), minutes), 'h:mm a')) : list.push(this.getDateFormat(this.genDateHour((i - 19), minutes), 'h:mm a'));
+            i < 20 ? list.push(parseInt(this.getDateFormat(this.genDateHour((i + 5), minutes), 'Hmm'))) : list.push(parseInt(this.getDateFormat(this.genDateHour((i - 19), minutes), 'Hmm')));
           }
         }
         return list;
@@ -176,24 +192,52 @@
     },
     methods: {
       colorTime(day, time) {
-        if (this.lget(this.form, 'days', []).length > 0) {
+        if (this.lget(this.form, 'days[0]')) {
           let days = this.lget(this.form, 'days', []).map(a => a.name);
           let idx = days.indexOf(day.name);
           return this.lget(this.form, ['days', idx, 'times'], []).includes(time) || this.lget(this.form, ['days', idx, 'times'], []).includes('*');
         } else return false;
       },
-      pushTime(time, index) {
+      pushTime(time, index, add, loop, save) {
         // eslint-disable-next-line no-console
-        // console.log('pushing time', time, index)
-        if (this.lget(this.form, 'days', []).length && this.lget(this.form, ['days', index, 'times'], []).includes(time)) {
-          this.form.days[index].times.splice(this.lget(this.form, ['days', index, 'times'], []).indexOf(time), 1);
-        } else if (this.form && this.form.days) {
-          this.lget(this.form, ['days', index, 'times'], []).push(time);
+        console.log('pushtime', time, index, add, save);
+        let idx = this.lget(this.form, ['days', index, 'times'], []).indexOf(time);
+        if (this.lget(this.form, 'days[0]') && idx > -1) {
+          if (!add) {
+            this.form.days[index].times.splice(idx, 1);
+            if (this.interval === 60 && !loop) {
+              this.pushTime(time + 15, index, false, true);
+              this.pushTime(time + 30, index, false, true);
+              this.pushTime(time + 45, index, false, true, true);
+            }
+            if (this.interval === 30 && !loop) {
+              this.pushTime(time + 15, index, false, true);
+              this.pushTime(time - 15, index, false, true, true);
+            }
+          }
         } else {
-          this.$lset(this.form, 'days', this.templateAvailability);
-          this.lget(this.form, ['days', index, 'times'], []).push(time);
+          if (!this.lget(this.form, 'days[0].name')) {
+            this.form.days = JSON.parse(JSON.stringify(this.templateAvailability));
+            this.form.days[index].times.push(time);
+          } else if (this.lget(this.form, ['days', index, 'times'])) {
+            this.form.days[index].times.push(time);
+          } else {
+            this.$lset(this.form, ['days', index, 'times'], [time]);
+          }
+          //handle adding all intervals within the hour when hiding smaller intervals. The 'add' variable is because we don't want to remove sub-intervals if they are already added when adding a larger interval
+          if (this.interval === 60 && !loop) {
+            this.pushTime(time + 15, index, true, true);
+            this.pushTime(time + 30, index, true, true);
+            this.pushTime(time + 45, index, true, true, true);
+          }
+          if (this.interval === 30 && !loop) {
+            this.pushTime(time + 15, index, true, true);
+            this.pushTime(time - 15, index, true, true, true);
+          }
         }
-        this.$emit('input', this.form);
+        if (this.interval === 15 || save) this.$emit('input', this.form);
+        console.log('set time', this.form.days[index].times);
+
       },
       copyPrev(index) {
         if (this.lget(this.form, 'days', []).length > 0) {
@@ -203,20 +247,8 @@
         }
       },
       newBlackout(val) {
-        let date = new Date(val);
-        let dateObj = { month: parseInt(this.getDateFormat(date, 'MM')), date: parseInt(this.getDateFormat(date, 'DD')) };
-        let list = this.lget(this.form, 'blackoutDates', []);
-        console.log('blackout', dateObj);
-        let idxs = [];
-        list.forEach((day, i) => {
-          let dayMatch = this.lget(day, 'date') === this.lget(dateObj, 'date');
-          let monthMatch = this.lget(day, 'month') === this.lget(dateObj, 'month');
-          // TODO: add year workflow for non recurring dates
-          if( dayMatch && monthMatch ) idxs.push(i);
-        });
-        if(idxs && idxs.length) {
-          this.$quickNotify(`${dateObj.month}/${dateObj.date} already selected`);
-        } else this.form.blackoutDates.unshift(dateObj);
+        this.form.blackoutDates.unshift(val);
+        this.addingBlackout = defaultBlackout();
       },
       selectAll(index) {
         let val = ['*'];

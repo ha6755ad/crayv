@@ -61,7 +61,9 @@
           <product-item :value="opt" @add="handleInput" :editing="editing">
 <!--          TODO: this slot not working-->
             <template v-if="$scopedSlots.side" v-slot:side>
-              <slot name="side" :item="opt" :index="index"></slot>
+              <slot name="side" :item="opt" :index="index">
+
+              </slot>
             </template>
           </product-item>
         </template>

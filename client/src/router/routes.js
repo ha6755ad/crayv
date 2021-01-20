@@ -7,22 +7,27 @@ export default function ({store, ssrContext}) {
       children: [
         {
           path: '',
+          name: 'home',
           component: () => import('pages/Index.vue')
         },
         {
           path: '/catalog',
+          name: 'catalog',
           component: () => import('pages/Catalog/Catalog.vue')
         },
         {
           path: '/lineups',
-          component: () => import('pages/Lineups/Lineups.vue')
+          name: 'lineups',
+          component: () => import('../components/lineups/pages/ProductLineups')
         },
         {
           path: '/subscriptions',
+          name: 'subscriptions',
           component: () => import('pages/Subscriptions/Subscriptions.vue')
         },
         {
           path: '/schedule',
+          name: 'schedule',
           component: () => import('pages/Schedule/Schedule.vue')
         },
         {
@@ -37,14 +42,28 @@ export default function ({store, ssrContext}) {
         },
         {
           path: '/profile',
+          name: 'profile',
           component: () => import('pages/Profile')
         },
         {
           path: '/profile/:nav',
-          name: 'profile-page', component: () => import('pages/Profile'),
+          name: 'profile-page',
+          component: () => import('pages/Profile'),
         }
       ]
     },
+    {
+      path: '/shop/:marketplace',
+      name: 'marketplace',
+      component: () => import('../layouts/MarketplaceLayout'),
+      children: [
+        {
+          path: '',
+          name: 'marketplace-home',
+          component: () => import('../components/marketplace/pages/Marketplace')
+        }
+      ]
+    }
   ];
 
   // Always leave this as last one
