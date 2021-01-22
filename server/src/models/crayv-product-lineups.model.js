@@ -25,7 +25,9 @@ module.exports = function (app) {
       }
     }],
     recommended: [{id: {type: Schema.Types.ObjectId, refPath: 'idModel'}, idModel: { type: String, enum: ['crayv-products', 'crayv-product-groups']}}],
-    settings: { type: Common.ProductSettings },
+    settings: {
+      productSettings: { type: Common.ProductSettings }
+    },
     products: [{type: Schema.Types.ObjectId, ref: 'crayv-products'}],
     productGroups: [{type: Schema.Types.ObjectId, ref: 'crayv-product-groups'}]
   }, {

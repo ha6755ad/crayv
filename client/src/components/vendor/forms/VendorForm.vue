@@ -27,11 +27,12 @@
 
     <div class="q-my-md">
       <default-vendor-settings
+        start-on
         :save-on-change="form && form._id ? true : false"
         :id-in="form._id"
         service-in="crayv-vendors"
-        @input="$lset(form, 'settings', $event)"
-        :value="form.settings"
+        @input="$lset(form, 'settings.vendorSettings', $event)"
+        :value="lget(form, 'settings.vendorSettings')"
       ></default-vendor-settings>
     </div>
 

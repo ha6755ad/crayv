@@ -18,6 +18,7 @@ module.exports = function (app) {
     soldBy: {type: Schema.Types.ObjectId, ref: 'lc-scorecard'},
     cart: {type: Schema.Types.ObjectId, ref: 'crayv-carts'},
     person: {type: Schema.Types.ObjectId, ref: 'users'},
+    vendorSettings: { type: Schema.Types.ObjectId, ref: 'crayv-vendor-settings' },
     group_order: {type: Schema.Types.ObjectId, ref: 'group_orders'},
     products: [{type: Common.productOrder}],
     location: {type: Common.Address, required: false},

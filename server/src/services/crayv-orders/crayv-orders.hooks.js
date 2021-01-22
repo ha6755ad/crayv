@@ -43,7 +43,7 @@ const relateGroupOrder = async () => {
     therePath: 'orders',
     thereService: 'crayv-group-orders'
   };
-  await relateOtm(context)(config);
+  await relateOtm(config)(context);
 };
 
 const removeGroupOrder = async () => {
@@ -52,7 +52,7 @@ const removeGroupOrder = async () => {
     therePath: 'orders',
     thereService: 'crayv-group-orders'
   };
-  await removeOtm(context)(config);
+  await removeOtm(config)(context);
 };
 
 const inactivateCart = async context => {
@@ -67,25 +67,8 @@ const inactivateCart = async context => {
   }
 };
 
-// const checkAndCreatePledge = async context => {
-//   if (lget(context, 'result.status') === 'complete') {
-//     let productIds = lget(context, 'result.products', []).map(a => a.product);
-//     let pledges = await context.app.service('bw-requirements').find({
-//       query: {
-//         productId: { $in: productIds }
-//       }
-//     }).data;
-//     for (let i = 0; i < pledges.length; i++) {
-//       let pledge = pledges[i];
-//       if (!pledge.active) {
-//         await context.app.service('bw-pledges').patch(pledge._id, {
-//           active: true,
-//           order: lget(context, 'result._id')
-//         });
-//       }
-//     }
-//   }
-// };
+const { incInventory } = require('./hooks/product-inventory');
+
 
 
 module.exports = {
@@ -93,9 +76,9 @@ module.exports = {
     all: [authenticate('jwt')],
     find: [],
     get: [],
-    create: [],
-    update: [],
-    patch: [],
+    create: [incInventory()],
+    update: [incInventory()],
+    patch: [incInventory()],
     remove: []
   },
 
@@ -113,9 +96,9 @@ module.exports = {
     all: [],
     find: [],
     get: [],
-    create: [],
-    update: [],
-    patch: [],
+    create: [incInventory({undo: true})],
+    update: [incInventory({undo: true})],
+    patch: [incInventory({undo: true})],
     remove: []
   }
 };

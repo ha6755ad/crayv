@@ -68,7 +68,7 @@
               v-model="addDialog">
       <q-card style="width: 600px; max-width: 100vw; height: 100vh">
         <q-btn class="t-r-f bg-dark text-light" dense flat size="sm" icon="mdi-close" @click="addDialog = false"/>
-        <slot name="form" :close="addDialog = false"></slot>
+        <slot name="form" :close="closeDialog"></slot>
       </q-card>
     </q-dialog>
   </q-card>
@@ -154,6 +154,9 @@
     methods: {
       handleRmv(val) {
         this.$emit('rmv', val);
+      },
+      closeDialog(){
+        this.addDialog = false;
       }
     }
   };

@@ -1,5 +1,5 @@
 <template>
-  <div id="product-corner-details-card">
+  <div id="product-corner-details-card" :style="{boxShadow: flat ? 'none' : '0 0 10px rgba(0,0,0,.15)'}">
     <q-dialog v-model="imgOverlay" :style="{width: $q.screen.width <= 800 ? '100%' : '50%'}">
       <q-card>
         <q-img
@@ -97,6 +97,7 @@
     components: { VClamp }, //adminMenu
     // can be sm, md, or lg
     props: {
+      flat: Boolean,
       disabled: Boolean,
       cardSize: {
         type: String,
@@ -366,7 +367,7 @@
   width: 100%;
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: 1fr minmax(100px, 30%);
+  grid-template-rows: 99fr minmax(120px, 30%);
   position: relative;
   border-radius: 10px;
   overflow: hidden;
@@ -403,7 +404,7 @@
     height: 100%;
     display: grid;
     grid-template-columns: 70fr 30fr;
-    grid-template-rows: 50fr 50fr;
+    grid-template-rows: 50% 50%;
 
 
     .buy {

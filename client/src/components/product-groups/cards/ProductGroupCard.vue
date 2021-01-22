@@ -1,8 +1,15 @@
 <template>
-  <q-card :flat="flat" class="bg-light __p_group_grid" style="border-radius: 10px; overflow: hidden" @click.stop="$emit('add', value)">
+  <q-card :id="`card-${value._id}`" :flat="flat" class="bg-light __p_group_grid" :style="{borderRadius: '10px', overflow: 'hidden', height: width * 1.1 + 'px' }" @click.stop="$emit('add', value)">
 
     <div class="t-l flex items-center">
-      <q-btn dense push size="sm" color="positive" icon="mdi-checkbox-marked-outline" v-if="active"></q-btn>
+      <q-btn
+        dense
+        push
+        size="sm"
+        color="positive"
+        icon="mdi-checkbox-marked-outline"
+        v-if="active"
+      ></q-btn>
     </div>
 
     <div class="flex items-center bg-shade-4 t-r text-white">
@@ -66,7 +73,7 @@
   // import { models } from 'feathers-vuex';
   import VClamp from 'vue-clamp';
   import {mapGetters} from 'vuex';
-  import ProductGroupForm from 'components/products/forms/ProductGroupForm';
+  import ProductGroupForm from 'components/product-groups/forms/ProductGroupForm';
   import MultiImageViewer from 'components/common/atoms/images/MultiImageViewer';
   import ProductGroupViewer from 'components/product-groups/cards/ProductGroupViewer';
 
@@ -78,8 +85,15 @@
       active: Boolean,
       value: Object
     },
+    mounted(){
+      this.setWidth();
+      window.addEventListener('resize', () => {
+        this.setWidth();
+      });
+    },
     data() {
       return {
+        width: 300,
         imgTab: 0,
         editDialog: false,
         fullDialog: false
@@ -99,6 +113,7 @@
       ...mapGetters('crayv-vendors', {
         getVendor: 'get'
       }),
+
       sellType(){
         return this.lget(this.value, 'type', 'a-la-carte');
       },
@@ -138,7 +153,15 @@
         // return this.$store.state.auth.user._id === this.lineupVendor.owner || this.getPerson(this.$store.state.auth.user.hasPerson).inGroups.includes(this.lineupVendor.owner)
       },
     },
-    methods: {}
+    methods: {
+      setWidth(){
+        setTimeout(() => {
+          let el = document.getElementById(`card-${this.value._id}`);
+          let width = el.getBoundingClientRect().width;
+          this.width = width;
+        }, 30);
+      }
+    }
   };
 </script>
 

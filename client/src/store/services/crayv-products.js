@@ -24,6 +24,8 @@ class CrayvProducts extends BaseModel {
       options: [],
       settings: common.ProductSettings,
       shipping: {},
+      inventory: {},
+      groupOrders: false,
       events: [],
       vendorId: null,
       tags: [],

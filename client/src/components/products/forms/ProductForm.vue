@@ -85,13 +85,42 @@
             ></product-variant-item>
           </q-item>
         </q-list>
-        <q-separator></q-separator>
+
+        <q-slide-transition>
+          <div v-if="trackInventory">
+            <q-input :value="form.inventory.stock" label="Current Stock" @input="changeStock"></q-input>
+            <div class="text-xxs text-mb-xxs text-weight-light q-pa-sm">There are currently <b>{{lget(form, 'inventory.pending', 0) * -1}}</b> committed in pending orders</div>
+
+          </div>
+        </q-slide-transition>
+
+        <q-separator class="q-my-sm"></q-separator>
+
         <q-checkbox label="Allow Group Orders" v-model="form.groupOrders"/>
 
       </div>
     </div>
 
-    <tax-line></tax-line>
+    <q-separator class="q-my-sm"></q-separator>
+
+    <div class="row q-my-sm">
+      <q-checkbox color="nice" v-model="form.settings.syncSettings" label="Sync with vendor settings"></q-checkbox>
+    </div>
+
+    <q-slide-transition>
+      <template v-if="!form.settings.syncSettings">
+        <div class="q-my-md">
+          <default-product-settings
+            schedule-off
+            :save-on-change="false"
+            :id-in="form._id"
+            service-in="crayv-products"
+            @input="$lset(form, 'settings.productSettings', $event)"
+            :value="lget(form, 'settings.productSettings')"
+          ></default-product-settings>
+        </div>
+      </template>
+    </q-slide-transition>
 
     <div class="row justify-end q-pa-sm">
       <q-btn label="Save Product" color="primary" @click="saveProduct(form)"/>
@@ -108,22 +137,26 @@
   import {vCheck} from 'src/mixins/ir-validate';
   import MultiImageUpload from 'components/common/substance/images/MultiImageUpload';
   import ProductVariantItem from 'components/products/card/ProductVariantItem';
-  import TaxLine from 'components/products/tax/TaxLine';
+  import DefaultProductSettings from 'components/products/settings/DefaultProductSettings';
 
   export default {
     name: 'ProductForm',
     mixins: [vCheck],
-    components: { TaxLine, ProductVariantItem, MultiImageUpload, VendorPicker, PricePicker, ProductVariantForm },
+    components: { DefaultProductSettings, ProductVariantItem, MultiImageUpload, VendorPicker, PricePicker, ProductVariantForm },
     props: {
       value: Object,
       vendorIn: Object
     },
     mounted() {
-      if (this.value) this.form = new models.api.CrayvProducts(this.value).clone();
+      if (this.value){
+        Object.assign(this.form, Object.assign({}, this.value));
+        this.stockChange = true;
+      }
       if (this.vendorIn) this.vendor = this.vendorIn;
     },
     data() {
       return {
+        stockChange: false,
         updateValidOnInput: true,
         variantDialog: false,
         adding: true,
@@ -140,6 +173,9 @@
       ...mapGetters('crayv-vendors', { findVendors: 'find' }),
       statePromos() {
         return this.findPromos().data;
+      },
+      trackInventory(){
+        return this.lget(this.vendorContext, 'settings.trackInventory') && this.lget(this.form, 'settings.syncSettings') || this.lget(this.form, 'settings.trackInventory');
       },
       stateProducts() {
         return this.findProducts().data;
@@ -236,6 +272,16 @@
           this.form.variants ? this.form.variants.push(val) : this.form.variants = [val];
         }
         this.variantDialog = false;
+      },
+      changeStock(){
+        if(this.stockChange) {
+          this.$q.dialog({
+            title: 'Note on changing stock',
+            message: 'Your stock number is how we know if you have enough product to take an order. We are just making sure you are intentionally changing this number'
+          }).onDismiss(() => {
+            this.stockChange = false;
+          });
+        }
       },
       remove() {
         this.$q.dialog({

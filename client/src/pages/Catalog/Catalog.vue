@@ -14,15 +14,28 @@
           v-bind="page.attrs"
         >
           <template v-if="page.item" v-slot:list-item="{item, handleInput}">
-            <component v-bind="page.itemAttrs" :is="page.item" :value="item" @add="handleInput"></component>
+            <component
+              v-bind="page.itemAttrs"
+              :is="page.item"
+              :value="item"
+              @add="handleInput"
+            ></component>
           </template>
 
           <template v-if="page.card && page.attrs.grid" v-slot:card="{item, handleInput}">
-            <component v-bind="page.cardAttrs" :is="page.card" :value="item" @add="handleInput"></component>
+            <component
+              v-bind="page.cardAttrs"
+              :is="page.card"
+              :value="item"
+              @add="handleInput"
+            ></component>
           </template>
 
           <template v-slot:form="{close}">
-            <component :is="page.form" @input="close"></component>
+            <component
+              :is="page.form"
+              @input="close"
+            ></component>
           </template>
         </paginate-list>
 
@@ -38,7 +51,7 @@
   import ProductItem from 'components/products/card/ProductItem';
   import PaginateList from 'components/common/substance/lists/PaginateList';
   import ProductGroupCard from 'components/product-groups/cards/ProductGroupCard';
-  import ProductGroupForm from 'components/products/forms/ProductGroupForm';
+  import ProductGroupForm from 'components/product-groups/forms/ProductGroupForm';
   import LineupCard from 'components/lineups/cards/LineupCard';
   import LineupForm from 'components/lineups/forms/LineupForm';
 

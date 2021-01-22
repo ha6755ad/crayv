@@ -38,23 +38,27 @@ const ProductOptions = {
   }
 };
 const ProductSettings = {
-  productTypes: [],
-  syncSettings: true,
+  trackInventory: undefined,
+  taxExempt: undefined,
+  syncSettings: undefined,
+  capacity: undefined,
+  taxes: undefined,
   schedule: {
-    days: [],
-    blackoutDates: []
+    days: undefined,
+    blackoutDates: undefined
   },
-  boundaries: {}
 };
 
 const VendorSettings = {
-  automateTaxes: true,
-  taxExempt: false,
-  syncSettings: true,
-  taxes: [],
+  trackInventory: undefined,
+  automateTaxes: undefined,
+  capacity: undefined,
+  taxExempt: undefined,
+  syncSettings: undefined,
+  taxes: undefined,
   schedule: {
-    days: [],
-    blackoutDates: []
+    days: undefined,
+    blackoutDates: undefined
   },
 };
 

@@ -19,6 +19,11 @@ const tomtomReverseGeocode = require('./tomtom-reverse-geocode/tomtom-reverse-ge
 const users = require('./users/users.service.js');
 const mapboxBoundaries = require('./mapbox-boundaries/mapbox-boundaries.service.js');
 
+const iyQueue = require('./iy-queue/iy-queue.service.js');
+
+const iyCronTasks = require('./iy-cron-tasks/iy-cron-tasks.service.js');
+const iyQueueLogs = require('./iy-queue-logs/iy-queue-logs.service.js');
+
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
   app.configure(crayvProducts);
@@ -40,4 +45,7 @@ module.exports = function (app) {
   app.configure(tomtomReverseGeocode);
   app.configure(users);
   app.configure(mapboxBoundaries);
+  app.configure(iyQueue);
+  app.configure(iyCronTasks);
+  app.configure(iyQueueLogs);
 };

@@ -61,6 +61,11 @@ export default function ({store, ssrContext}) {
           path: '',
           name: 'marketplace-home',
           component: () => import('../components/marketplace/pages/Marketplace')
+        },
+        {
+          path: 'product-store',
+          name: 'product-store',
+          component: () => import('../components/products/pages/ShopProducts')
         }
       ]
     }

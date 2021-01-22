@@ -10,7 +10,7 @@
       search
       grid
       load-service="crayv-marketplaces"
-      :query-in="{ privacy: 'public', vendorSettings: { $nin: this.lget(this.vendorContext, 'vendorSettings', []) }
+      :query-in="{ privacy: 'public', vendorSettings: { $in: lget(vendorContext, 'vendorSettings', []) }
               }"
       :value="null"
     >

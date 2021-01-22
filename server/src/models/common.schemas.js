@@ -121,7 +121,36 @@ const RRULE = new Schema({
 }, { _id: false });
 
 const Schedule = new Schema({
-  days: {type: Array},
+  days: {
+    sunday: {
+      all: Boolean,
+      times: [Number]
+    },
+    monday: {
+      all: Boolean,
+      times: [Number]
+    },
+    tuesday: {
+      all: Boolean,
+      times: [Number]
+    },
+    wednesday: {
+      all: Boolean,
+      times: [Number]
+    },
+    thursday: {
+      all: Boolean,
+      times: [Number]
+    },
+    friday: {
+      all: Boolean,
+      times: [Number]
+    },
+    saturday: {
+      all: Boolean,
+      times: [Number]
+    }
+  },
   blackoutDates: {type: Array, contains: { start: { year: Number, month: Number, date: Number, hour: Number, minute: Number }, end: { year: Number, month: Number, date: Number, hour: Number, minute: Number } }}
 });
 
@@ -149,6 +178,19 @@ const ProductOption = new Schema({
     default: Boolean
   }
 });
+
+const Capacity = new Schema({
+  once: { type: Number, default: 1, min: 1 },
+  hour: { type: Number, default: 1, min: 1 },
+  day: { type: Number, default: 1, min: 1 },
+  month: { type: Number, default: 1, min: 1 },
+}, { _id: false });
+
+const ProductInventory = new Schema({
+  updatedAt: Date,
+  stock: { type: Number },
+  pending: { type: Number }
+}, { _id: false });
 
 const productOrder = new Schema({
   product: { type: Schema.Types.ObjectId, ref: 'products' },
@@ -210,7 +252,9 @@ const taxItem = new Schema({
 });
 
 const ProductSettings = new Schema({
-  syncSettings: { type: Boolean, default: true },
+  trackInventory: { type: Boolean },
+  taxExempt: Boolean,
+  capacity: {type: Capacity},
   taxes: [{
     areaIds: [{ type: String }], //'*' for all
     sales: { type: taxItem },
@@ -225,8 +269,9 @@ const ProductSettings = new Schema({
 //TODO: need to dedup postal codes
 const VendorSettings = new Schema({
   automateTaxes: Boolean,
+  trackInventory: { type: Boolean },
   taxExempt: Boolean,
-  syncSettings: { type: Boolean, default: true },
+  capacity: {type: Capacity},
   taxes: [{
     areaId: { type: String },
     postal_codes: [{ type: String }],
@@ -247,6 +292,7 @@ module.exports = {
   RRULE,
   Address,
   Pricing,
+  ProductInventory,
   ProductOption,
   ProductSettings,
   ProductVariant,

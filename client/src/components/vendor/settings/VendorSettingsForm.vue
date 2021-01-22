@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-md relative-position fill_size">
-    <q-img style="width: 100%; height: 225px; border-radius: 6px"
+    <q-img style="width: 100%; height: 325px; border-radius: 6px"
            :src="getAvatar(form, 'img', 'large', null, 'https://cdn.quasar.dev/img/material.png')">
       <q-btn class="t-r text-white" style="background: rgba(0,0,0,.3)" size="sm" flat icon="mdi-image"
              label="cover image" @click.stop="imgDialog = true"></q-btn>
@@ -10,8 +10,10 @@
 
       <div class="row absolute-bottom bg-light-8" style="background: rgba(255,255,255,.7)">
         <div class="col-12 q-pa-md">
-          <q-input hide-bottom-space borderless input-class="text-md text-mb-md text-weight-medium"
-                   placeholder="Name Settings..." v-model="form.name"/>
+          <q-input hint="Customer display name" input-class="text-md text-mb-md text-weight-medium"
+                   placeholder="Display Name..." v-model="form.name" ></q-input>
+          <q-input hint="Name for admin purposes" input-class="text-md text-mb-md text-weight-medium"
+                   placeholder="Name Settings..." v-model="form.settingsName" ></q-input>
         </div>
 
       </div>
@@ -73,8 +75,8 @@
             :save-on-change="form && form._id ? true : false"
             :id-in="form._id"
             service-in="crayv-vendor-settings"
-            @input="$lset(form, 'settings', $event)"
-            :value="lget(form, 'settings')"
+            @input="$lset(form, 'settings.vendorSettings', $event)"
+            :value="lget(form, 'settings.vendorSettings')"
           ></default-vendor-settings>
         </div>
       </template>
@@ -120,6 +122,7 @@
       } else {
         this.form.img = this.lget(this.vendorContext, 'img');
         this.form.avatar = this.lget(this.vendorContext, 'avatar');
+        this.form.name = this.lget(this.vendorContext, 'name');
       }
     },
     data() {

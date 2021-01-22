@@ -21,6 +21,8 @@ class CrayvProductGroups extends BaseModel {
       events: [],
       images: [],
       vendorId: null,
+      inventory: {},
+      groupOrders: false,
       products: [],
       parent: null,
       children: [],

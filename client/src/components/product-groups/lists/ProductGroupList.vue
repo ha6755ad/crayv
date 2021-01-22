@@ -74,7 +74,7 @@
 </template>
 <script>
   import LoadAndPaginate from 'components/common/atoms/loading/LoadAndPaginate';
-  import ProductGroupForm from 'components/products/forms/ProductGroupForm';
+  import ProductGroupForm from 'components/product-groups/forms/ProductGroupForm';
   import {SelectMixin} from 'src/mixins/SelectMixin';
   import {mapGetters} from 'vuex';
   import ProductGroupCard from 'components/product-groups/cards/ProductGroupCard';

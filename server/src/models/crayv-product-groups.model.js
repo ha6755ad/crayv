@@ -23,8 +23,12 @@ module.exports = function (app) {
     vendorId: {type: Schema.Types.ObjectId, ref: 'crayv-vendors'},
     parent: {type: Schema.Types.ObjectId, ref: 'crayv-product-groups'}, //TODO: add parent children workflow to the UI
     children: [{type: Schema.Types.ObjectId, ref: 'crayv-product-groups'}],
-    settings: {type: Common.ProductSettings},
+    inventory: { type: Common.ProductInventory },
+    settings: {
+      productSettings: { type: Common.ProductSettings }
+    },
     options: [{type: Common.ProductOption}],
+    groupOrders: Boolean,
     products: [{
       type: Object, contains: {
         id: {type: Schema.Types.ObjectId, ref: 'crayv-products'},

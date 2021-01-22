@@ -14,8 +14,14 @@ const relateMarketplace = async context => {
     therePath: 'vendorSettings',
     thereService: 'crayv-marketplaces'
   };
-  if(context.method === 'remove') await removeOtm(context)(config);
-  else await relateOtm(context)(config);
+  if(context.method === 'remove') await removeOtm(config)(context);
+  else await relateOtm(config)(context)
+    .then(res => {
+      console.log('related vendor settings to marketplace', res);
+    })
+    .catch(err => {
+      console.log('error relating vendor settings to marketplace', err.message);
+    });
 };
 
 const relateVendor = async context => {
@@ -24,9 +30,8 @@ const relateVendor = async context => {
     therePath: 'vendorSettings',
     thereService: 'crayv-vendors'
   };
-  if(context.method === 'remove') return await removeOtm(context)(config);
-  else return await relateOtm(config)(context)
-    .then(res => console.log('relate res', res));
+  if(context.method === 'remove') return await removeOtm(config)(context);
+  else return await relateOtm(config)(context);
 };
 
 // const checkRoles = async context => {

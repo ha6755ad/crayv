@@ -38,35 +38,51 @@ const servicePlugins = requireModule
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     state: {
-      vendorContext: null
+      vendorContext: null,
+      marketplaceContext: null,
     },
     getters: {
       vendorContext(state){
         return state.vendorContext;
+      },
+      marketplaceContext(state){
+        return state.marketplaceContext;
       }
     },
     mutations: {
+      SET_MARKETPLACE_CONTEXT(state, payload){
+        state.marketplaceContext = payload;
+        try {
+          LocalStorage.set('marketplaceId', payload._id);
+        } catch(e) {
+          console.log('error setting local storage vendorId', e);
+        }
+        try {
+          SessionStorage.set('marketplaceId', payload._id);
+        } catch(e) {
+          console.log('error setting session storage vendor', e);
+        }
+      },
       SET_VENDOR_CONTEXT(state, payload){
         state.vendorContext = payload;
         try {
           LocalStorage.set('vendorId', payload._id);
         } catch(e) {
           console.log('error setting local storage vendorId', e);
-        } finally {
-          console.log('set local storage', payload);
         }
         try {
           SessionStorage.set('vendorId', payload._id);
         } catch(e) {
           console.log('error setting session storage vendor', e);
-        } finally {
-          console.log('set session storage', payload);
         }
       },
     },
     actions: {
       setVendorContext(context, payload){
         context.commit('SET_VENDOR_CONTEXT', payload);
+      },
+      setMarketplaceContext(context, payload){
+        context.commit('SET_MARKETPLACE_CONTEXT', payload);
       }
     },
 

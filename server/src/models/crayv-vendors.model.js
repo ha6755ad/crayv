@@ -20,7 +20,9 @@ module.exports = function (app) {
     avatar: { type: Common.Images },
     img: { type: Common.Images },
     vendorSettings: [{ type: Schema.Types.ObjectId, ref: 'crayv-vendor-settings' }],
-    settings: { type: Common.VendorSettings },
+    settings: {
+      vendorSettings: { type: Common.VendorSettings }
+    },
     products: [{ type: Schema.Types.ObjectId, ref: 'crayv-products' }],
     productGroups: [{ type: Schema.Types.ObjectId, ref: 'crayv-product-groups' }],
     productLineups: [{ type: Schema.Types.ObjectId, ref: 'crayv-product-lineups' }],

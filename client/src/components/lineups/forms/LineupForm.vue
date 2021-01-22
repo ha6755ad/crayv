@@ -38,7 +38,7 @@
       select
       editing
       :sm="12" :md="12" :lg="12" :xl="12"
-      :query-in="{ _id: { $in: this.lget(this.vendorContext,'productGroups', [])} }"
+      :query-in="{ _id: { $in: lget(this.vendorContext,'productGroups', [])} }"
       emit-value
       multiple
       v-model="form.productGroups"
@@ -47,23 +47,26 @@
     <div class="q-pa-sm text-xxs text-mb-xs text-weight-medium">Add Products</div>
     <product-list
       select
-      :query-in="{ _id: { $in: this.lget(this.vendorContext, 'products', [])} }"
+      :query-in="{ _id: { $in: lget(this.vendorContext, 'products', [])} }"
       emit-value
       multiple
       v-model="form.products"
     ></product-list>
 
+    <div class="row q-my-sm">
+      <q-checkbox color="nice" v-model="form.settings.syncSettings" label="Sync with vendor settings"></q-checkbox>
+    </div>
+
     <q-slide-transition>
-      <template v-if="!form.syncSettings">
+      <template v-if="!form.settings.syncSettings">
         <div class="q-my-md">
-          <product-settings-form
-            can-sync
+          <default-product-settings
             :save-on-change="form && form._id ? true : false"
             :id-in="form._id"
-            service-in="crayv-vendor-settings"
-            @input="$lset(form, 'settings', $event)"
-            :value="lget(form, 'settings')"
-          ></product-settings-form>
+            service-in="crayv-product-lineup"
+            @input="$lset(form, 'settings.productSettings', $event)"
+            :value="lget(form, 'settings.productSettings')"
+          ></default-product-settings>
         </div>
       </template>
     </q-slide-transition>
@@ -81,14 +84,14 @@
   import ProductGroupList from 'components/product-groups/lists/ProductGroupList';
   import ProductList from 'components/products/lists/ProductList';
   import SingleImageUpload from 'components/common/substance/images/SingleImageUpload';
-  import ProductSettingsForm from 'components/products/settings/ProductSettingsForm';
   import {vCheck} from 'src/mixins/ir-validate';
   import SettingsList from 'components/vendor/settings/SettingsList';
+  import DefaultProductSettings from 'components/products/settings/DefaultProductSettings';
 
   export default {
     name: 'LineupForm',
     mixins: [vCheck],
-    components: { SettingsList, ProductSettingsForm, SingleImageUpload, ProductList, ProductGroupList },
+    components: { DefaultProductSettings, SettingsList, SingleImageUpload, ProductList, ProductGroupList },
     props: {
       value: Object
     },

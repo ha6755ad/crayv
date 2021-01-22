@@ -131,8 +131,7 @@
     computed: {
       ...mapGetters('auth', { user: 'user' }),
       queryAdders(){
-        let activeObj = { active: !this.showInactive };
-        return this.queryIn ? {...this.queryIn, ...activeObj} : activeObj;
+        return this.queryIn;
       },
       paramsAdders(){
         return this.paramsIn;

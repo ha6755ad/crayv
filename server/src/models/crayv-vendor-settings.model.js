@@ -12,14 +12,17 @@ module.exports = function (app) {
     active: { type: Boolean, default: true },
     createdBy: { type: Schema.Types.ObjectId, ref: 'users' },
     updatedBy: { type: Schema.Types.ObjectId, ref: 'users' },
-    marketplace: { type: Schema.Types.ObjectId, ref: 'crayv-marketplaces', required: true },
+    marketplace: { type: Schema.Types.ObjectId, ref: 'crayv-marketplaces', required: true, index: true },
     avatar: { type: Common.Images },
     img: { type: Common.Images },
     name: String,
+    settingsName: String,
     vendor: {type: Schema.Types.ObjectId, ref: 'crayv-vendors'},
     address: { type: Common.Address },
     geo: { type: Common.GeoLocation },
-    settings: { type: Common.VendorSettings },
+    settings: {
+      vendorSettings: { type: Common.VendorSettings }
+    },
     productLineups: [{ type: Schema.Types.ObjectId, ref: 'crayv-product-lineups' }],
     promotions: [{ type: Schema.Types.ObjectId, ref: 'crayv-promotions' }]
   }, {

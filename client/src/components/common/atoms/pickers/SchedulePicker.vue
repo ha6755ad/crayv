@@ -28,14 +28,14 @@
               size-in="35px"
               hide-text
               dark
-              :value="range.start"
+              :value="$buildDate(range.start)"
             ></date-chip>
             <div class="text-md text-mb-md text-weight-bolder">-</div>
             <date-chip
               size-in="35px"
               hide-text
               dark
-              :value="range.end"
+              :value="$buildDate(range.end)"
               removable
               @remove="form.blackoutDates.splice(i, 1)"
             ></date-chip>
@@ -61,19 +61,31 @@
 
       <!--                DATE HEADER -->
 
-      <div v-for="(day, index) in templateAvailability" :key="day.name" class="days">
+      <div v-for="(day, index) in Object.keys(templateAvailability)" :key="day" class="days">
 
-        <q-btn :label="day.name" flat/>
+        <q-btn :label="day" flat/>
 
         <q-card dark>
-          <q-btn icon="mdi-content-copy" size="sm" round flat @click="copyPrev(index)">
+          <q-btn-dropdown icon="mdi-content-copy" size="sm" round flat>
             <q-tooltip>Copy previous day</q-tooltip>
-          </q-btn>
+            <q-list dense separator>
+              <q-item>
+              <q-item-section>
+                <q-item-label class="text-weight-bolder">Copy from</q-item-label>
+              </q-item-section>
+              </q-item>
+              <q-item v-for="d in Object.keys(templateAvailability)" :key="d" clickable @click="copy(d, day)">
+                <q-item-section>
+                  <q-item-label class="text-uppercase">{{ d }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
           <q-btn class="q-mx-sm"
-                 :icon="lget(form, ['days', index, 'times'], []).includes('*') ? 'mdi-minus-box' : 'mdi-checkbox-marked'"
+                 :icon="lget(form, ['days', day, 'all']) ? 'mdi-minus-box' : 'mdi-checkbox-marked'"
                  size="sm" @click="selectAll(index)" round flat>
             <q-tooltip>{{
-                lget(form, ['days', index, 'times'], []).includes('*') ? 'Deselect All' : 'Select All'
+                lget(form, ['days', day, 'all']) ? 'Deselect All' : 'Select All'
               }}
             </q-tooltip>
           </q-btn>
@@ -82,7 +94,7 @@
 
           <div class="timeList">
             <div class="times" :style="colorTime(day, time) ? {color: '#a6f5a9'} : ''" v-for="time in times"
-                 :key="time" @click="pushTime(time, index)">
+                 :key="time" @click="pushTime(time, day)">
               <div class="q-pa-sm">{{ parseDateHour(time) }}</div>
               <q-icon v-if="colorTime(day, time)" name="mdi-checkbox-marked-circle-outline"
                       style="color: #b5f5b7"/>
@@ -120,39 +132,32 @@
         addingBlackout: defaultBlackout(),
         interval: 60,
         form: {
-          days: [],
+          days: {},
           blackoutDates: []
         },
-        templateAvailability: [
-          {
-            name: 'Sunday',
-            times: []
+        templateAvailability: {
+          sunday: {
+            times: [],
           },
-          {
-            name: 'Monday',
-            times: []
+          monday: {
+            times: [],
           },
-          {
-            name: 'Tuesday',
-            times: []
+          tuesday: {
+            times: [],
           },
-          {
-            name: 'Wednesday',
-            times: []
+          wednesday: {
+            times: [],
           },
-          {
-            name: 'Thursday',
-            times: []
+          thursday: {
+            times: [],
           },
-          {
-            name: 'Friday',
-            times: []
+          friday: {
+            times: [],
           },
-          {
-            name: 'Saturday',
+          saturday: {
             times: []
           }
-        ],
+        }
       };
     },
     watch: {
@@ -192,68 +197,70 @@
     },
     methods: {
       colorTime(day, time) {
-        if (this.lget(this.form, 'days[0]')) {
-          let days = this.lget(this.form, 'days', []).map(a => a.name);
-          let idx = days.indexOf(day.name);
-          return this.lget(this.form, ['days', idx, 'times'], []).includes(time) || this.lget(this.form, ['days', idx, 'times'], []).includes('*');
+        if (this.lget(this.form, 'days')) {
+          return this.lget(this.form, ['days', day, 'times'], []).includes(time) || this.lget(this.form, ['days', day, 'all']);
         } else return false;
       },
-      pushTime(time, index, add, loop, save) {
+      pushTime(time, day, add, loop, save) {
         // eslint-disable-next-line no-console
-        console.log('pushtime', time, index, add, save);
-        let idx = this.lget(this.form, ['days', index, 'times'], []).indexOf(time);
-        if (this.lget(this.form, 'days[0]') && idx > -1) {
+        console.log('pushtime', time, day, add, save);
+        let idx = this.lget(this.form, ['days', day, 'times'], []).indexOf(time);
+        if (this.lget(this.form, 'days') && idx > -1) {
           if (!add) {
-            this.form.days[index].times.splice(idx, 1);
+            this.form.days[day].times.splice(idx, 1);
             if (this.interval === 60 && !loop) {
-              this.pushTime(time + 15, index, false, true);
-              this.pushTime(time + 30, index, false, true);
-              this.pushTime(time + 45, index, false, true, true);
+              this.pushTime(time + 15, day, false, true);
+              this.pushTime(time + 30, day, false, true);
+              this.pushTime(time + 45, day, false, true, true);
             }
             if (this.interval === 30 && !loop) {
-              this.pushTime(time + 15, index, false, true);
-              this.pushTime(time - 15, index, false, true, true);
+              this.pushTime(time + 15, day, false, true);
+              this.pushTime(time - 15, day, false, true, true);
             }
           }
         } else {
-          if (!this.lget(this.form, 'days[0].name')) {
-            this.form.days = JSON.parse(JSON.stringify(this.templateAvailability));
-            this.form.days[index].times.push(time);
-          } else if (this.lget(this.form, ['days', index, 'times'])) {
-            this.form.days[index].times.push(time);
+          if (!this.lget(this.form, ['days', day])) {
+            this.form.days = Object.assign({}, this.templateAvailability);
+            this.form.days[day].times.push(time);
+          } else if (this.lget(this.form, ['days', day, 'times'])) {
+            this.form.days[day].times.push(time);
           } else {
-            this.$lset(this.form, ['days', index, 'times'], [time]);
+            this.$lset(this.form, ['days', day, 'times'], [time]);
           }
           //handle adding all intervals within the hour when hiding smaller intervals. The 'add' variable is because we don't want to remove sub-intervals if they are already added when adding a larger interval
           if (this.interval === 60 && !loop) {
-            this.pushTime(time + 15, index, true, true);
-            this.pushTime(time + 30, index, true, true);
-            this.pushTime(time + 45, index, true, true, true);
+            this.pushTime(time + 15, day, true, true);
+            this.pushTime(time + 30, day, true, true);
+            this.pushTime(time + 45, day, true, true, true);
           }
           if (this.interval === 30 && !loop) {
-            this.pushTime(time + 15, index, true, true);
-            this.pushTime(time - 15, index, true, true, true);
+            this.pushTime(time + 15, day, true, true);
+            this.pushTime(time - 15, day, true, true, true);
           }
         }
         if (this.interval === 15 || save) this.$emit('input', this.form);
-        console.log('set time', this.form.days[index].times);
 
       },
-      copyPrev(index) {
-        if (this.lget(this.form, 'days', []).length > 0) {
-          let ind = index - 1;
-          this.$lset(this.form, ['days', index, 'times'], JSON.parse(JSON.stringify(this.lget(this.form, ['days', ind, 'times'], []))));
-          this.$emit('input', this.form);
-        }
+      copy(from, to) {
+        this.$lset(this.form, ['days', to, 'times'], this.lget(this.form, ['days', from, 'times']));
+        this.$emit('input', this.form);
       },
       newBlackout(val) {
-        this.form.blackoutDates.unshift(val);
+
+        const dateObj = dt => {
+          let year = this.getDateFormat(dt, 'YYYY');
+          let month = this.getDateFormat(dt, 'M');
+          let date = this.getDateFormat(dt, 'D');
+          let hours = this.getDateFormat(dt, 'H');
+          let minutes = this.getDateFormat(dt, 'm');
+          return { year: parseInt(year), month: parseInt(month), date: parseInt(date), hours: parseInt(hours), minutes: parseInt(minutes) };
+        };
+
+        this.form.blackoutDates.unshift({ start: dateObj(val.start), end: dateObj(val.end) });
         this.addingBlackout = defaultBlackout();
       },
       selectAll(index) {
-        let val = ['*'];
-        if (this.lget(this.form, ['days', index, 'times'], []).includes('*')) val = [];
-        this.$lset(this.form, ['days', index, 'times'], val);
+        this.$lset(this.form, ['days', index, 'all'], !this.lget(this.form, ['days', index, 'all']));
       }
     }
   };

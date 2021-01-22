@@ -29,7 +29,7 @@
 
 <script>
   import { mapGetters } from 'vuex';
-  import ProductGroupForm from '../../components/products/forms/ProductGroupForm';
+  import ProductGroupForm from 'components/product-groups/forms/ProductGroupForm';
   import ProductGroupCard from '../../components/product-groups/cards/ProductGroupCard';
 
   export default {

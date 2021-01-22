@@ -40,7 +40,7 @@
 
 <script>
   import DefaultAvatar from 'components/common/atoms/avatars/DefaultAvatar';
-  import ProductGroupForm from 'components/products/forms/ProductGroupForm';
+  import ProductGroupForm from 'components/product-groups/forms/ProductGroupForm';
 
   export default {
     name: 'ProductGroupItem',
