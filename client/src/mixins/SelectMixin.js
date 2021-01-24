@@ -49,10 +49,12 @@ export const SelectMixin = {
       } else return [];
     },
     localActiveItems(){
-      if(this.value){
-        let list = this.options ? this.options : [];
-        return !this.idVal ? list.filter(a => this.activeIds.includes(a)) : list.filter(a => this.activeIds.includes(a[this.idVal]));
-      } else return [];
+      if(this.emitValue) {
+        if (this.value) {
+          let list = this.options ? this.options : [];
+          return !this.idVal ? list.filter(a => this.activeIds.includes(a)) : list.filter(a => this.activeIds.includes(a[this.idVal]));
+        } else return this.selected;
+      } else return this.selected;
     },
     activeItems() {
       return this.selectService ? this.stateActiveItems : this.localActiveItems;
@@ -83,8 +85,8 @@ export const SelectMixin = {
       return this.activeIds.map(a => JSON.stringify(a)).indexOf(JSON.stringify(checkVal));
     },
     handleInput(val) {
+      console.log('handle input', val);
       let idx = this.selectedIndex(val);
-      console.log('input', idx, val, this.emitValue, this.multiple);
       if (idx === -1) {
         let payload = val;
         if (this.emitValue) {

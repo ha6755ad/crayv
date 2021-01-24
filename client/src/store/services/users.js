@@ -25,6 +25,8 @@ class Users extends BaseModel {
     return {
       // name: null,
       email: null,
+      addresses: [],
+      avatar: undefined,
       // auth0Id: null,
       // googleId: null,
       // roles: [],

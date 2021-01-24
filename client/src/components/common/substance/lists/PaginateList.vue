@@ -24,10 +24,13 @@
         <div v-if="adding && grid" class="row justify-end">
           <q-btn flat size="sm" :label="addLabel" icon="mdi-plus" @click="addDialog = true"></q-btn>
         </div>
-        <div v-if="grid" class="row q-py-md">
-          <div
-            :class="`col-${cols} col-sm-${sm} col-md-${md} col-lg-${lg} col-xl-${xl}`"
-            v-for="(item, i) in scope.items" :key="`item-${i}`"
+        <div
+          v-if="grid" class="__paginate_grid q-py-md"
+          :style="{
+            gridTemplateColumns: `repeat(auto-fill, minmax(${colMinMax}`,
+            gridTemplateRows: `repeat(auto-fill, minmax(${rowMinMax}`,
+             }">
+          <div style="width: 100%" v-for="(item, i) in scope.items" :key="`item-${i}`"
           >
             <slot name="card" :scope="scope" :item="item" :handleInput="handleInput" :index="i"></slot>
           </div>
@@ -82,17 +85,14 @@
   export default {
     name: 'PaginateList',
     mixins: [SelectMixin],
-    components: {  AddListItem, LoadAndPaginate },
+    components: { AddListItem, LoadAndPaginate },
     props: {
       qidIn: String,
       loadService: String,
       addLabel: { type: String, default: 'Add New' },
       dark: Boolean,
-      cols: { type: Number, default: 12 },
-      sm: { type: Number, default: 6 },
-      md: { type: Number, default: 4 },
-      lg: { type: Number, default: 3 },
-      xl: { type: Number, default: 2 },
+      colMinMax: { type: String, default: '330px, 360px' },
+      rowMinMax: { type: String, default: '300px, 330px' },
       searchPlaceholder: { type: String, default: 'Search...' },
       searchLabel: { type: String },
       paginator: { type: Boolean, default: true },
@@ -141,7 +141,7 @@
     watch: {},
     computed: {
       ...mapGetters('auth', { user: 'user' }),
-      service(){
+      service() {
         return this.loadService;
       },
       queryAdders() {
@@ -155,9 +155,18 @@
       handleRmv(val) {
         this.$emit('rmv', val);
       },
-      closeDialog(){
+      closeDialog() {
         this.addDialog = false;
       }
     }
   };
 </script>
+
+<style scoped lang="scss">
+  .__paginate_grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 360px));
+    grid-template-rows: repeat( auto-fill, minmax(300px, 330px));
+  }
+</style>

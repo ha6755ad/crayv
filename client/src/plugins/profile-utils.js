@@ -25,7 +25,7 @@ export default async () => {
       formatted: lget(address, 'address.freeformAddress', null),
       address1: lget(address, 'address.streetNumber', '') + ' ' + lget(address, 'address.streetName', ''),
       region: lget(address, 'address.countrySubdivision', ''),
-      city: lget(address, 'address.countrySecondarySubdivision', ''),
+      city: lget(address, 'address.municipality', ''),
       postal: lget(address, 'address.postalCode', ''),
       country: lget(address, 'address.country', ''),
       latitude: Number(address.position.split(',')[0]),

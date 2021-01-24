@@ -9,7 +9,7 @@
         <div class="col-12 q-gutter-sm">
           <q-input label="Variant Name" v-model="form.name"/>
           <q-input label="Descriptor" v-model="form.description"/>
-          <price-picker v-model="form.price.basePrice"/>
+          <price-picker v-model="form.price"/>
           <div class="row text-xs text-mb-xs text-weight-light">Variant Type</div>
           <div class="row">
             <q-checkbox label="Size" v-model="form.type" true-value="size"/>

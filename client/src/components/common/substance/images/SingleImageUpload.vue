@@ -4,7 +4,14 @@
       <div style="height: 100%; width: 100%" class="flex flex-center">
     <q-slide-transition>
       <template v-if="adding">
-        <image-uploader name="value" :value="value" @input="handleImage"/>
+        <image-uploader
+          storage="s3"
+          label-off
+          name="value"
+          :value="value"
+          @input="handleImage"
+          :attrs="{imageTransformVariantsOriginalName: 'large'}"
+        />
 <!--        <form-generator @remove="removeImage" @input="handleImage" :value="imgResult" :fields="fields"></form-generator>-->
       </template>
     </q-slide-transition>

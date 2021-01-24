@@ -11,45 +11,53 @@ export default function ({store, ssrContext}) {
           component: () => import('pages/Index.vue')
         },
         {
-          path: '/catalog',
-          name: 'catalog',
-          component: () => import('pages/Catalog/Catalog.vue')
-        },
-        {
-          path: '/lineups',
-          name: 'lineups',
-          component: () => import('../components/lineups/pages/ProductLineups')
-        },
-        {
-          path: '/subscriptions',
-          name: 'subscriptions',
-          component: () => import('pages/Subscriptions/Subscriptions.vue')
-        },
-        {
-          path: '/schedule',
-          name: 'schedule',
-          component: () => import('pages/Schedule/Schedule.vue')
-        },
-        {
-          path: '/account',
-          name: 'vendor-account',
-          component: () => import('../components/vendor/pages/VendorSettings')
-        },
-        {
-          path: '/marketplaces',
-          name: 'marketplaces',
-          component: () => import('components/marketplace/pages/Marketplaces')
-        },
-        {
-          path: '/profile',
+          path: 'profile',
           name: 'profile',
-          component: () => import('pages/Profile')
+          component: () => import('../components/family-pod/personal/ExtendFcProfile')
         },
         {
           path: '/profile/:nav',
           name: 'profile-page',
-          component: () => import('pages/Profile'),
-        }
+          component: () => import('components/family-pod/pages/Profile'),
+        },
+        {
+          path: 'admin',
+          name: 'vendor-admin',
+          component: () => import('../pages/CrayvAdmin'),
+          meta: { requiredAuth: true },
+          children: [
+            {
+              path: '',
+              name: 'vendor-account',
+              component: () => import('../components/vendor/pages/VendorSettings'),
+            },
+            {
+              path: 'catalog',
+              name: 'catalog',
+              component: () => import('pages/Catalog/Catalog.vue')
+            },
+            {
+              path: 'lineups',
+              name: 'lineups',
+              component: () => import('../components/lineups/pages/ProductLineups')
+            },
+            {
+              path: 'subscriptions',
+              name: 'subscriptions',
+              component: () => import('pages/Subscriptions/Subscriptions.vue')
+            },
+            {
+              path: 'schedule',
+              name: 'schedule',
+              component: () => import('pages/Schedule/Schedule.vue')
+            },
+            {
+              path: 'marketplaces',
+              name: 'marketplaces',
+              component: () => import('components/marketplace/pages/Marketplaces')
+            },
+          ]
+        },
       ]
     },
     {
@@ -66,6 +74,11 @@ export default function ({store, ssrContext}) {
           path: 'product-store',
           name: 'product-store',
           component: () => import('../components/products/pages/ShopProducts')
+        },
+        {
+          path: 'classifieds',
+          name: 'classifieds',
+          component: () => import('../components/classifieds/pages/CrayvClassifieds')
         }
       ]
     }

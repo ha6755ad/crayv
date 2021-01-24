@@ -4,7 +4,7 @@
       <q-toolbar style="box-shadow: 0 0 10px rgba(0,0,0,.15)" class="bg-white">
         <div style="height: 60px; width: 100vw" class="row items-center">
           <q-btn icon="mdi-menu" @click="drawer = !drawer" dense flat color="dark"></q-btn>
-          <q-card style="height: 40px; width: 40px" flat class="bg-transparent q-mx-sm">
+          <q-card style="height: 40px; width: 40px" flat class="bg-transparent q-mx-sm pointer" @click="$routerPreserve({name: 'marketplace-home'})">
             <q-img contain :src="getAvatar(marketplace, 'avatar')"></q-img>
           </q-card>
           <div class="text-sm text-mb-md text-weight-bold text-dark">{{ marketplaceName }}</div>
@@ -22,22 +22,23 @@
       content-class="bg-light"
     >
       <q-list separator>
-        <q-item></q-item>
-        <q-item v-for="(nav, i) in navItems" :key="`nav-item-${i}`" clickable @click="nav.click()">
-          <q-item-section avatar>
-            <!--            <q-btn push dense style="background: linear-gradient(16deg, var(&#45;&#45;q-color-primary), var(&#45;&#45;q-color-nice))">-->
-            <div style="height: 32px; width: 32px;">
-              <component color1="var(--q-color-primary)" color2="var(--q-color-secondary)" color3="var(--q-color-nice)"
-                         color4="var(--q-color-nice)" :is="nav.iconComponent"></component>
-            </div>
-            <!--            </q-btn>-->
-          </q-item-section>
-          <q-item-section>
-            <q-item-label class="text-weight-bold">{{ nav.label }}</q-item-label>
-            <q-item-label caption>{{ nav.caption }}</q-item-label>
-          </q-item-section>
-        </q-item>
+        <template v-if="activeItem">
+          <marketplace-nav-item :value="activeItem">
+            <template v-slot:side>
+              <q-btn icon="mdi-menu-down" dense flat></q-btn>
+            </template>
+            <template v-slot:menu>
+              <marketplace-drawer></marketplace-drawer>
+            </template>
+          </marketplace-nav-item>
+        </template>
+        <q-separator></q-separator>
       </q-list>
+      <q-slide-transition>
+        <template v-if="!activeItem">
+          <marketplace-drawer></marketplace-drawer>
+        </template>
+      </q-slide-transition>
     </q-drawer>
 
     <q-page-container>
@@ -47,23 +48,37 @@
 </template>
 
 <script>
-  import ShopIcon from 'components/common/atoms/custom-icons/ShopIcon';
-  import EventIcon from 'components/common/atoms/custom-icons/EventIcon';
-  import ClassifiedIcon from 'components/common/atoms/custom-icons/ClassifiedIcon';
-  import WalletIcon from 'components/common/atoms/custom-icons/WalletIcon';
-  import CartIcon from 'components/common/atoms/custom-icons/CartIcon';
-  import HistoryIcon from 'components/common/atoms/custom-icons/HistoryIcon';
   import {mapGetters} from 'vuex';
+  import {MarketPlaceDrawer} from 'components/marketplace/mixins/MarketplaceDrawer';
+  import MarketplaceDrawer from 'components/marketplace/drawers/MarketplaceDrawer';
+  import MarketplaceNavItem from 'components/marketplace/drawers/MarketplaceNavItem';
 
   export default {
     name: 'MarketplaceLayout',
-    components: { ShopIcon },
+    mixins: [MarketPlaceDrawer],
+    components: { MarketplaceNavItem, MarketplaceDrawer },
     data() {
       return {
         drawer: false
       };
     },
     watch: {
+      user: {
+        immediate: true,
+        handler(newVal, oldVal) {
+          let newId = this.lget(newVal, '_id', 0);
+          let oldId = this.lget(oldVal, '_id', 0);
+          if (newId && newId !== oldId) {
+            this.$store.dispatch('crayv-carts/find', {
+              query: {
+                person: this.lget(this.$store.getters['auth/user'], '_id'),
+                active: true
+              },
+              $populateParams: { name: 'withLines' }
+            });
+          }
+        }
+      },
       marketplaceName: {
         immediate: true,
         async handler(newVal) {
@@ -115,58 +130,7 @@
       marketplace() {
         return this.marketplaceId ? this.getMarketplace(this.marketplaceId) : null;
       },
-      navItems() {
-        return [
-          {
-            label: 'Products',
-            caption: 'Community based e-commerce',
-            iconComponent: ShopIcon,
-            click: () => {
-              this.$router.push({name: 'product-store', query: this.$route.query, params: this.$route.params });
-            }
-          },
-          {
-            label: 'Crayv Events',
-            caption: 'Buy in groups for big savings',
-            iconComponent: EventIcon,
-            click: () => {
-              this.$router.push({name: 'shop', query: this.$route.query, params: this.$route.params });
-            }
-          },
-          {
-            label: 'Classifieds',
-            caption: 'Peer to peer stuff exchange',
-            iconComponent: ClassifiedIcon,
-            click: () => {
-              this.$router.push({name: 'shop', query: this.$route.query, params: this.$route.params });
-            }
-          },
-          {
-            label: 'Crayv Wallet',
-            caption: 'See your balance and activity',
-            iconComponent: WalletIcon,
-            click: () => {
-              this.$router.push({name: 'shop', query: this.$route.query, params: this.$route.params });
-            }
-          },
-          {
-            label: 'Cart',
-            caption: 'Your shopping cart',
-            iconComponent: CartIcon,
-            click: () => {
-              this.$router.push({name: 'shop', query: this.$route.query, params: this.$route.params });
-            }
-          },
-          {
-            label: 'Order History',
-            caption: 'View historical orders',
-            iconComponent: HistoryIcon,
-            click: () => {
-              this.$router.push({name: 'shop', query: this.$route.query, params: this.$route.params });
-            }
-          }
-        ];
-      }
+
     }
   };
 </script>

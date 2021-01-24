@@ -74,7 +74,7 @@
       color: String,
       textColor: String,
       sizeIn: String,
-      value: [Object, String],
+      value: [Object, String, Array],
       options: Array,
       emitValue: Boolean,
       optionAvatar: {

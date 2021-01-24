@@ -18,7 +18,14 @@
         </q-slide-transition>
         <q-slide-transition>
           <template v-if="adding">
-            <image-uploader name="value" :value="value" @input="addImage"/>
+            <image-uploader
+              storage="s3"
+              label-off
+              name="value"
+              :value="value"
+              @input="addImage"
+              :attrs="{imageTransformVariantsOriginalName: 'large'}"
+            />
           </template>
         </q-slide-transition>
       </div>

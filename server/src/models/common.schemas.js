@@ -56,8 +56,6 @@ const Phone = new Schema({
   },
   regionCode: { type: String, required: false },
   valid: { type: Boolean, required: false },
-  possible: { type: Boolean, required: false },
-  possibility: { type: String, required: false },
   isValid: { type: Boolean, required: false },
   country: {
     name: { type: String, required: false },
@@ -88,6 +86,7 @@ const Address = new Schema({
   postal: { type: String, required: false },
   region: { type: String, required: false },
   googleAddress: { type: Object, required: false },
+  tomtomAddress: { type: Object },
   uuid: { type: String, required: false }
 });
 

@@ -36,12 +36,13 @@
 </template>
 
 <script>
-  import {models} from 'feathers-vuex';
   import DefaultList from './DefaultList';
   import TomtomAutocomplete from '../../utils/mapbox/tomtom/TomtomAutocomplete';
+  import {SelectMixin} from 'src/mixins/SelectMixin';
 
   export default {
     name: 'ProfileAddress',
+    mixins: [SelectMixin],
     components: {TomtomAutocomplete, DefaultList},
     props: {
       path: {
@@ -55,47 +56,16 @@
       subjectIn: Object,
       value: Array
     },
-    mounted() {
-      this.form = new models.api[this.subject]().clone();
-    },
+
     data() {
       return {
         adding: null,
-        form: {}
       };
     },
     watch: {
-      // value: {
-      //   immediate: true,
-      //   handler(newVal){
-      //     if(newVal?.length){
-      //       this.form.addresses = newVal
-      //     }
-      //   }
-      // },
-      subjectIn: {
-        immediate: true,
-        handler(newVal) {
-          if (newVal?._id) {
-            this.form = new models.api[this.subject](newVal).clone();
-          }
-        }
-      },
+
       methods: {
-        addressInput(val) {
-          if (val.formatted) {
-            if (!this.form[this.path].map(a => a.formatted).includes(val.formatted)) {
-              if (!this.lget(this.subjectIn, 'defaultAddress', null)) this.$setDefaultProfileItem(this.subjectIn, 'address', val);
-              this.form[this.path].push(val);
-              this.$emit('input', this.form.email);
-              this.form.save()
-                .then(() => {
-                  this.$q.notify({message: 'Address added to profile', color: 'info'});
-                }).catch(err => this.$errNotify(err.message));
-            }
-          }
-          console.log('got new address', val);
-        }
+
       }
     }
   };

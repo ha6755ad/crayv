@@ -1,39 +1,24 @@
 <template>
-  <div id="profile-image-picker"
+  <div id="ImageSelect"
+       v-bind="$attrs['div-attrs']"
        style="width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center">
-    <file-pond name="name"
-               ref="pond"
-               label-idle='<b>Drag & Drop</b> your image or <b><span class="filepond--label-action"> Browse </span></b> to select'
-               accepted-file-types="image/png, image/jpeg, image/gif"
-               imagePreviewHeight="170"
-               imageCropAspectRatio="1:1"
-               imageResizeTargetWidth="600"
-               imageResizeTargetHeight="600"
-               stylePanelLayout="compact circle"
-               styleLoadIndicatorPosition="center bottom"
-               styleButtonRemoveItemPosition="left bottom"
-               styleProgressIndicatorPosition="right bottom"
-               styleButtonProcessItemPosition="right bottom"
-               style="width: 170px;"
-               :instantUpload="false"
-               :imageEditEditor="myDoka"
-               v-bind:server="{  process, load, remove }"
-               v-bind:files="myFiles"
-               @init="handleFilePondInit"
+    <file-pond :name="path"
+               :files="myFiles"
+               :server="{  process, load, remove/*, revert,  restore, fetch*/ }"
+               @init="handleFilePondInit, $emit('init', $refs.pond)"
                @processfile="handleFilePondProcessfile"
                @removefile="handleFilePondRemovefile"
-               @preparefile="handleFilePondPrepareFile"/> <!-- , revert,  restore, load, fetch -->
-    <p :style="titleStyle">{{ title }}</p>
+               @preparefile="handleFilePondPrepareFile"
+               v-bind="$attrs['attrs']"
+               v-on="listeners"/>
 
+    <p v-if="!labelOff" v-bind="$attrs['label-attrs']" v-text="$lget($attrs, 'label-attrs.v-text')"></p>
   </div>
 </template>
 
 <script>
-  const lset = require('lodash.set');
-  // AWS SDK
-  import AWS from 'aws-sdk';
   // Import Doka
-  import {create} from '../../../../css/doka.esm.min';
+  import {create} from '../../../../css/doka.esm.min.js';
   import '../../../../css/doka.min.css';
 
   import vueFilePond from 'vue-filepond';
@@ -54,7 +39,6 @@
   import FilePondPluginImageResize from 'filepond-plugin-image-resize';
   import FilePondPluginImageTransform from 'filepond-plugin-image-transform';
   import FilePondPluginImageEdit from 'filepond-plugin-image-edit';
-  import {mapGetters} from 'vuex';
 
   // Create component
   const FilePond = vueFilePond(
@@ -67,328 +51,304 @@
     FilePondPluginImageEdit
   );
 
-  AWS.config.update({
-    accessKeyId: process.env.VUE_APP_AWS_ACCESS_KEY,
-    secretAccessKey: process.env.VUE_APP_AWS_SECRET_ACCESS_KEY,
-    region: process.env.VUE_APP_AWS_REGION || 'us-west-2',
-    sslEnabled: true,
-    ServerSideEncryption: 'AES256',
-    Tagging: 'Source=Profile'
-  });
-
   export default {
+    name: 'ImageUploader',
+    inheritAttrs: false,
     components: {
       FilePond
     },
     props: {
-      name: {
-        type: String,
-        required: true
-      },
-      largeImage: {
-        type: String,
-      },
-      instantUpload: {
-        type: Boolean,
+      labelOff: Boolean,
+      value: {
+        type: [Array, String, Object],
         required: false,
-        default: true
+        default() {
+          return [];
+        }
       },
-      title: {
-        type: String,
-        default: 'Upload Image'
-      },
+      path: String,
       storage: {
         type: String,
         required: false,
-        default: 's3'
+        default: 'local-public'
       },
-      titleStyle: {
-        type: Object,
-        default: function () {
-          return {
-            fontSize: '11px',
-            marginTop: '-5px',
-          };
-        }
-      },
-      acceptedFileTypes: {
-        type: String,
-        default: 'image/png, image/jpeg, image/gif'
-      },
-      imagePreviewHeight: {
-        type: String,
-        default: '170'
-      },
-      imageCropAspectRatio: {
-        type: String,
-        default: '1:1'
-      },
-      imageResizeTargetWidth: {
-        type: String,
-        default: '600'
-      },
-      imageResizeTargetHeight: {
-        type: String,
-        default: '600'
-      },
-      stylePanelLayout: {
-        type: String,
-        default: 'compact circle'
-      },
-      styleLoadIndicatorPosition: {
-        type: String,
-        default: 'center bottom'
-      },
-      styleButtonRemoveItemPosition: {
-        type: String,
-        default: 'left bottom'
-      },
-      styleProgressIndicatorPosition: {
-        type: String,
-        default: 'right bottom'
-      },
-      styleButtonProcessItemPosition: {
-        type: String,
-        default: 'right bottom'
-      },
-      styleBorder: {
-        type: String,
-        default: 'width: 170px;'
-      },
-      imageTransformVariantsIncludeDefault: {
-        type: Boolean,
-        default: false
-      },
-      imageTransformVariantsIncludeOriginal: {
-        type: Boolean,
-        default: true
-      },
-      imageTransformVariantsOriginalName: {
-        type: String,
-        default: 'raw'
-      }
     },
     data() {
       return {
-        // FilePond
+        show: false,
         uploadedFiles: [],
-        newImage: {},
-        myDoka: create({
-          cropMask: (root, setInnerHTML) => {
-            // https://pqina.nl/doka/docs/patterns/api/doka-instance/#setting-the-crop-mask
-            setInnerHTML(root, `
-                <mask id="my-mask">
-                    <rect x="0" y="0" width="100%" height="100%" fill="white"/>
-                    <circle cx="50%" cy="50%" r="50%" fill="black"/>
-                </mask>
-                <rect fill="rgba(255,255,255,.3125)" x="0" y="0" width="100%" height="100%" mask="url(#my-mask)"/>
-                <circle cx="50%" cy="50%" r="50%" fill="transparent" stroke-width="1" stroke="#fff"/>
-            `);
-          },
-          // doka options here
-          cropAspectRatioOptions: [
-            {
-              label: 'Free',
-              value: null
-            },
-            {
-              label: 'Portrait',
-              value: 1.25
-            },
-            {
-              label: 'Square',
-              value: 1
-            },
-            {
-              label: 'Landscape',
-              value: .75
-            }
-          ]
-        })
+        newImages: [],
+        apiCallOff: false,
       };
     },
+    watch: {
+      $attrs: {
+        immediate: true,
+        deep: true,
+        handler(newVal, oldVal) {
+          if (JSON.stringify(newVal) !== JSON.stringify(oldVal)) {
+            // remove attrs for local use.
+            let apiCallOff = this.$lget(newVal, 'attrs.apiCallOff');
+            if (apiCallOff) this.apiCallOff = apiCallOff || false;
+            // this.$omitDeep(newVal, ['attrs.apiCallOff']);
+
+
+            // attrs defaults
+            this.$lset(newVal, 'attrs.name', this.$lget(newVal, 'attrs.name', 'name'));
+            this.$lset(newVal, 'attrs.ref', this.$lget(newVal, 'attrs.ref', 'pond'));
+            this.$lset(newVal, 'attrs.label-idle', this.$lget(newVal, 'attrs.label-idle', '<b>Drag & Drop</b> your image or <b><span class="filepond--label-action"> Browse </span></b> to select'));
+            this.$lset(newVal, 'attrs.accepted-file-types', this.$lget(newVal, 'attrs.accepted-file-types', 'image/png, image/jpeg, image/gif'));
+            this.$lset(newVal, 'attrs.imagePreviewHeight', this.$lget(newVal, 'attrs.imagePreviewHeight', '170'));
+            this.$lset(newVal, 'attrs.imageCropAspectRatio', this.$lget(newVal, 'attrs.imageCropAspectRatio', '1:1'));
+            this.$lset(newVal, 'attrs.imageResizeTargetWidth', this.$lget(newVal, 'attrs.imageResizeTargetWidth', '600'));
+            this.$lset(newVal, 'attrs.imageResizeTargetHeight', this.$lget(newVal, 'attrs.imageResizeTargetHeight', '600'));
+            this.$lset(newVal, 'attrs.stylePanelLayout', this.$lget(newVal, 'attrs.stylePanelLayout', 'compact circle'));
+            this.$lset(newVal, 'attrs.styleLoadIndicatorPosition', this.$lget(newVal, 'attrs.styleLoadIndicatorPosition', 'center bottom'));
+            this.$lset(newVal, 'attrs.styleButtonRemoveItemPosition', this.$lget(newVal, 'attrs.styleButtonRemoveItemPosition', 'left bottom'));
+            this.$lset(newVal, 'attrs.styleProgressIndicatorPosition', this.$lget(newVal, 'attrs.styleProgressIndicatorPosition', 'right bottom'));
+            this.$lset(newVal, 'attrs.styleButtonProcessItemPosition', this.$lget(newVal, 'attrs.styleButtonProcessItemPosition', 'right bottom'));
+            this.$lset(newVal, 'attrs.allow-multiple', this.$lget(newVal, 'attrs.allow-multiple', false));
+            this.$lset(newVal, 'attrs.allow-reorder', this.$lget(newVal, 'attrs.allow-reorder', true));
+            this.$lset(newVal, 'attrs.allowImagePreview', this.$lget(newVal, 'attrs.allowImagePreview', true));
+            this.$lset(newVal, 'attrs.style', this.$lget(newVal, 'attrs.style', 'width: 200px;'));
+            this.$lset(newVal, 'attrs.imageTransformVariantsIncludeDefault', this.$lget(newVal, 'attrs.imageTransformVariantsIncludeDefault', false));
+            this.$lset(newVal, 'attrs.imageTransformVariantsIncludeOriginal', this.$lget(newVal, 'attrs.imageTransformVariantsIncludeOriginal', true));
+            this.$lset(newVal, 'attrs.imageTransformVariantsOriginalName', this.$lget(newVal, 'attrs.imageTransformVariantsOriginalName', 'raw'));
+            this.$lset(newVal, 'attrs.instantUpload', this.$lget(newVal, 'attrs.instantUpload', true));
+            this.$lset(newVal, 'attrs.dropValidation', this.$lget(newVal, 'attrs.dropValidation', true));
+            // this.$lset(newVal, 'attrs.max-files', this.$lget(newVal, 'attrs.max-files', 5));
+            this.$lset(newVal, 'attrs.imageEditEditor', this.$lget(newVal, 'attrs.imageEditEditor', create({
+              cropMask: (root, setInnerHTML) => {
+                // https://pqina.nl/doka/docs/patterns/api/doka-instance/#setting-the-crop-mask
+                setInnerHTML(root, `
+                  <mask id="my-mask">
+                      <rect x="0" y="0" width="100%" height="100%" fill="white"/>
+                      <circle cx="50%" cy="50%" r="50%" fill="black"/>
+                  </mask>
+                  <rect fill="rgba(255,255,255,.3125)" x="0" y="0" width="100%" height="100%" mask="url(#my-mask)"/>
+                  <circle cx="50%" cy="50%" r="50%" fill="transparent" stroke-width="1" stroke="#fff"/>
+              `);
+              },
+              // doka options here
+              cropAspectRatioOptions: [
+                {
+                  label: 'Free',
+                  value: null
+                },
+                {
+                  label: 'Portrait',
+                  value: 1.25
+                },
+                {
+                  label: 'Square',
+                  value: 1
+                },
+                {
+                  label: 'Landscape',
+                  value: .75
+                }
+              ]
+            })));
+            // this.$lset(newVal, 'attrs.imageTransformVariants', this.$lget(newVal, 'attrs.imageTransformVariants', {
+            //   'medium': transforms => {
+            //     transforms.resize.size.width = 384;
+            //     transforms.resize.size.height = 384;
+            //     return transforms;
+            //   },
+            //   'small': transforms => {
+            //     transforms.resize.size.width = 128;
+            //     transforms.resize.size.height = 128;
+            //     return transforms;
+            //   },
+            //   'favicon': transforms => {
+            //     transforms.resize.size.width = 50;
+            //     transforms.resize.size.height = 50;
+            //     return transforms;
+            //   }
+            // }));
+
+            // div-attrs defaults
+            this.$lset(newVal, 'div-attrs.class', this.$lget(newVal, 'div-attrs.class', 'col-12'));
+
+            // label-attrs defaults
+            this.$lset(newVal, 'label-attrs.style', this.$lget(newVal, 'label-attrs.style', 'font-size: 11px; margin-top: -5px'));
+            this.$lset(newVal, 'label-attrs.v-text', this.$lget(newVal, 'label-attrs.v-text', 'Upload Image'));
+          }
+        }
+      },
+    },
     computed: {
-      ...mapGetters('file-uploader', {
-        findFiles: 'find',
-      }),
-      myFiles: function () {
+      axiosFeathers() {
+        return this.$axios.create({
+          baseURL: process.env.VUE_APP_FEATHERS_URL,
+          headers: {
+            ContentType: 'application/x-www-form-urlencoded',
+            Accept: 'application/json',
+            Authorization: 'Bearer ' + this.$store.state.auth.accessToken
+          }
+        });
+      },
+      listeners() {
+        // eslint-disable-next-line no-unused-vars
+        const {input, ...listeners} = this.$listeners;
+        return listeners;
+      },
+      myFiles() {
+        let path = this.lget(this.$attrs, 'attrs.imageTransformVariantsOriginalName', 'raw');
         let images = [];
-        if (this.largeImage && this.largeImage !== '') {
+        if (typeof this.value === 'string') {
           images.push({
-            source: this.largeImage,
+            source: this.value,
             options: {
               type: 'local'
             }
           });
+        } else if (this.lget(this.value, 'constructor') === Array && this.value.length > 0) {
+          this.value.forEach(value => {
+            let source = this.$lget(value, [path, 'file'], this.$lget(value, path, null));
+            if (source) {
+              images.push({
+                source: source,
+                options: {
+                  type: 'local'
+                }
+              });
+            }
+          });
+        } else if(this.value && Object.keys(this.value)){
+          let source = this.$lget(this.value, [path, 'file'], this.$lget(this.value, path, null));
+          if (source) {
+            images.push({
+              source: source,
+              options: {
+                type: 'local'
+              }
+            });
+          }
         }
         return images;
       }
     },
     methods: {
-      // ...mapActions('file-uploader', {
-      //   uploadFiles: 'create',
-      //   removeFiles: 'remove'
-      // }),
       // eslint-disable-next-line no-unused-vars
-      process(fieldName, file, metadata, load, error, progress, abort) {
-        // var s3 = new AWS.S3();
-        // var today = new Date();
-        // for (var i = 0; i < file.length; i++) {
-        //   var stream = file[i];
-        //   var uniqueName = {
-        //     path: `profile/${today.getFullYear().toString()}${today.getMonth().toString().padStart(2, "0")}/`,
-        //     file: `${this.uuidURL()}_${stream.name}_${stream.file.name.replace(/[^a-zA-Z0-9.]/g, "")}`
-        //   };
-        //   var params = {
-        //     Bucket: process.env.VUE_APP_AWS_BUCKET_NAME || 'ionrev-crayv-demo',
-        //     Key: uniqueName.path + uniqueName.file,
-        //     Body: stream.file,
-        //     ContentType: stream.file.type,
-        //     ACL: 'public-read'
-        //   };
-        //   var options = {
-        //     partSize: 10 * 1024 * 1024,
-        //     queueSize: 1
-        //   };
-        //   let avatar_key = stream.name;
-        //   // eslint-disable-next-line no-console
-        //   console.log(this.$store.state.person);
-        //   s3.upload(params, options, function (err, data) {
-        //     if (err) {
-        //       // eslint-disable-next-line no-console
-        //       console.log('Something went wrong:', err);
-        //     } else {
-        //       // eslint-disable-next-line no-console
-        //       console.log('Something went right:', data);
-        //       if (data['details'] === undefined) {
-        //         data['details'] = {};
-        //       }
-        //       data['details']['name'] = stream.file.name;
-        //       data['details']['size'] = stream.file.size;
-        //       data['details']['type'] = stream.file.type;
-        //       data['details']['lastModifiedDate'] = stream.file.lastModifiedDate;
-        //       this.setImage(avatar_key, data)
-        //
-        //     }
-        //   }.bind(this));
-        // }
-        if(!Array.isArray(file)){
-          file = [{file:file, name:'large'}];
-        }
-        file.forEach(f => {
-          let avatar_key = f.name;
-          let payload = new FormData();
-          payload.append('name', f.file.name);
-          payload.append('storage', this.storage);
-          payload.append('file', f.file);
-          let info = {
-            name: f.file.name,
-            size: f.file.size,
-            type: f.file.type,
-            lastModifiedDate: f.file.lastModifiedDate
-          };
-          payload.append('info', JSON.stringify(info));
-          // console.log('payload', payload);
-          const axios = this.$axios.create({
-            baseURL: process.env.VUE_APP_FEATHERS_URL,
-            headers: {
-              contentType: 'application/json',
-              Accept: 'application/json',
-              Authorization: 'Bearer ' + this.$store.state.auth.accessToken
-            }
+      process(fieldName, file, metadata, load, error, progress, abort, transfer, options) {
+        console.log('file', file);
+        if (this.apiCallOff) {
+          file.map(f => {
+            let avatar_key = f.name;
+            this.newImages.push({[avatar_key]: f.file});
           });
-          // console.log('posting image', payload);
-          axios.post('/file-uploader', payload)
-            // this.uploadFiles(payload)
-            .then(res => {
-              // if (res['info'] === undefined) {
-              //   res['info'] = {};
-              // }
-              // res['info']['name'] = f.file.name;
-              // res['info']['size'] = f.file.size;
-              // res['info']['type'] = f.file.type;
-              // res['info']['lastModifiedDate'] = f.file.lastModifiedDate;
-              // console.log('got response in image uploader', res);
-              return this.setImage(avatar_key, res.data);
+          this.$emit('input', this.multiple ? this.newImages : this.lget(this.newImages, [0]));
+          this.show = false;
+          load();
+        } else {
+          Promise.all(file.map(f => {
+            let avatar_key = f.name;
+            let payload = new FormData();
+            payload.append('name', f.file.name);
+            payload.append('storage', this.storage);
+            payload.append('file', f.file);
+            let info = {
+              name: f.file.name,
+              size: f.file.size,
+              type: f.file.type,
+              lastModifiedDate: f.file.lastModifiedDate
+            };
+            payload.append('info', JSON.stringify(info));
+            // console.log('payload', payload);
+            return this.axiosFeathers.post('/file-uploader', payload)
+              .then(res => {
+                console.log('image upload success:', res);
+                //TODO: we need to be able to group variants with the raw
+                this.newImages.push({[avatar_key]: res.data});
+                return {[avatar_key]: res.data};
+              })
+              .catch(err => {
+                console.error('image upload error', err);
+              });
+          }))
+            .then((res) => {
+              console.log('promise.all res', res);
+              console.log('newImages', this.newImages);
+              this.$emit('input', this.multiple ? this.newImages : this.lget(this.newImages, [0]));
+              this.show = false;
+              load();
             })
-            // eslint-disable-next-line no-unused-vars
             .catch(err => {
-              // eslint-disable-next-line no-console
-              // console.error('error', err);
+              console.log('promise.all error', err);
             });
-        });
+        }
       },
       // eslint-disable-next-line no-unused-vars
       load(source, load, error, progress, abort, headers) {
-        var myRequest = new Request(source);
+        const myRequest = new Request(source);
         fetch(myRequest)
           .then(function (response) {
+            console.log('load response', response);
             response.blob()
               .then(function (myBlob) {
                 load(myBlob);
               })
-              // eslint-disable-next-line no-unused-vars
               .catch(function (error) {
                 // eslint-disable-next-line no-console
-                // console.error('Load Error: ', error);
+                console.error('Load Error: ', error);
               });
           });
       },
       // eslint-disable-next-line no-unused-vars
-      async remove(uniqueFileId, load, error) {
-        // console.log('revert uniqueFileId:', uniqueFileId);
-        let imageId = this.lget(this.newImage, 'large._id');
-        if (!imageId) {
-          let images = this.findFiles({
-            query: {
-              file: uniqueFileId
-            }
-          }).data;
-
-          imageId = images[0]._id;
+      async remove(source, load, error) {
+        console.log('remove source:', source);
+        let image = this.$lfind(this.newImages, {raw: {file: source}});
+        console.log('remove newImages:', this.newImages);
+        console.log('remove image:', image);
+        if (image && !this.apiCallOff) {
+          this.axiosFeathers.delete(`/file-uploader/${image.raw._id}`)
+            .then(res => {
+              console.log('image remove success:', res);
+              this.$emit('remove', res.data || res);
+            })
+            .catch(err => {
+              console.error('image remove error:', err);
+            });
+        } else {
+          this.$emit('remove', source);
         }
-        // eslint-disable-next-line no-unused-vars
-        let result = await this.removeFiles(imageId);
-        // console.log('removeFiles result:', result);
-        this.$emit('input', {});
         load();
       },
-      setImage(avatar_key, data) {
-        lset(this.newImage, avatar_key, data);
-        // console.log('emitting image', this.newImage, this.avatar_key, this.data);
-        this.$emit('input', this.newImage);
-      },
+      // // eslint-disable-next-line no-unused-vars
+      // async revert(uniqueFileId, load, error) {
+      //   console.log('revert uniqueFileId:', uniqueFileId);
+      //   load();
+      // },
       // FilePond
       handleFilePondInit: function () {
         // eslint-disable-next-line no-console
         // console.log('FilePond has initialized');
         // FilePond instance methods are available on `this.$refs.pond`
         this.$refs.pond.getFiles();
+        this.show = true;
       },
       // eslint-disable-next-line no-unused-vars
       handleFilePondProcessfile: function (error, file) {
         // eslint-disable-next-line no-console
-        // console.log('FilePond succesfully processed file ' + file.filename);
+        console.log('FilePond succesfully processed file:', file.filename);
         this.$nextTick();
       },
       handleFilePondRemovefile: function (error, file) {
         // eslint-disable-next-line no-console
         // console.log("FilePond deleted file " + file.filename);
-        var index = this.uploadedFiles.indexOf(file.file);
+        // let index = this.uploadedFiles.indexOf(file.file);
+        let index = this.uploadedFiles.indexOf(this.$lfind(this.uploadedFiles, {file: file.file}));
         if (index > -1) {
           this.uploadedFiles.splice(index, 1);
           this.$nextTick();
         }
       },
-      // eslint-disable-next-line no-unused-vars
       handleFilePondPrepareFile: function (file, output) {
         // eslint-disable-next-line no-console
-        // console.log('FilePond Prepare file ' + file.filename);
+        // console.log("FilePond Prepare file " + file.filename);
         // eslint-disable-next-line no-console
-        // console.log('FilePond Prepare file ' + output);
-        if(!Array.isArray(output)){
-          output = [{file:output, name: 'raw'}];
-        }
+        console.log('FilePond Prepare file:', output);
         output.forEach(file => {
           this.uploadedFiles.push(file);
         });
@@ -397,6 +357,11 @@
   };
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+  .filepond--root {
+    height: 90% !important;
+  }
+  .filepond--panel-root {
+    border-radius: 10px !important;
+  }
 </style>

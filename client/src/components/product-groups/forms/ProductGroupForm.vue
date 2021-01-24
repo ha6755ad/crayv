@@ -47,21 +47,13 @@
                   :value="prod"
                 >
                   <template v-slot:side>
-                    <q-select
-                      style="width: 100px"
-                      dense
-                      label="Currency"
-                      :value="lget(form, ['products', i, 'price', 'currency'], 'usd')"
-                      @input="changeCurrency(i, ...arguments)"
-                      :options="['usd', 'ngn']"
-                    ></q-select>
+
                     <price-picker
                       style-in="width: 120px"
                       input-class="text-xxxs text-mb-xxs text-weight-bold text-right"
                       dense
                       :currency-in="lget(prod, ['price', 'currency'], 'usd')"
-                      :value="lget(prod, ['price', 'basePrice'], 0)"
-                      @input="changePrice(i, ...arguments)"
+                      v-model="prod.price"
                     ></price-picker>
                   </template>
                 </product-item>
@@ -79,12 +71,7 @@
             hint="Sell this group as a package, individual items, or both"
           ></q-select>
           <template v-if="form.type !== 'a-la-carte'">
-            <q-select
-              label="Currency"
-              v-model="form.price.currency"
-              :options="['usd', 'ngn']"
-            />
-            <price-picker :currency-in="lget(form, 'price.currency', 'usd')" v-model="form.price.basePrice"/>
+            <price-picker  v-model="form.price"/>
           </template>
           <q-separator class="q-my-md"/>
         </div>

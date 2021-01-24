@@ -53,12 +53,7 @@
           </template>
         </q-select>
 
-        <q-select
-          label="Currency"
-          v-model="form.price.currency"
-          :options="['usd', 'ngn']"
-        />
-        <price-picker :currency-in="lget(form, 'price.currency', 'usd')" v-model="form.price.basePrice"/>
+        <price-picker  v-model="form.price"/>
 
         <q-separator class="q-my-md"/>
 

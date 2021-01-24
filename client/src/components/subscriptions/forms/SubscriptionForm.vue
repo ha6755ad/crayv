@@ -53,8 +53,8 @@
                   <div class="pointer">
                     Price: <span class="text-weight-bold text-blue-10">{{opt.price && opt.price.basePrice ? dollarString(opt.price.basePrice, '$') : 'n/a'}} <q-icon
                     name="mdi-pencil-box" class="q-mx-sm"/></span>
-                    <q-popup-edit :value="opt.price.basePrice">
-                      <price-picker v-model="opt.price.basePrice"/>
+                    <q-popup-edit :value="opt.price">
+                      <price-picker v-model="opt.price"/>
                     </q-popup-edit>
                   </div>
                   <q-separator/>

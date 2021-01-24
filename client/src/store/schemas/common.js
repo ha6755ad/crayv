@@ -62,7 +62,10 @@ const VendorSettings = {
   },
 };
 
+const currencyEnum = ['usd', 'ngn'];
+
 module.exports = {
+  currencyEnum: currencyEnum,
   VendorSettings: VendorSettings,
   ProductSettings: ProductSettings,
   ProductVariant: ProductVariant,

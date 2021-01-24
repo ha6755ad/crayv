@@ -36,8 +36,8 @@
 
 <script>
   import {mapGetters} from 'vuex';
-  import PersonalProfile from '../components/family-pod/personal/PersonalProfile';
-  import PaymentDetails from '../components/family-pod/payment/PaymentDetails';
+  import PersonalProfile from '../personal/PersonalProfile';
+  import PaymentDetails from '../payment/PaymentDetails';
 
   export default {
     name: 'Profile',

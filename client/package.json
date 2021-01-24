@@ -61,6 +61,7 @@
     "vue-ctk-date-time-picker": "^2.5.0",
     "vue-i18n": "^8.0.0",
     "vue-sanitize": "^0.2.0",
+    "vue-tel-input": "^5.0.3",
     "vue-tour": "^1.5.0",
     "vuelidate": "^0.7.6"
   },

@@ -37,6 +37,19 @@ module.exports = {
         }
       },
       methods: {
+        $setForm(path, val){
+          this.form[path] = val;
+          this.dirty = true;
+        },
+        $routerPreserve({ name, params, query, path } = {}){
+          let routerObj = {};
+          if(name) routerObj.name = name;
+          if(params) routerObj.params = params;
+          if(query) routerObj.query = query;
+          if(path) routerObj.path = path;
+          let obj = {...this.$route, ...routerObj};
+          this.$router.push(obj);
+        },
         $arrMove(arr, fromIndex, toIndex, obj) {
           let cloneArr = JSON.parse(JSON.stringify(arr));
           cloneArr.splice(fromIndex, 1);

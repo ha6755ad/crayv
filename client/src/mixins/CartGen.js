@@ -8,7 +8,7 @@ export const CartGen = {
     stateCarts(){
       let carts = this.findCarts({
         query: {
-          person: this.lget(this.$store.state.auth, 'user.hasPerson', '$'),
+          person: this.lget(this.$store.getters['auth/user'], '_id'),
           active: true
         }
       }).data;

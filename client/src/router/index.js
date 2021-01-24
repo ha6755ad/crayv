@@ -17,6 +17,7 @@ import iconPlugin from '@quasar/quasar-ui-qiconpicker';
 import VueGeolocation from 'vue-browser-geolocation';
 import dateUtils from '../plugins/dateUtils';
 import qNotify from '../plugins/qNotify';
+import VueTelInput from 'vue-tel-input';
 
 
 
@@ -35,6 +36,7 @@ Vue.use(stripeUtils);
 Vue.use(iconPlugin);
 Vue.use(dateUtils);
 Vue.use(qNotify);
+Vue.use(VueTelInput);
 
 
 

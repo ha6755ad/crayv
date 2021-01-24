@@ -2,14 +2,19 @@
 //
 // See http://mongoosejs.com/docs/models.html
 // for more of what you can do here.
+const Common = require('./common.schemas');
+
 module.exports = function (app) {
   const modelName = 'users';
   const mongooseClient = app.get('mongooseClient');
   const { Schema } = mongooseClient;
   const schema = new Schema({
     name: String,
+    avatar: { type: Common.Images },
     email: { type: String, unique: true, lowercase: true, required: true },
     password: { type: String, required: true },
+    addresses: [{type: Common.Address}],
+    phone: { type: Common.Phone },
     orders: [{type: Schema.Types.ObjectId, ref: 'crayv-orders'}],
     carts: [{type: Schema.Types.ObjectId, ref: 'crayv-carts'}],
     vendors: [{type: Schema.Types.ObjectId, ref: 'crayv-vendors'}],

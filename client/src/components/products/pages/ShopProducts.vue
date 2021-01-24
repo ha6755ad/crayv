@@ -10,29 +10,39 @@
       border: 'solid 1px rgba(0,0,0,.4)',
       borderBottom: menu ? 'none' : 'solid 1px rgba(0,0,0,.4)'
     }">
-      <q-btn @click="menu = !menu" :icon-right="`mdi-menu-${menu ? 'up' : 'down'}`" dense flat icon="mdi-filter-variant"></q-btn>
+      <q-btn @click="menu = !menu" :icon-right="`mdi-menu-${menu ? 'up' : 'down'}`" dense flat
+             icon="mdi-filter-variant"></q-btn>
     </div>
     <q-slide-transition>
-    <div class="row q-pa-sm" style="border: solid 1px rgba(0,0,0,.4); border-radius: 0 8px 8px 8px" v-if="menu">
-      <div class="col-6 col-md-4 q-pa-sm">
-        <btn-picker
-          v-model="vendorFilter"
-          :options="vendorSettings"
-          empty-label="Vendor..."
-          before-text="Vendor Filter"
-          color="white"
-          :size-in="$q.screen.lt.md ? 'sm' : ''"
-          text-color="dark"
-          outline
-          multiple
-          rounded
-          clearable
-        ></btn-picker>
-      </div>
-      <div class="col-6 col-md-4 q-pa-sm">
+      <div class="q-pa-sm" v-if="menu" style="border: solid 1px rgba(0,0,0,.4); border-radius: 0 8px 8px 8px">
+        <div class="row">
+          <div class="col-6 col-md-4 q-pa-sm">
+            <btn-picker
+              v-model="vendorFilter"
+              :options="vendorSettings"
+              empty-label="Vendor..."
+              before-text="Vendor Filter"
+              color="white"
+              :size-in="$q.screen.lt.md ? 'sm' : ''"
+              text-color="dark"
+              outline
+              multiple
+              rounded
+              clearable
+            ></btn-picker>
+          </div>
+          <div class="col-6 col-md-4 q-pa-sm">
 
+          </div>
+        </div>
+        <div class="row justify-center q-mt-sm">
+          <q-input style="width: 100%" v-model="searchInput" placeholder="Search Products..." rounded filled>
+            <template v-slot:prepend>
+              <q-icon name="mdi-magnify"></q-icon>
+            </template>
+          </q-input>
+        </div>
       </div>
-    </div>
     </q-slide-transition>
     <div class="q-py-lg" style="width: 100%; height: 80vh">
       <div class="__shop_grid">
@@ -113,7 +123,8 @@
     data() {
       return {
         vendorFilter: null,
-        menu: true
+        menu: true,
+        searchInput: ''
       };
     },
     computed: {
@@ -207,6 +218,12 @@
         // let queryObj = [];
         // queryObj.$or.push({ 'settings.productSettings.schedule.days': { $exists: false } });
         let queryObj = {};
+        if (this.searchInput && this.searchInput.length) {
+          queryObj.$or = [
+            { name: { $regex: this.searchInput, $options: 'igm' } },
+            { description: { $regex: this.searchInput, $options: 'igm' } }
+          ];
+        }
         queryObj._id = { $in: this.productGroupIds };
         return queryObj;
       },
@@ -214,6 +231,12 @@
         // let queryObj = JSON.parse(JSON.stringify(({}, this.productAvailability)));
         // queryObj.$or.push({ 'settings.productSettings.schedule.days': { $exists: false } });
         let queryObj = {};
+        if (this.searchInput && this.searchInput.length) {
+          queryObj.$or = [
+            { name: { $regex: this.searchInput, $options: 'igm' } },
+            { description: { $regex: this.searchInput, $options: 'igm' } }
+          ];
+        }
         queryObj._id = { $in: this.productIds };
         return queryObj;
       }

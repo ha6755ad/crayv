@@ -74,7 +74,19 @@
       </template>
 
       <template v-slot:selected-item="scope">
-        <q-chip :dark="dark" square :color="color" :icon="tagIcon" :label="scope.opt" removable @remove="scope.toggleOption(scope.opt)"></q-chip>
+        <q-chip
+          :dark="dark"
+          square
+          :color="color"
+          :icon="tagIcon"
+          :label="scope.opt && scope.opt.length < 21 ? scope.opt : scope.opt.substring(0, 18) + '...'"
+          removable
+          @remove="scope.toggleOption(scope.opt)"
+        >
+          <q-tooltip v-if="scope.opt && scope.opt.length > 20">
+            {{scope.opt}}
+          </q-tooltip>
+        </q-chip>
       </template>
 
     </q-select>

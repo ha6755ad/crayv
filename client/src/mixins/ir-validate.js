@@ -1,11 +1,12 @@
 const lget = require('lodash.get');
 const lset = require('lodash.set');
 const lisequal = require('lodash.isequal');
+const lisEmpty = require('lodash.isempty');
 
 const validators = {
   notEmpty: {
     method: (field, type, format) => {
-      let fieldCheck = field && field.value && typeof field.value !== 'undefined';
+      let fieldCheck = field && (field.value || field.value === 0) && typeof field.value !== 'undefined';
       let typeCheck = type ? typeof field.value === type : true;
       let formatCheck = format ? format(field) : true;
       return fieldCheck && typeCheck && formatCheck;
@@ -127,6 +128,32 @@ export const vCheck = {
     }
   },
   methods: {
+    $flatObjKeyList(obj, path){
+      let list = [];
+      if (!lisEmpty(obj)) {
+        Object.keys(obj).forEach(key => {
+          let newPath = path ? `${path}.${key}` : key;
+          let getVal = lget(obj, key, '');
+          // console.log('see change');
+          let pathToAdd = typeof getVal === 'object' && !Array.isArray(getVal) ? this.$flatObjKeyList(getVal, newPath) : newPath;
+          list.push(pathToAdd);
+        });
+      }
+      return this.$flattenArray(list);
+    },
+    $getSaveObj(vCheck){
+      let obj = {};
+      let form = vCheck ? vCheck : this.vCheckForm;
+      if(form){
+        let list = this.$flatObjKeyList(form);
+        list.forEach(key => {
+          if(lget(this.isDirty, key)) {
+            lset(obj, key, lget(form, key));
+          }
+        });
+      }
+      return obj;
+    },
     $vRefreshErrors(newVal, oldVal){
       // console.log('refresh errors', newVal, oldVal);
       let equal = lisequal(newVal, oldVal);
@@ -220,22 +247,23 @@ export const vCheck = {
       let key_list = Object.keys(valid);
 
       key_list.forEach(key => {
-        let keyProp = lget(valid, key);
+        let keyProp = valid[key];
         let methods = lget(keyProp, 'v');
         if (Array.isArray(methods)) {
           methods.forEach(method => {
-            let fieldObj = { value: form[key], name: lget(keyProp, 'name', key)};
+            console.log('checking method', key, form, keyProp);
+            let fieldObj = { value: lget(form, key), name: lget(keyProp, 'name', key)};
             let v = method.split(':');
-            // console.log('v', v, methods, method);
+            console.log('v', v, methods, method);
             let prop = v[0];
             let arg = v[1];
-            // console.log('prop', prop, validators[prop]);
+            console.log('prop', prop, validators[prop]);
             let validator = lget(validators, prop);
             let check = validator ? validator['method'](fieldObj, arg) : null;
-            // console.log('check', check, fieldObj, arg);
+            console.log('check', check, fieldObj, arg);
             if (!check) lset(errors, key, validator['err'](fieldObj, arg));
             else {
-              // console.log('check success - removing error for ', key);
+              console.log('check success - removing error for ', key);
               lset(errors, key,  null);
             }
           });

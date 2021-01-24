@@ -6,10 +6,10 @@
 
     <div>
       <q-select
+        :dense="dense"
         ref="addressSelect"
         :label="label"
-        :placeholder="!$lisEmpty(normalizedAddress) ? '' : placeholder"
-        borderless
+        :placeholder="placeholder"
         :style="{ ...{'max-width': '90vw', width: '100%'}, ...$attrs.inputStyle }"
         hide-bottom-space
         :bg-color="$attrs.bgColor ? $attrs.bgColor : 'white'"
@@ -48,6 +48,7 @@
   export default {
     name: 'TomtomAutocomplete',
     props: {
+      dense: Boolean,
       dark: Boolean,
       label: String,
       hint: String,
@@ -135,7 +136,7 @@
             //eslint-disable-next-line-no-console
 
             // this.$refs.addressSelect.showPopup()
-            this.$refs.addressSelect.focus();
+            this.lget(this.$refs, 'addressSelect') ? this.$refs.addressSelect.focus() : '';
           }
         }
       }
@@ -143,12 +144,12 @@
     computed: {
       // ...mapState('tomtom-autocomplete', {placeloading: 'isFindPending'}),
       ...mapState('tomtom-geocode', { geoloading: 'isFindPending' }),
-      ...mapGetters('tomtom-geocode', { addresses: 'list' }),
+      ...mapGetters('tomtom-geocode', { stateAddresses: 'list' }),
       loading() {
         return this.placeloading || this.geoloading;
       },
       addressList() {
-        return this.addresses.map(a => a.address.freeformAddress);
+        return this.stateAddresses.map(a => a.address.freeformAddress);
       }
     },
     methods: {
