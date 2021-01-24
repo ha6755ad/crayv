@@ -4,6 +4,8 @@
       <remove-button service="crayv-classifieds" :value="value"></remove-button>
     </div>
 
+    <image-form v-model="form.images" multiple></image-form>
+
     <div class="q-my-md text-xs text-mb-xs text-weight-bold">{{form.name ? form.name : 'Add Listing'}}</div>
 
     <q-input
@@ -40,8 +42,12 @@
 
     <q-separator dark class="q-my-md"></q-separator>
 
-    <address-form :value="lget(user, 'addresses')" @input="handleAddress"
-                  @add="$setForm('location', ...arguments)"></address-form>
+    <address-form
+      :value="lget(user, 'addresses')"
+      @input="handleAddress"
+      @add="$setForm('location', ...arguments)"
+      adding
+    ></address-form>
 
     <q-separator dark class="q-my-md"></q-separator>
 
@@ -60,11 +66,12 @@
   import AddressForm from 'components/family-pod/personal/AddressForm';
   import {mapGetters} from 'vuex';
   import {vCheck} from 'src/mixins/ir-validate';
+  import ImageForm from 'components/family-pod/personal/ImageForm';
 
   export default {
     name: 'ClassifiedsForm',
     mixins: [vCheck],
-    components: { AddressForm, TagPicker, PricePicker, RemoveButton },
+    components: { ImageForm, AddressForm, TagPicker, PricePicker, RemoveButton },
     props: {
       value: Object
     },

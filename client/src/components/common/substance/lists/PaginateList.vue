@@ -22,7 +22,7 @@
     >
       <template v-slot:list="scope">
         <div v-if="adding && grid" class="row justify-end">
-          <q-btn flat size="sm" :label="addLabel" icon="mdi-plus" @click="addDialog = true"></q-btn>
+          <q-btn push color="nice" size="sm" :label="addLabel" icon="mdi-plus" @click="addDialog = true"></q-btn>
         </div>
         <div
           v-if="grid" class="__paginate_grid q-py-md"

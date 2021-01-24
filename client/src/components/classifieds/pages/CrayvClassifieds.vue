@@ -1,9 +1,6 @@
 <template>
   <q-page class="q-pa-md">
     <div class="text-md text-mb-md text-weight-bold">Peer Exchange</div>
-    <div class="row justify-end">
-      <q-btn icon="mdi-page-layout-body" label="Post" push color="nice" size="sm" @click="addDialog = true"></q-btn>
-    </div>
 
     <paginate-list
       load-service="crayv-classifieds"
@@ -12,6 +9,8 @@
       search
       v-model="selected"
       row-min-max="380px, 420px"
+      adding
+      add-label="New Listing"
     >
       <template v-slot:card="scope">
         <classifieds-card :value="scope.item"></classifieds-card>

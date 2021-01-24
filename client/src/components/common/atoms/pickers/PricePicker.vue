@@ -15,8 +15,8 @@
       :input-class="inputClass"
       :dense="dense"
       filled
-      v-model.number="form.basePrice"
-      @input="handleInput"
+      @input="newPrice"
+      :value="dollarString(lget(form, 'basePrice', 0), '', 2)"
       :label="$attrs.label ? $attrs.label : 'Price'"
       mask="#.##"
       fill-mask="0"
@@ -60,7 +60,7 @@
       value: {
         immediate: true,
         handler(newVal){
-          if(typeof newVal === 'number' && newVal !== this.price) {
+          if(newVal) {
             this.form = Object.assign({}, newVal);
           }
         }
@@ -72,6 +72,10 @@
       }
     },
     methods: {
+      newPrice(val){
+        this.form.basePrice = val;
+        this.handleInput();
+      },
       handleInput(){
         this.$emit('input', this.form);
       }

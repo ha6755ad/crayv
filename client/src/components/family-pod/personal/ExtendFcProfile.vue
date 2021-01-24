@@ -5,20 +5,20 @@
       <q-card :class="`q-pa-${$q.screen.name}`" style="width: 1200px; max-width: 100%; background: white; min-height: 90vh">
         <div class="q-pa-md text-sm text-mb-sm text-weight-bold">Your Personal Info</div>
         <div class="row q-my-sm">
-          <image-form :value="modelForm.avatar" @input="$setForm('avatar', ...arguments)"></image-form>
+          <image-form v-model="form.avatar"></image-form>
         </div>
 
         <div style="width: 500px; max-width: 100%">
-        <q-input class="q-my-sm" input-class="text-xs text-mb-xs text-weight-medium" :value="modelForm.name" @input="form.name = $event" placeholder="name"></q-input>
+        <q-input class="q-my-sm" input-class="text-xs text-mb-xs text-weight-medium" v-model="form.name" placeholder="name"></q-input>
         </div>
 
         <q-separator dark class="q-my-sm"></q-separator>
 
-        <phone-form :value="modelForm.phone" @input="$setForm('phone', ...arguments)"></phone-form>
+        <phone-form v-model="form.phone"></phone-form>
 
         <q-separator dark class="q-my-sm"></q-separator>
 
-        <address-form @input="$setForm('addresses', ...arguments)" :value="modelForm.addresses" multiple></address-form>
+        <address-form v-model="form.addresses" multiple></address-form>
 
       </q-card>
     </div>

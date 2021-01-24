@@ -13,6 +13,7 @@ class CrayvClassifieds extends BaseModel {
   // Define default properties here
   static instanceDefaults () {
     return {
+      images: [],
       name: '',
       description: '',
       price: {},

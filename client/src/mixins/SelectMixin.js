@@ -66,7 +66,7 @@ export const SelectMixin = {
       if (this.value) {
         let list = Array.isArray(this.value) ? this.value : [this.value];
         //you an set idval to null to have not map on a non-emitValue component such as when the value is a string or list of strings
-        return this.emitValue || !this.idVal ? list : list.map(a => a[this.idVal]);
+        return !this.emitValue || !this.idVal ? list : list.map(a => a[this.idVal]);
       } else return [];
     },
   },
@@ -81,12 +81,14 @@ export const SelectMixin = {
       return this.activeIds.includes(id);
     },
     selectedIndex(val) {
-      let checkVal = this.idVal ? val[this.idVal] : val;
-      return this.activeIds.map(a => JSON.stringify(a)).indexOf(JSON.stringify(checkVal));
+      if(this.multiple) {
+        let checkVal = this.idVal ? val[this.idVal] : val;
+        return this.activeIds ? this.activeIds.map(a => JSON.stringify(a)).indexOf(JSON.stringify(checkVal)) : -1;
+      } else return -1;
     },
     handleInput(val) {
-      console.log('handle input', val);
       let idx = this.selectedIndex(val);
+      console.log('input idx', idx);
       if (idx === -1) {
         let payload = val;
         if (this.emitValue) {
@@ -94,6 +96,7 @@ export const SelectMixin = {
         }
         if (this.multiple) {
           this.selected ? this.selected.push(payload) : this.selected = [payload];
+          console.log('selected after push', this.selected);
         } else {
           this.selected = payload;
         }
@@ -103,6 +106,7 @@ export const SelectMixin = {
         this.multiple ? this.selected.splice(idx, 1) : this.selected = null;
         this.$emit('rmvInput', val, idx);
       }
+      console.log('handle input', val, this.selected);
       this.$emit('input', this.selected);
     }
   }
