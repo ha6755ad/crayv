@@ -155,7 +155,10 @@ const Schedule = new Schema({
 
 const Pricing = new Schema({
   currency: { type: String, enum: ['usd', 'ngn'] },
-  basePrice: Number
+  basePrice: Number,
+  delivery: {
+    basePrice: Number
+  }
 }, { _id: false });
 
 const ProductVariant = new Schema({

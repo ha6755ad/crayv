@@ -9,6 +9,9 @@
       v-model="form.currency"
       @input="handleInput"
       :options="currencies"
+      option-value="value"
+      option-label="name"
+      emit-value
       :borderless="borderless"
     ></q-select>
     <q-input
@@ -30,7 +33,7 @@
     >
       <template v-slot:prepend>
         <template v-if="!borderless">
-        <q-icon :name="currencyIcon"/>
+        <q-icon :name="$getCurrencyIcon(form.currency)"/>
         </template>
         <template v-else>
           <q-btn-dropdown size="sm" flat :icon="currencyIcon">

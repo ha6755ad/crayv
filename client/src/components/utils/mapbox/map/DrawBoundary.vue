@@ -1,11 +1,13 @@
 <template>
-  <div flat style="position: relative; height: 100%; width: 100%; z-index: 1; display: grid; grid-template-rows: auto 1fr; grid-template-columns: 100%">
+  <div style="position: relative; height: 100%; width: 100%; z-index: 1; display: grid; grid-template-rows: auto 1fr; grid-template-columns: 100%">
     <div>
       <q-card flat>
         <q-list separator>
-          <q-item v-for="(item, i) in lget(value, 'features', [])" :key="`geo-feature-${i}`" clickable @mouseenter="active = i" @mouseleave="active = -1" @touchstart="active = i" @touchend="active = -1" >
+          <q-item v-for="(item, i) in lget(form, 'features', [])" :key="`geo-feature-${i}`" clickable @mouseenter="active = i" @mouseleave="active = -1" @touchstart="active = i" @touchend="active = -1" >
             <q-item-section>
-              <q-item-label>{{lget(item, 'name', 'Untitled Boundary')}}</q-item-label>
+              <q-item-label>
+                <q-input dense placeholder="Untitled..." borderless hide-bottom-space :value="item.name" @input="item.name = $event" @keyup.enter="$emit('input', form)"></q-input>
+              </q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-btn flat dense icon="mdi-delete" @click="$emit('rmv', i)"/>
@@ -19,6 +21,8 @@
       :id="id"
       fullScreen
       drawing
+      :markers-in="markersIn"
+      :center="center ? center : [-111.876183, 40.758701]"
       @poly="setBoundary"
       polygons
       :geo-in="value"
@@ -35,6 +39,9 @@
     name: 'DrawBoundary',
     components: { Mapbox },
     props: {
+      markersIn: Array,
+      center: Array,
+      singleBoundary: Boolean,
       id: {
         type: String,
         default: 'map'
@@ -59,7 +66,11 @@
     },
     methods: {
       setBoundary (val) {
-        this.form = val;
+        if(this.singleBoundary) {
+          this.form.features.push(val.features[0]);
+        } else {
+          this.form = val;
+        }
         this.$emit('input', this.form);
       }
     }

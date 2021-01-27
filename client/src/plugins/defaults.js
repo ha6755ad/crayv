@@ -106,7 +106,9 @@ module.exports = {
           }
         },
         $getCurrencyIcon(value) {
-          return this.$arrayFilterZero(this.$store.state.currency.national_currencies.filter(a => a.value === value), '', 'icon');
+          if(value) {
+            return this.$arrayFilterZero(this.$store.state.currency.national_currencies.filter(a => a.value === value), '', 'icon');
+          } else return '';
         },
         $getCurrencyName(value) {
           return this.$arrayFilterZero(this.$store.state.currency.national_currencies.filter(a => a.value === value), '', 'name');

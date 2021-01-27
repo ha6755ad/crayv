@@ -16,10 +16,14 @@ class CrayvClassifieds extends BaseModel {
       images: [],
       name: '',
       description: '',
-      price: {},
+      price: {
+        basePrice: 0,
+        currency: 'usd'
+      },
       type: 'obo',
       tags: [],
       location: null,
+      boundary: null,
       offers: [],
       accepted: undefined,
       sold: undefined

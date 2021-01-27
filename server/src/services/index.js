@@ -31,6 +31,8 @@ const irComments = require('./ir-comments/ir-comments.service');
 const fvVideoUploads = require('./fv-video-uploads/fv-video-uploads.service');
 const fvYoutube = require('./fv-youtube/fv-youtube.service');
 
+const boundaryFilter = require('./boundary-filter/boundary-filter.service.js');
+
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
   app.configure(crayvProducts);
@@ -60,4 +62,5 @@ module.exports = function (app) {
   app.configure(fvVideoUploads);
   app.configure(fvYoutube);
   app.configure(irComments);
+  app.configure(boundaryFilter);
 };

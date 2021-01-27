@@ -1,6 +1,7 @@
 <template>
-  <q-card class="q-pa-md" style="width: 600px; max-width: 100%">
-    <div class="row justify-center items-center text-xs text-mb-xs text-weight-medium">
+  <q-card :flat="flat" class="q-pa-md" style="width: 600px; max-width: 100%">
+    <div :class="flex ? 'flex items-center justify-center' : ''" style="width: 100%">
+    <div class="flex justify-center items-center text-xxs text-mb-xxs text-weight-medium">
       <div>Within</div>
       <q-btn-dropdown
         class="q-mx-sm"
@@ -18,10 +19,10 @@
       </q-btn-dropdown>
       <div>km</div>
     </div>
-    <div class="row justify-center items-center text-xxs text-mb-xxs text-weight-light q-pa-sm">
-      of you in&nbsp; <q-btn @click="changing = !changing" class="q-mx-xs" outline :color="color" :icon-right="changing ? 'mdi-menu-up' : 'mdi-menu-down'" :label="lget(address, 'city', 'unknown city')"></q-btn>
+    <div class="flex justify-center items-center text-xxs text-mb-xxs text-weight-light q-pa-sm">
+      of you in&nbsp; <q-btn @click="changing = !changing" class="q-mx-xs" outline :color="color" :icon-right="changing ? 'mdi-menu-up' : 'mdi-menu-down'" :label="$limitStr(lget(address, 'city', 'unknown city'), textLimit)"></q-btn>
     </div>
-    <q-separator class="q-my-sm"></q-separator>
+    </div>
     <q-slide-transition>
     <div style="width: 100%" v-if="changing">
       <tab-stepper
@@ -53,7 +54,7 @@
             marker-drag
             :center="coordinates"
             :markers-in="[coordinates]"
-            :geo-in="$createGeoJSONCircle(coordinates, km)"
+            :geo-in="lget($createGeoJSONCircle(coordinates, km), 'data')"
             @pin="setLocation"
             ></mapbox>
           </q-card>
@@ -77,6 +78,9 @@
     mixins: [LocationMixin],
     components: { Mapbox, TomtomAutocomplete, TabStepper },
     props: {
+      flex: Boolean,
+      flat: Boolean,
+      textLimit: { type: Number, default: 40 },
       km: { type: Number, default: 10 },
       color: String,
       padding: { type: String, default: 'sm' }

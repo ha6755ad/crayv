@@ -18,12 +18,22 @@
         </q-item-section>
       </q-item>
     </q-list>
+    <div :style="{ height: filters ? 'auto' : 0, transition: 'all .3s ease-out' }">
+
+    </div>
   </div>
 </template>
 
 <script>
+
   export default {
     name: 'ClassifiedsDrawer',
+    components: { },
+    data(){
+      return {
+        filters: true,
+      };
+    },
     computed: {
       items(){
         return [

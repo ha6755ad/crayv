@@ -14,7 +14,7 @@ const updatedBy = require('./hooks/updated-by');
 module.exports = {
   before: {
     all: [
-      paramsFromClient('disableSoftDelete', 'verify_methods'),
+      paramsFromClient('disableSoftDelete', 'verify_methods', '$boundaryParams'),
       iff(
         context => !['authentication', 'file-uploader', 'app-tokens'].includes(context.path),
         [
