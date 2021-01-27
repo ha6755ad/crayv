@@ -4,35 +4,9 @@ const lget = require('lodash.get');
 const lset = require('lodash.set');
 import {Notify, Dialog} from 'quasar';
 
-const localUuid = () => {
-  var dt = new Date().getTime();
-  var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    var r = (dt + Math.random() * 16) % 16 | 0;
-    dt = Math.floor(dt / 16);
-    return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-  });
-  return uuid;
-};
-
 export default async () => {
   Vue.prototype.$setPhone = (number, isValid, path) => {
     return path ? lget(number.isValid, 'path') : isValid;
-  };
-
-  Vue.prototype.$tomtomToAddress = async (address) => {
-    let addressObj = {
-      uuid: localUuid(),
-      formatted: lget(address, 'address.freeformAddress', null),
-      address1: lget(address, 'address.streetNumber', '') + ' ' + lget(address, 'address.streetName', ''),
-      region: lget(address, 'address.countrySubdivision', ''),
-      city: lget(address, 'address.municipality', ''),
-      postal: lget(address, 'address.postalCode', ''),
-      country: lget(address, 'address.country', ''),
-      latitude: Number(address.position.split(',')[0]),
-      longitude: Number(address.position.split(',')[1]),
-      tomtomAddress: address.address
-    };
-    return addressObj;
   };
 
   Vue.prototype.$getDefaultProfileAddress = (person, defaultPath) => {

@@ -85,7 +85,8 @@ export const vCheck = {
     return {
       //must set these properties in local component - issues exporting them here
       vErrors: {},
-      vDirty: {}
+      vDirty: {},
+      isVDirty: false
     };
   },
   watch: {
@@ -158,7 +159,7 @@ export const vCheck = {
       // console.log('refresh errors', newVal, oldVal);
       let equal = lisequal(newVal, oldVal);
       if (oldVal && !equal && newVal) {
-
+        this.isVDirty = true;
         const layerDeep = (val, oVal, path) => {
           // console.log('layerdeep', val, oVal, path);
           Object.keys(val).forEach(key => {

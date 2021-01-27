@@ -26,6 +26,11 @@ const iyQueueLogs = require('./iy-queue-logs/iy-queue-logs.service.js');
 
 const crayvClassifieds = require('./crayv-classifieds/crayv-classifieds.service.js');
 
+const crayvOffers = require('./crayv-offers/crayv-offers.service.js');
+const irComments = require('./ir-comments/ir-comments.service');
+const fvVideoUploads = require('./fv-video-uploads/fv-video-uploads.service');
+const fvYoutube = require('./fv-youtube/fv-youtube.service');
+
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
   app.configure(crayvProducts);
@@ -51,4 +56,8 @@ module.exports = function (app) {
   app.configure(iyCronTasks);
   app.configure(iyQueueLogs);
   app.configure(crayvClassifieds);
+  app.configure(crayvOffers);
+  app.configure(fvVideoUploads);
+  app.configure(fvYoutube);
+  app.configure(irComments);
 };

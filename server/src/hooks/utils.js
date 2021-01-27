@@ -30,9 +30,8 @@ const dedupData = (context, config) => {
 };
 
 const flattenArray = (arr) => {
-  let self = this;
   return arr.reduce(function (flat, toFlatten) {
-    return flat.concat(Array.isArray(toFlatten) ? self.$flattenArray(toFlatten) : toFlatten);
+    return flat.concat(Array.isArray(toFlatten) ? flattenArray(toFlatten) : toFlatten);
   }, []);
 };
 

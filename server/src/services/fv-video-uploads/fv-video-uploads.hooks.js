@@ -1,0 +1,60 @@
+const {authenticate} = require('@feathersjs/authentication').hooks;
+const { populate } = require('feathers-graph-populate');
+
+const {fastJoin} = require('feathers-hooks-common');
+const lset = require('lodash.set');
+const lget = require('lodash.get');
+
+const creatorResolvers = {
+  joins: {
+    // eslint-disable-next-line no-unused-vars
+    video: $select => async (video, context) => {
+      let userObject =
+        await context.app.service('users').find({
+          query: {
+            _id: {$in: video.creator}
+          }
+        });
+      lset(video,'_fastjoin.creator', { _id: lget(userObject, '_id'), name: lget(userObject, 'name', lget(userObject, 'username', lget(video, 'author'))), avatar: lget(userObject, 'avatar') });
+    }
+  }
+};
+
+const populates = {
+
+};
+const namedQueries = {
+
+};
+
+module.exports = {
+  before: {
+    all: [],
+    find: [],
+    get: [],
+    create: [authenticate('jwt')],
+    update: [authenticate('jwt')],
+    patch: [authenticate('jwt')],
+    remove: [authenticate('jwt')]
+  },
+
+  after: {
+    all: [populate({populates, namedQueries}), fastJoin(creatorResolvers)],
+    find: [],
+    get: [],
+    create: [],
+    update: [],
+    patch: [],
+    remove: []
+  },
+
+  error: {
+    all: [],
+    find: [],
+    get: [],
+    create: [],
+    update: [],
+    patch: [],
+    remove: []
+  }
+};

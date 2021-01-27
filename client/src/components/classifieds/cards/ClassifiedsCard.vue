@@ -2,7 +2,7 @@
   <div class="__classifieds_card" @click="fullScreen = true">
 
     <div class="t-r">
-      <q-btn v-if="lget(value, 'createdBy', 1) === lget(user, '_id')" dense flat icon="mdi-pencil-box" @click="editDialog = true"></q-btn>
+      <q-btn v-if="canEdit" dense flat icon="mdi-pencil-box" @click="editDialog = true"></q-btn>
     </div>
 
     <q-card style="border-radius: 8px; height: 100%; width: 100%">
@@ -21,7 +21,7 @@
         {{lget(value, 'description', 'No Description')}}
         </v-clamp>
       </div>
-      <div class="row no-wrap" style="overflow-x: scroll">
+      <div class="row no-wrap" style="width: 100%; overflow-x: scroll">
         <q-chip
           v-for="(tag, i) in tagList"
           :key="tag + i"
@@ -29,7 +29,7 @@
           square
           color="nice"
           icon="mdi-tag"
-          :label="tag && tag.length < 21 ? tag : tag.substring(0, 18) + '...'">
+          :label="$limitStr(tag, 21)">
           <q-tooltip v-if="tag && tag.length > 20">
             {{tag}}
           </q-tooltip>
@@ -53,7 +53,7 @@
     </q-dialog>
 
     <q-dialog maximized transition-hide="slide-down" transition-show="slide-up" v-model="fullScreen">
-      <q-card square style="height: 100vh; width: 100vw">
+      <q-card square style="height: 100vh; width: 100vw" class="bg-background">
         <q-btn class="t-r-f bg-dark text-light" dense flat size="sm" icon="mdi-close" @click="fullScreen = false"/>
         <listing-page :value="value"></listing-page>
       </q-card>
@@ -83,11 +83,15 @@
     computed: {
       ...mapGetters('auth', {user: 'user'}),
       ...mapState('currency', {currencies: 'national_currencies'}),
+      ...mapGetters({marketplace: 'marketplaceContext'}),
       tagList(){
         return Array.from(new Set(this.lget(this.value, 'tags', [])));
       },
       currency(){
         return this.$arrayFilterZero(this.currencies.filter(a => a.value === this.lget(this.value, 'price.currency', 'usd')));
+      },
+      canEdit(){
+        return this.lget(this.value, 'createdBy', 1) === this.lget(this.user, '_id') || this.$isSuperAdmin(this.marketplace) || this.$isAdmin(this.marketplace);
       }
     }
   };

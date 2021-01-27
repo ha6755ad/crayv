@@ -105,8 +105,8 @@ const relateVendor = async context => {
     therePath: 'productGroups',
     thereService: 'crayv-vendors'
   };
-  if(context.method === 'remove') await removeOtm(config)(context);
-  else await relateOtm(config)(context);
+  if(context.method === 'remove') return await removeOtm(config)(context);
+  else return await relateOtm(config)(context);
 };
 
 const relateProducts = async context => {
@@ -116,8 +116,8 @@ const relateProducts = async context => {
     thereService: 'crayv-products',
     hereMapId: 'id',
   };
-  if(context.method === 'remove') await removeMtm(config)(context);
-  else await relateMtm(config)(context);
+  if(context.method === 'remove') return await removeMtm(config)(context);
+  else return await relateMtm(config)(context);
 };
 
 const checkDuplicateTaxAreas = context => {

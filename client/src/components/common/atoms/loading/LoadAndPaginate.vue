@@ -19,47 +19,59 @@
         ></search-item>
       </div>
     </div>
-    <slot name="list" :items="items"></slot>
-    <div class="row justify-end q-my-sm" v-if="paginator && !paginatorTop">
+    <slot name="list" :items="useItems"></slot>
+    <div class="row justify-end q-my-sm" v-if="paginator && !paginatorTop && (total > itemsLimit)">
       <btn-paginator
         :dark="dark"
         :pages="itemsPages"
         v-model="itemsCurrentPage"
       ></btn-paginator>
     </div>
+    <slot name="bottom" :total="total"></slot>
   </div>
 </template>
 <script>
   import BtnPaginator from 'components/common/atoms/pagination/BtnPaginator';
-  // import {loadPaginatedMixin} from 'src/mixins/LoadPaginateMixin';
   import SearchItem from 'components/common/atoms/search/SearchItem';
   import {makeFindPaginateMixin} from '@ionrev/iy-common-client-lib';
-  // import $lcamelCase from 'lodash.camelcase';
-  // const { makeFindPaginateMixin } = Mixins;
 
 
   export default {
     mixins: [makeFindPaginateMixin({
       name: 'items',
+      qid: 'items',
       service() {
         return this.loadService;
       },
       query() {
-        return this.query;
+        let text = this.searchInput;
+        let query = {};
+        if (text && typeof (text) === 'string' && text.length) {
+          let nameSearch = {
+            $regex: `${text}`,
+            $options: 'igm'
+          };
+          if (this.tagSearch) {
+            let nameObj = {};
+            nameObj[this.filterName] = nameSearch;
+            let tagObj = {};
+            let patternExp = new RegExp(text, 'igm');
+            tagObj[this.useTagPath] = { $in: [patternExp] };
+            query.$or = [nameObj, tagObj];
+          } else {
+            query[this.filterName] = nameSearch;
+          }
+        }
+        console.log('change in query', { ...query, ...this.queryAdders });
+        return { ...query, ...this.queryAdders };
       },
       params() {
         return this.paramsAdders;
       },
-      makeFindMixinOptions() {
-        return {
-          queryWhen() {
-            return this.loadWatch ? this.loadWatch : this.loadOnMount;
-          }
-        };
-      }
     })],
     components: { SearchItem, BtnPaginator },
     props: {
+      filter: Function,
       qidIn: String,
       dark: Boolean,
       searchInputIn: String,
@@ -94,8 +106,6 @@
       },
       useTagPath: { type: String, default: 'tags' },
       loadService: String,
-      getterLimitIn: Number,
-      actionLimitIn: Number,
       //you can simply increment the load event to trigger new load
       loadWatch: {
         required: false
@@ -109,16 +119,14 @@
     data() {
       return {
         searchInput: '',
-        getterLimit: 25,
-        actionLimit: 25,
         // itemsQid: 'items'
       };
     },
     watch: {
       searchInputIn: {
         immediate: true,
-        handler(newVal, oldVal) {
-          if (typeof newVal === 'string' || typeof oldVal === 'string') {
+        handler(newVal) {
+          if (typeof newVal === 'string') {
             this.searchInput = newVal;
           }
         }
@@ -128,25 +136,20 @@
         handler(newVal) {
           this.$emit('loading', newVal);
         }
-      },
-      getterLimitIn: {
-        immediate: true,
-        handler(newVal) {
-          if (typeof newVal === 'number') {
-            this.getterLimit = newVal;
-          }
-        }
-      },
-      actionLimitIn: {
-        immediate: true,
-        handler(newVal) {
-          if (typeof newVal === 'number') {
-            this.actionLimit = newVal;
-          }
-        }
       }
     },
     computed: {
+      useItems(){
+        if(this.filter){
+          return this.filter(this.items);
+        } else return this.items;
+      },
+      qid(){
+        return this.qidIn ? this.qidIn : 'items';
+      },
+      total(){
+        return this.lget(this.itemsPaginationData, 'default.mostRecent.total', 0);
+      },
       paginateLoading() {
         return this.$store.state[this.loadService]['isFindPending'];
       },
@@ -155,29 +158,7 @@
       // },
       filterName() {
         return this.filterByName ? this.filterByName : 'name';
-      },
-      query() {
-        let text = this.searchInput;
-        let query = {};
-        if (text && typeof (text) === 'string' && text.length) {
-          let nameSearch = {
-            $regex: `${text}`,
-            $options: 'igm'
-          };
-          if (this.tagSearch) {
-            let nameObj = {};
-            nameObj[this.filterName] = nameSearch;
-            let tagObj = {};
-            let patternExp = new RegExp(text, 'igm');
-            tagObj[this.useTagPath] = { $in: [patternExp] };
-            query.$or = [nameObj, tagObj];
-          } else {
-            query[this.filterName] = nameSearch;
-          }
-        }
-        console.log('change in query', query);
-        return { ...query, ...this.queryAdders };
-      },
+      }
     },
     methods: {
       newPage(i) {

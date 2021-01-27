@@ -86,8 +86,8 @@ const relateVendor = async context => {
     therePath: 'products',
     thereService: 'crayv-vendors'
   };
-  if(context.method === 'remove') await removeOtm(config)(context);
-  else await relateOtm(config)(context);
+  if(context.method === 'remove') return await removeOtm(config)(context);
+  else return await relateOtm(config)(context);
 };
 
 // const noDuplicatePromos = context => {

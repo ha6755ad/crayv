@@ -19,7 +19,10 @@ class CrayvClassifieds extends BaseModel {
       price: {},
       type: 'obo',
       tags: [],
-      location: null
+      location: null,
+      offers: [],
+      accepted: undefined,
+      sold: undefined
     };
   }
 }

@@ -9,7 +9,7 @@
         :dense="dense"
         ref="addressSelect"
         :label="label"
-        :placeholder="placeholder"
+        :placeholder="normalizedAddress ? '' : placeholder"
         :style="{ ...{'max-width': '90vw', width: '100%'}, ...$attrs.inputStyle }"
         hide-bottom-space
         :bg-color="$attrs.bgColor ? $attrs.bgColor : 'white'"
@@ -24,6 +24,9 @@
         @input-value="setInput"
         @input="geocode"
       >
+        <template v-slot:prepend>
+          <slot name="prepend"></slot>
+        </template>
         <template v-slot:append>
           <q-spinner size="30px" v-if="loading"></q-spinner>
         </template>
@@ -186,18 +189,7 @@
 
         let mappedAddress = val ? val : null;
         if (mappedAddress) {
-          this.normalizedAddress = {
-            uuid: this.uuid(),
-            formatted: val.address.freeformAddress,
-            address1: val.address.streetNumber + ' ' + val.address.streetName,
-            region: val.address.countrySubdivision,
-            city: val.address.countrySecondarySubdivision,
-            postal: val.address.postalCode,
-            country: val.address.country,
-            latitude: val.position.lat,
-            longitude: val.position.lon,
-            tomtomAddress: val.address
-          };
+          this.normalizedAddress = this.$tomtomToAddress(val);
         }
         this.$emit('input', this.normalizedAddress);
         // // eslint-disable-next-line no-console

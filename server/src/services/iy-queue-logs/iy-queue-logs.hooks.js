@@ -6,8 +6,8 @@ const relateQueue = async context => {
     therePath: 'logs',
     thereService: 'iy-queue'
   };
-  if(context.method === 'remove') await removeOtm(config)(context);
-  else await relateOtm(config)(context);
+  if(context.method === 'remove') return await removeOtm(config)(context);
+  else return await relateOtm(config)(context);
 };
 
 module.exports = {

@@ -1,47 +1,75 @@
 <template>
   <div :class="colClass" :style="styleIn">
     <q-select
-      :error-message="errorMessage('price.currency')"
-      :error="errorCheck('price.currency')"
-      v-if="!currencyOff"
+      :readonly="disable"
+      :error-message="errorMessage ? errorMessage('price.currency') : null"
+      :error="errorCheck ? errorCheck('price.currency') : false"
+      v-if="!currencyOff && !borderless"
       label="Currency"
       v-model="form.currency"
       @input="handleInput"
       :options="currencies"
+      :borderless="borderless"
     ></q-select>
     <q-input
-      :error-message="errorMessage('price.basePrice')"
-      :error="errorCheck('price.basePrice')"
+      :disable="disable"
+      :borderless="borderless"
+      :error-message="errorMessage ? errorMessage('price.basePrice') : null"
+      :error="errorCheck ? errorCheck('price.basePrice') : null"
       :input-class="inputClass"
       :dense="dense"
-      filled
+      :filled="!borderless"
       @input="newPrice"
       :value="dollarString(lget(form, 'basePrice', 0), '', 2)"
-      :label="$attrs.label ? $attrs.label : 'Price'"
+      :label="!borderless ? label ? label : 'Price' : null"
       mask="#.##"
       fill-mask="0"
       reverse-fill-mask
-      hint="#.##"
+      :hint="!borderless ? '#.##' : null"
+      :hide-bottom-space="borderless"
     >
       <template v-slot:prepend>
+        <template v-if="!borderless">
         <q-icon :name="currencyIcon"/>
+        </template>
+        <template v-else>
+          <q-btn-dropdown size="sm" flat :icon="currencyIcon">
+            <q-list dense>
+              <q-item v-for="(curr, i) in currencies" :key="`curr-${i}`" @click="handleCurrency(curr.value)" clickable>
+                <q-item-section avatar>
+                  <q-icon :name="curr.icon"></q-icon>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{curr.name}}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-btn flat dense size="sm" v-if="form.currency === curr.value" color="positive" icon="mdi-checkbox-marked"></q-btn>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
+        </template>
       </template>
     </q-input>
   </div>
 </template>
 
 <script>
-  import { currencyEnum } from '../../../../store/schemas/common';
+  import { mapState } from 'vuex';
+
   export default {
     name: 'PricePicker',
     props: {
+      disable: Boolean,
+      borderless: Boolean,
+      inputClass: {
+        type: String,
+        default: 'text-right text-weight-medium'
+      },
+      label: String,
       errorCheck: { required: false },
       errorMessage: { required: false },
       currencyOff: Boolean,
-      inputClass: {
-        type: String,
-        default: 'text-right'
-      },
       colClass: String,
       styleIn: [Object, String],
       dense: Boolean,
@@ -53,7 +81,7 @@
           basePrice: 0,
           currency: 'usd'
         },
-        currencies: currencyEnum
+
       };
     },
     watch: {
@@ -67,6 +95,7 @@
       }
     },
     computed: {
+      ...mapState('currency', {currencies: 'national_currencies'}),
       currencyIcon(){
         return `mdi-currency-${this.lget(this.form, 'currency', 'usd')}`;
       }
@@ -74,6 +103,10 @@
     methods: {
       newPrice(val){
         this.form.basePrice = val;
+        this.handleInput();
+      },
+      handleCurrency(val){
+        this.form.currency = val;
         this.handleInput();
       },
       handleInput(){

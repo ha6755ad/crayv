@@ -38,11 +38,9 @@
         <div class="text-sm text-mb-lg text-weight-medium">Confirm and name
           {{ files && files.length ? files.length : '' }} file {{ files && files.length === 1 ? '' : 's' }}
         </div>
-        <div :class="`row ${ files && files.length === 1 ? 'justify-center' : ''} q-px-md no-wrap`"
-             style="width: 100%; overflow-x: scroll">
+        <div :class="`row ${ files && files.length === 1 ? 'justify-center' : ''} q-px-md no-wrap`" style="width: 100%; overflow-x: scroll">
           <div class="q-mx-xs" v-for="(file, i) in files" :key="`file-${i}`">
-            <q-input clearable @clear="nameInputs[i] = ''" outlined class="q-mb-sm" dense label="Name File"
-                     hide-bottom-space v-model="nameInputs[i].name"></q-input>
+            <q-input clearable @clear="nameInputs[i] = ''" outlined class="q-mb-sm" dense label="Name File" hide-bottom-space v-model="nameInputs[i].name"></q-input>
             <div class="row justify-center">
               <div style="border-radius: 2px; box-shadow: 0 0 4px rgba(0,0,0,.3); height: 130px; width: 100px">
                 <iframe :src="getPreviewURL(file)" height="130px" width="100px" frameborder="0"></iframe>
@@ -52,8 +50,7 @@
         </div>
         <div class="row justify-end">
           <q-btn class="q-mx-xs" size="sm" label="cancel" flat color="negative" @click="clearAll"/>
-          <q-btn flat icon="mdi-upload" class="q-mx-xs" size="sm" label="upload" push color="positive"
-                 @click="handleInput"/>
+          <q-btn flat icon="mdi-upload" class="q-mx-xs" size="sm" label="upload" push color="positive" @click="handleInput"/>
         </div>
       </q-card>
     </q-dialog>
@@ -100,7 +97,7 @@
       value: {
         handler(newVal) {
           if (newVal && typeof newVal !== 'undefined') {
-            if (Array.isArray(newVal)) {
+            if(Array.isArray(newVal)) {
               this.files = newVal;
             } else this.files = [newVal];
           }
@@ -168,12 +165,12 @@
         });
         setTimeout(() => {
           console.log('emitting files', this.files);
-          // this.$emit('input', this.files)
+        // this.$emit('input', this.files)
         }, 200);
       },
       setPending(files) {
         files.forEach(file => {
-          this.nameInputs ? this.nameInputs.push({ name: file.name }) : this.nameInputs = [{ name: file.name }];
+          this.nameInputs ? this.nameInputs.push({name: file.name}) : this.nameInputs = [{name: file.name}];
         });
         this.files = files;
         this.filePending = true;
@@ -220,7 +217,7 @@
             'content-type': 'application/x-www-form-urlencoded',
           };
           let token = this.lget(this.$store, 'state.auth.accessToken');
-          if (token) headers.Authorization = 'Bearer ' + token;
+          if(token) headers.Authorization = 'Bearer ' + token;
           else headers['x-api-key'] = this.lget(this.$attrs, 'api-key');
           this.$axios({
             method: 'post',
@@ -231,15 +228,7 @@
             .then(res => {
               console.log('got res', res);
               let val = res.data;
-              if (this.multiple) {
-                if (!Array.isArray(val)) val = [res.data];
-                if (this.value && Array.isArray(this.value)) {
-                  console.log('array input', res);
-                  this.value.forEach(file => {
-                    val.push(file);
-                  });
-                }
-              }
+              if(this.multiple && !Array.isArray(val)) val = [res.data];
               console.log('emit input', val);
               this.$emit('input', val);
             })
@@ -247,17 +236,17 @@
               console.log('error uploading file', err);
               this.$errNotify('Error uploading file ' + err.message);
             });
-          // fetch('https://httpbin.org/post', {
-          //   method: 'POST',
-          //   body: formData
-          // })
-          //   .then(res => res.json())
-          //   .then(res => {
-          //     console.log('done uploading', res);
-          //   })
-          //   .catch(e => {
-          //     console.error(JSON.stringify(e.message));
-          //   });
+        // fetch('https://httpbin.org/post', {
+        //   method: 'POST',
+        //   body: formData
+        // })
+        //   .then(res => res.json())
+        //   .then(res => {
+        //     console.log('done uploading', res);
+        //   })
+        //   .catch(e => {
+        //     console.error(JSON.stringify(e.message));
+        //   });
         });
       }
     }
@@ -285,6 +274,7 @@
     align-items: center;
     justify-content: center;
     position: relative;
+    margin: 10px;
     /*box-shadow: 0px 0px 0px 4px #757575;*/
   }
 </style>

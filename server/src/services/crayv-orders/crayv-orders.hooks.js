@@ -37,22 +37,22 @@ const namedQueries = {
   }
 };
 
-const relateGroupOrder = async () => {
+const relateGroupOrder = async context => {
   let config = {
     herePath: 'group_order',
     therePath: 'orders',
     thereService: 'crayv-group-orders'
   };
-  await relateOtm(config)(context);
+  return await relateOtm(config)(context);
 };
 
-const removeGroupOrder = async () => {
+const removeGroupOrder = async context => {
   let config = {
     herePath: 'group_order',
     therePath: 'orders',
     thereService: 'crayv-group-orders'
   };
-  await removeOtm(config)(context);
+  return await removeOtm(config)(context);
 };
 
 const inactivateCart = async context => {

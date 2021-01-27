@@ -4,6 +4,7 @@ import ClassifiedIcon from 'components/common/atoms/custom-icons/ClassifiedIcon'
 import WalletIcon from 'components/common/atoms/custom-icons/WalletIcon';
 import CartIcon from 'components/common/atoms/custom-icons/CartIcon';
 import HistoryIcon from 'components/common/atoms/custom-icons/HistoryIcon';
+import ClassifiedsDrawer from 'components/marketplace/drawers/ClassifiedsDrawer';
 
 export const MarketPlaceDrawer = {
   computed: {
@@ -14,7 +15,7 @@ export const MarketPlaceDrawer = {
       return [
         {
           label: 'Products',
-          caption: 'Community based e-commerce',
+          caption: 'Community e-commerce',
           iconComponent: ShopIcon,
           active: this.$route.name === 'product-store',
           click: () => {
@@ -34,7 +35,9 @@ export const MarketPlaceDrawer = {
           label: 'Classifieds',
           caption: 'Peer to peer stuff exchange',
           iconComponent: ClassifiedIcon,
-          active: this.$route.name === 'classifieds',
+          drawer: ClassifiedsDrawer,
+          drawerAttrs: {},
+          active: this.$route.path.indexOf('/classifieds') > -1,
           click: () => {
             this.$router.push({name: 'classifieds', query: this.$route.query, params: this.$route.params });
           }

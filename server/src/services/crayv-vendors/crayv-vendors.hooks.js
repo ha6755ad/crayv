@@ -38,8 +38,8 @@ const relateOwner = async context => {
     therePath: 'vendors',
     thereService: thereService
   };
-  if(context.method === 'remove') await removeOtm(config)(context);
-  else await relateOtm(config)(context);
+  if(context.method === 'remove') return await removeOtm(config)(context);
+  else return await relateOtm(config)(context);
 };
 
 const setupAdmin = context => {

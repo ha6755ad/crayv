@@ -7,11 +7,35 @@
           <q-card style="height: 40px; width: 40px" flat class="bg-transparent q-mx-sm pointer" @click="$routerPreserve({name: 'marketplace-home'})">
             <q-img contain :src="getAvatar(marketplace, 'avatar')"></q-img>
           </q-card>
-          <div class="text-sm text-mb-md text-weight-bold text-dark">{{ marketplaceName }}</div>
           <q-space></q-space>
-          <q-card flat class="bg-transparent" style="height: 30px; width: 30px">
-            <q-img contain src="https://ha6755ad-images.s3-us-west-1.amazonaws.com/crayv_standard.svg"></q-img>
-          </q-card>
+          <div class="flex items-center text-dark">
+            <template v-if="!user || !user._id">
+              <div class="text-0-9 q-mr-sm text-weight-medium text-uppercase pointer" @click="login(false)">Login</div>
+              <q-separator vertical/>
+              <div class="text-0-9 q-ml-sm q-mr-md text-weight-medium text-uppercase pointer" @click="login(true)">Signup</div>
+              <q-dialog v-model="loginDialog">
+                <q-card style="width: 600px; max-width: 100vw">
+                  <q-btn v-show="!registering" size="sm" flat label="sign up" class="t-r" @click="registering=true"/>
+                  <q-btn v-show="registering" size="sm" flat label="login" class="t-r" @click="registering=false"/>
+                  <template v-if="registering">
+                    <register></register>
+                  </template>
+                  <template v-else>
+                    <login></login>
+                  </template>
+                </q-card>
+              </q-dialog>
+            </template>
+            <template v-else>
+              <div class="text-0-9 q-ml-sm q-mr-md text-weight-medium text-uppercase pointer"
+                   @click="$store.dispatch('auth/logout')">Logout
+              </div>
+            </template>
+            <q-card flat class="bg-transparent" style="height: 30px; width: 30px">
+              <q-img contain src="https://ha6755ad-images.s3-us-west-1.amazonaws.com/crayv_standard.svg"></q-img>
+            </q-card>
+<!--            <q-btn round flat class="q-mx-sm" icon="mdi-cart" @click="cartDrawer = !cartDrawer"></q-btn>-->
+          </div>
         </div>
       </q-toolbar>
     </q-header>
@@ -39,6 +63,11 @@
           <marketplace-drawer></marketplace-drawer>
         </template>
       </q-slide-transition>
+      <q-slide-transition>
+        <template v-if="activeItem">
+          <component :is="activeItem.drawer" v-bind="activeItem.drawerAttrs"></component>
+        </template>
+      </q-slide-transition>
     </q-drawer>
 
     <q-page-container>
@@ -52,14 +81,20 @@
   import {MarketPlaceDrawer} from 'components/marketplace/mixins/MarketplaceDrawer';
   import MarketplaceDrawer from 'components/marketplace/drawers/MarketplaceDrawer';
   import MarketplaceNavItem from 'components/marketplace/drawers/MarketplaceNavItem';
+  import Register from 'components/auth/Register';
+  import Login from 'components/auth/Login';
+  import {LocationMixin} from 'src/mixins/LocationMixin';
 
   export default {
     name: 'MarketplaceLayout',
-    mixins: [MarketPlaceDrawer],
-    components: { MarketplaceNavItem, MarketplaceDrawer },
+    mixins: [MarketPlaceDrawer, LocationMixin],
+    components: { Login, Register, MarketplaceNavItem, MarketplaceDrawer },
     data() {
       return {
-        drawer: false
+        drawer: false,
+        loginDialog: false,
+        registering: false,
+        estimateAddress: true,
       };
     },
     watch: {
@@ -131,6 +166,12 @@
         return this.marketplaceId ? this.getMarketplace(this.marketplaceId) : null;
       },
 
+    },
+    methods: {
+      login(val) {
+        this.registering = val;
+        this.loginDialog = true;
+      }
     }
   };
 </script>

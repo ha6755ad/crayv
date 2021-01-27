@@ -56,7 +56,7 @@
 <script>
   import {mapActions} from 'vuex';
   import {models} from 'feathers-vuex';
-  import DragUpload from 'components/formGeneratorCustom/DragUpload';
+  import DragUpload from '../../uploads/DragUpload';
 
   const Vimeo = require('vimeo').Vimeo;
   const client = new Vimeo('fcab04874723d01838bf6fa9a6644a9d4b11b337', 'zHXkLdWmGFy6otDMAtQI2LbqkGFVCpdrrOCVlqVHt4vprmL8fahnCVQmORlNC9Sfy4MRrfZMcOqTCXV8adQOiBw7dqMGfZ+PCzQAOz2yVr77oRSXlEW9Nh+Nj5IMzotM', 'bd32f840c3c63352623d4dfd67c86e3b');

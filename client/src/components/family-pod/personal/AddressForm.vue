@@ -22,7 +22,7 @@
           Add New
         </q-item-section>
       </q-item>
-      <q-item v-for="(item, i) in activeItems" :key="`address-${i}`" clickable @click="$emit('add', item)">
+      <q-item v-for="(item, i) in activeItems" :key="`address-${i}`" clickable @click="$emit('input', item)">
         <q-item-section avatar>
           <q-icon name="mdi-map-marker"></q-icon>
         </q-item-section>

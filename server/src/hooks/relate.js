@@ -1,7 +1,12 @@
 const lget = require('lodash.get');
 const lset = require('lodash.set');
 const lisEmpty = require('lodash.isempty');
-const { flattenArray } = require('./utils');
+
+const flattenArray = (arr) => {
+  return arr.reduce(function (flat, toFlatten) {
+    return flat.concat(Array.isArray(toFlatten) ? flattenArray(toFlatten) : toFlatten);
+  }, []);
+};
 
 const flatObjKeyList = (obj, path) => {
   let list = [];
@@ -197,7 +202,7 @@ const relateOtm = (
         if (thereObj) lset(addToSet, therePath, thereObj);
         else lset(addToSet, therePath, id);
         // eslint-disable-next-line no-console
-        console.log('before relate otm', addToSet);
+        // console.log('before relate otm', addToSet);
         context.params.relateOtm_res = await context.app.service(thereService).patch(hereItemId, {
           $addToSet: addToSet
         }, { relate_hook: 'relateOtm' });

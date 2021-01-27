@@ -14,8 +14,8 @@ const relateMarketplace = async context => {
     therePath: 'vendorSettings',
     thereService: 'crayv-marketplaces'
   };
-  if(context.method === 'remove') await removeOtm(config)(context);
-  else await relateOtm(config)(context)
+  if(context.method === 'remove') return await removeOtm(config)(context);
+  else return await relateOtm(config)(context)
     .then(res => {
       console.log('related vendor settings to marketplace', res);
     })

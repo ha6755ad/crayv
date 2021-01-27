@@ -10,6 +10,7 @@
   import mapboxgl from 'mapbox-gl/dist/mapbox-gl.js';
   import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
   import MapboxDraw from '@mapbox/mapbox-gl-draw';
+
   const lget = require('lodash.get');
   // const lset = require('lodash.set');
 
@@ -28,10 +29,13 @@
           return [-111.876183, 40.758701];
         }
       },
+      maxZoom: { type: Number, default: 15 },
       zoom: {
         type: Number,
         default: 10
       },
+      //TODO: make custom marker a config object
+      customMarker: Boolean,
       fill_color: {
         type: String,
         default: '#ff4577'
@@ -40,8 +44,10 @@
         type: Boolean,
         default: true,
       },
+      markerDrag: Boolean,
       geoIn: Object,
-      polygons: Boolean,
+      markersIn: Array,
+      polygons: { type: Boolean, default: true },
       drawing: Boolean,
       fullScreen: Boolean,
       hoverOn: {
@@ -57,7 +63,8 @@
         container: this.id,
         style: 'mapbox://styles/mapbox/streets-v11',
         center: this.center,
-        zoom: this.zoom
+        zoom: this.zoom,
+        maxZoom: this.maxZoom
       });
       setTimeout(() => {
         if (this.fullScreen) {
@@ -94,21 +101,21 @@
       geoIn: {
         deep: true,
         immediate: true,
-        handler(newVal){
-          if(this.showPolygons && newVal &&  lget(newVal, 'features', []).length){
+        handler(newVal) {
+          if (this.polygons && newVal && lget(newVal, 'features', []).length) {
             this.showPolygons(newVal);
           }
         }
       },
       activeItem: {
         immediate: true,
-        handler(newVal, oldVal){
+        handler(newVal, oldVal) {
           console.log('toggle acitve', newVal, oldVal);
-          if((newVal || newVal === 0) && newVal > -1){
+          if ((newVal || newVal === 0) && newVal > -1) {
             this.hoverId = newVal;
             this.toggleHover(newVal, true);
           }
-          if((oldVal || oldVal === 0) && oldVal > -1){
+          if ((oldVal || oldVal === 0) && oldVal > -1) {
             this.toggleHover(oldVal, false);
           }
         }
@@ -137,25 +144,31 @@
     },
     computed: {
       pointList() {
-        let geo = lget(this.geoIn, 'features', []).map(a => a.geometry).filter(b => b.type === 'Point');
-        return geo;
+        if (this.markersIn) return this.markersIn;
+        else {
+          let geo = lget(this.geoIn, 'features', []).map(a => a.geometry).filter(b => b.type === 'Point');
+          return geo;
+        }
       },
       flatPoints() {
-        let geo = lget(this.geoIn, 'features', []).map(a => a.geometry);
-        let list = [];
-        geo.forEach(a => {
-          if (a.type === 'Point') {
-            list.push(a.coordinates);
-          } else {
-            // eslint-disable-next-line no-console
-            // console.log('pushing coord', a);
-            a.coordinates[0].forEach(coord => {
-              list.push(coord);
-            });
-          }
-        });
-        // return [].concat.apply([], geo)
-        return list;
+        if (this.markersIn) return this.markersIn;
+        else {
+          let geo = lget(this.geoIn, 'features', []).map(a => a.geometry);
+          let list = [];
+          geo.forEach(a => {
+            if (a.type === 'Point') {
+              list.push(a.coordinates);
+            } else {
+              // eslint-disable-next-line no-console
+              // console.log('pushing coord', a);
+              a.coordinates[0].forEach(coord => {
+                list.push(coord);
+              });
+            }
+          });
+          // return [].concat.apply([], geo)
+          return list;
+        }
       }
     },
     methods: {
@@ -192,7 +205,7 @@
         this.addTouchListener(this.layerName);
         // }
       },
-      addTouchListener(id){
+      addTouchListener(id) {
         const addListener = (listenerOn, listenerOff, srcId) => {
           this.map.on(listenerOn, srcId, e => {
             if (e.features.length > 0) {
@@ -213,11 +226,12 @@
         addListener('touchstart', 'touchend', id);
         addListener('mousemove', 'mouseleave', id);
         this.map.on('click', id, e => {
-          this.$emit('elClick', e);
+          console.log('map click', e);
+          this.$emit('mapClick', e);
         });
       },
-      toggleHover(srcId, val){
-        if(val){
+      toggleHover(srcId, val) {
+        if (val) {
           if (this.hoverId || this.hoverId === 0) {
             console.log('toggle hover', srcId, val);
             this.map.setFeatureState(
@@ -254,6 +268,10 @@
           setTimeout(() => this.setMapCenter(val), 200);
         }
       },
+      markerDragEnd(marker) {
+        let lngLat = marker.getLngLat();
+        this.$emit('pin', lngLat);
+      },
       async setMapMarkers(val) {
         console.log('setting map markers', val);
         let map = this.map;
@@ -262,18 +280,27 @@
             m.remove();
           });
           let list = [];
-          val.forEach(a => {
+          val.forEach((a, i) => {
             // eslint-disable-next-line no-console
             console.log('setting marker', a, map);
-            // var el = document.createElement('div');
-            // el.style.backgroundImage = 'url(https://placekitten.com/g/50/)';
-            // el.style.width = '50px';
-            // el.style.height = '50px';
-            // el.style.borderRadius = '50%';
-            let marker = new mapboxgl.Marker({color: 'primary'})
+            let obj = { color: 'var(--q-color-nice', id: `marker-${i}`, draggable: this.markerDrag };
+            if (this.customMarker) {
+              let el = document.createElement('div');
+              el.style.background = 'rgba(0,0,0,.2)';
+              el.style.border = 'solid 5px var(--q-color-primary)';
+              el.style.width = '150px';
+              el.style.height = '150px';
+              el.style.borderRadius = '50%';
+              el.draggable = this.markerDrag;
+              obj = el;
+            }
+            let marker = new mapboxgl.Marker(obj)
               .setLngLat(a)
               .addTo(map);
             list.push(marker);
+            marker.on('dragend', () => {
+              this.markerDragEnd(marker);
+            });
           });
           this.markers = list;
           // if (list && list.length > 1) {
@@ -291,7 +318,8 @@
 
         this.map.fitBounds(bounds, {
           padding: 20,
-          maxZoom: 15
+          maxZoom: this.maxZoom,
+          zoom: this.zoom
         });
       },
     }

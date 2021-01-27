@@ -77,8 +77,24 @@ export default function ({store, ssrContext}) {
         },
         {
           path: 'classifieds',
-          name: 'classifieds',
-          component: () => import('../components/classifieds/pages/CrayvClassifieds')
+          component: () => import('../components/classifieds/pages/CrayvClassifieds'),
+          children: [
+            {
+              path: '',
+              name: 'classifieds',
+              component: () => import('../components/classifieds/pages/ForSale')
+            },
+            {
+              path: 'my-listings',
+              name: 'my-listings',
+              component: () => import('../components/classifieds/pages/MyListings')
+            },
+            {
+              path: 'my-offers',
+              name: 'my-offers',
+              component: () => import('../components/offers/pages/MyOffers')
+            }
+          ]
         }
       ]
     }

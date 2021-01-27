@@ -9,9 +9,12 @@
       </div>
     </div>
     <load-and-paginate
+      :search-input-in="searchInputIn"
+      :filter="filter"
       :qid-in="qidIn"
       :dark="dark"
       :query-adders="queryAdders"
+      :params-adders="paramsAdders"
       :load-service="service"
       :load-watch="loadWatch"
       :load-on-mount="!loadWatch"
@@ -23,6 +26,9 @@
       <template v-slot:list="scope">
         <div v-if="adding && grid" class="row justify-end">
           <q-btn push color="nice" size="sm" :label="addLabel" icon="mdi-plus" @click="addDialog = true"></q-btn>
+        </div>
+        <div v-if="emptyMessage && (!scope.items || !scope.items.length)"
+             class="text-xs text-mb-xs text-italic q-pa-md">{{ emptyMessage }}
         </div>
         <div
           v-if="grid" class="__paginate_grid q-py-md"
@@ -37,9 +43,9 @@
         </div>
         <q-list separator v-if="!select && !grid">
           <add-list-item :dark="dark" :title="addLabel" v-if="adding" @add="addDialog = true"></add-list-item>
-          <q-item v-for="(item, i) in scope.items" :key="`product-${i}`" style="width: 100%">
+          <div v-for="(item, i) in scope.items" :key="`product-${i}`" style="width: 100%">
             <slot name="list-item" :scope="scope" :item="item" :index="i" :handleInput="handleInput"></slot>
-          </q-item>
+          </div>
         </q-list>
         <q-select
           :label="searchLabel"
@@ -65,11 +71,15 @@
           </template>
         </q-select>
       </template>
+      <template v-slot:bottom="scope">
+       <slot name="bottom" :total="scope.total"></slot>
+      </template>
     </load-and-paginate>
 
-    <q-dialog position="right" :maximized="$q.screen.lt.sm" transition-hide="slide-right" transition-show="slide-left"
+    <q-dialog :position="formPosition" :maximized="formMax" :transition-hide="transitionHide"
+              :transition-show="transitionShow"
               v-model="addDialog">
-      <q-card style="width: 600px; max-width: 100vw; height: 100vh">
+      <q-card :style="formCardStyle">
         <q-btn class="t-r-f bg-dark text-light" dense flat size="sm" icon="mdi-close" @click="addDialog = false"/>
         <slot name="form" :close="closeDialog"></slot>
       </q-card>
@@ -87,6 +97,13 @@
     mixins: [SelectMixin],
     components: { AddListItem, LoadAndPaginate },
     props: {
+      filter: Function,
+      emptyMessage: String,
+      formMaximized: Boolean,
+      formCardStyle: { type: [String, Object], default: 'width: 600px; max-width: 100vw; height: 100vh' },
+      formPosition: { type: String, default: 'right' },
+      transitionHide: { type: String, default: 'slide-right' },
+      transitionShow: { type: String, default: 'slide-left' },
       qidIn: String,
       loadService: String,
       addLabel: { type: String, default: 'Add New' },
@@ -124,7 +141,9 @@
         type: Boolean,
         default: false
       },
+      searchInputIn: String,
       queryIn: Object,
+      paramsIn: Object,
       value: {
         required: true
       }
@@ -138,28 +157,45 @@
         addDialog: false
       };
     },
-    watch: {},
+    watch: {
+      searchInputIn: {
+        immediate: true,
+        handler(newVal){
+          if(typeof newVal === 'string'){
+            this.searchInput = newVal;
+          }
+        }
+      }
+    },
     computed: {
       ...mapGetters('auth', { user: 'user' }),
+      formMax() {
+        return this.formMaximized || this.formMaximized === false ? this.formMaximized : this.$q.screen.lt.sm;
+      },
       service() {
         return this.loadService;
+      },
+      paramsAdders(){
+        return this.paramsIn;
       },
       queryAdders() {
         // return {};
         return this.queryIn;
         // let activeObj = { active: !this.showInactive };
         // return this.queryIn ? {...this.queryIn, ...activeObj} : activeObj;
-      },
+      }
     },
     methods: {
       handleRmv(val) {
         this.$emit('rmv', val);
-      },
+      }
+      ,
       closeDialog() {
         this.addDialog = false;
       }
     }
-  };
+  }
+  ;
 </script>
 
 <style scoped lang="scss">

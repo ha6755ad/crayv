@@ -37,6 +37,14 @@ module.exports = {
         }
       },
       methods: {
+        $limitStr(string, limit, append){
+          let apnd = append ? append : [false, null].includes(append) ? '' : '...';
+          let appendLength = apnd ? JSON.stringify(apnd).length : 0;
+          let stringLength = (string && typeof string === 'string') ? string.length : 0;
+          if(limit && stringLength && stringLength > limit){
+            return string.substring(0, limit - appendLength) + apnd;
+          } else return string ;
+        },
         $setForm(path, val){
           this.form[path] = val;
           this.dirty = true;

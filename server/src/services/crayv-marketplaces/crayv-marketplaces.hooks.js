@@ -15,8 +15,8 @@ const relateHost = async context => {
     therePath: 'marketplace',
     thereService: 'bw-pods'
   };
-  if(context.method === 'remove') await removeOto(config)(context);
-  else await relateOto(config)(context);
+  if(context.method === 'remove') return await removeOto(config)(context);
+  else return await relateOto(config)(context);
 };
 
 module.exports = {

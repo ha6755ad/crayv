@@ -1,6 +1,6 @@
 <template>
   <q-card flat class="q-pa-md">
-    <div class="t-r">
+    <div class="t-r" v-if="value">
       <remove-button service="crayv-classifieds" :value="value"></remove-button>
     </div>
 

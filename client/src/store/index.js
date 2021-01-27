@@ -40,6 +40,8 @@ export default function (/* { ssrContext } */) {
     state: {
       vendorContext: null,
       marketplaceContext: null,
+      coordinates: null,
+      address: null,
     },
     getters: {
       vendorContext(state){
@@ -47,9 +49,28 @@ export default function (/* { ssrContext } */) {
       },
       marketplaceContext(state){
         return state.marketplaceContext;
+      },
+      address(state){
+        return state.address;
+      },
+      coordinates(state){
+        return state.coordinates;
       }
     },
     mutations: {
+      SET_ADDRESS(state, payload){
+        state.address = payload;
+      },
+      SET_COORDINATES(state, payload){
+        state.coordinates = payload;
+        try {
+          LocalStorage.set('coordinates', payload);
+        } catch(e) {
+          console.log('error setting local storage coordinates', e);
+        } finally {
+          console.log('set local coordintes', payload);
+        }
+      },
       SET_MARKETPLACE_CONTEXT(state, payload){
         state.marketplaceContext = payload;
         try {
@@ -78,6 +99,12 @@ export default function (/* { ssrContext } */) {
       },
     },
     actions: {
+      setAddress(context, payload){
+        context.commit('SET_ADDRESS', payload);
+      },
+      setCoordinates(context, payload){
+        context.commit('SET_COORDINATES', payload);
+      },
       setVendorContext(context, payload){
         context.commit('SET_VENDOR_CONTEXT', payload);
       },
