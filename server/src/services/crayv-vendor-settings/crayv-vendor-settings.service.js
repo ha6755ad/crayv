@@ -6,7 +6,8 @@ const hooks = require('./crayv-vendor-settings.hooks');
 module.exports = function (app) {
   const options = {
     Model: createModel(app),
-    paginate: app.get('paginate')
+    paginate: app.get('paginate'),
+    whitelist: ['$geoIntersects', '$geometry']
   };
 
   // Initialize our service with any options it requires

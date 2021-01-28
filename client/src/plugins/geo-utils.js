@@ -38,17 +38,14 @@ const createGeoJSONCircle = (center, radiusInKm, points) => {
   ret.push(ret[0]);
 
   return {
-    'type': 'geojson',
-    'data': {
-      'type': 'FeatureCollection',
-      'features': [{
-        'type': 'Feature',
-        'geometry': {
-          'type': 'Polygon',
-          'coordinates': [ret]
-        }
-      }]
-    }
+    type: 'FeatureCollection',
+    features: [{
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [ret]
+      }
+    }]
   };
 };
 

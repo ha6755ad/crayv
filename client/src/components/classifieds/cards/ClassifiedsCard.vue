@@ -6,20 +6,23 @@
     </div>
 
     <q-card style="border-radius: 8px; height: 100%; width: 100%">
-      <multi-image-viewer :value="value" avatar-path="images" default-img="https://ha6755ad-images.s3-us-west-1.amazonaws.com/crayv_standard.svg"></multi-image-viewer>
+      <multi-image-viewer :value="value" avatar-path="images"
+                          default-img="https://ha6755ad-images.s3-us-west-1.amazonaws.com/crayv_standard.svg"></multi-image-viewer>
     </q-card>
     <div class="fill_size q-pa-xs">
-      <div class="row items-center">
-        <div style="width: 80%" class="__one-liner q-pr-sm text-xxs text-mb-xxs text-weight-bold">{{lget(value, 'name')}}</div>
-        <div style="width: 20%" class="flex no-wrap justify-end items-center">
-        <q-icon :name="lget(currency, 'icon')"></q-icon>
-        <div class="text-xs text-mb-xs text-weight-medium">{{dollarString(lget(value, 'price.basePrice'), '', 2)}}</div>
+      <div class="row items-start" style="height: 65px">
+        <div style="width: 80%" class="q-pt-xs q-pr-sm text-xxs text-mb-xxs text-weight-bold">
+          <div class="__one-liner ">{{ lget(value, 'name') }}</div>
+
+          <div class="text-xxs text-mb-xxs text-weight-light">
+            <v-clamp :autoresize="true" :max-lines="2">
+              {{ lget(value, 'description', 'No Description') }}
+            </v-clamp>
+          </div>
         </div>
-      </div>
-      <div class="text-xxs text-mb-xxs" style="height: 36px">
-        <v-clamp :autoresize="true" :max-lines="2">
-        {{lget(value, 'description', 'No Description')}}
-        </v-clamp>
+        <div style="width: 20%">
+          <price-display :value="value.price"></price-display>
+        </div>
       </div>
       <div class="row no-wrap" style="width: 100%; overflow-x: scroll">
         <q-chip
@@ -31,15 +34,15 @@
           icon="mdi-tag"
           :label="$limitStr(tag, 21)">
           <q-tooltip v-if="tag && tag.length > 20">
-            {{tag}}
+            {{ tag }}
           </q-tooltip>
         </q-chip>
       </div>
       <div class="row items-center text-xxs text-mb-xxs text-weight-bold text-grey-6">
-        <div>{{lget(value, 'type') === 'obo' ? 'Best Offer' : 'First Come'}}</div>
+        <div>{{ lget(value, 'type') === 'obo' ? 'Best Offer' : 'First Come' }}</div>
         <q-space></q-space>
         <div>
-          {{lget(value, 'location.city', 'somewhere')}}, {{lget(value, 'location.region')}}
+          {{ lget(value, 'location.city', 'somewhere') }}, {{ lget(value, 'location.region') }}
         </div>
       </div>
     </div>
@@ -68,29 +71,31 @@
   import MultiImageViewer from 'components/common/atoms/images/MultiImageViewer';
   import ClassifiedsForm from 'components/classifieds/forms/ClassifiedsForm';
   import ListingPage from 'components/classifieds/pages/ListingPage';
+  import PriceDisplay from 'components/common/atoms/price/PriceDisplay';
+
   export default {
     name: 'ClassifiedsCard',
-    components: { ListingPage, ClassifiedsForm, MultiImageViewer, VClamp },
+    components: { PriceDisplay, ListingPage, ClassifiedsForm, MultiImageViewer, VClamp },
     props: {
       value: Object
     },
-    data(){
+    data() {
       return {
         editDialog: false,
         fullScreen: false
       };
     },
     computed: {
-      ...mapGetters('auth', {user: 'user'}),
-      ...mapState('currency', {currencies: 'national_currencies'}),
-      ...mapGetters({marketplace: 'marketplaceContext'}),
-      tagList(){
+      ...mapGetters('auth', { user: 'user' }),
+      ...mapState('currency', { currencies: 'national_currencies' }),
+      ...mapGetters({ marketplace: 'marketplaceContext' }),
+      tagList() {
         return Array.from(new Set(this.lget(this.value, 'tags', [])));
       },
-      currency(){
+      currency() {
         return this.$arrayFilterZero(this.currencies.filter(a => a.value === this.lget(this.value, 'price.currency', 'usd')));
       },
-      canEdit(){
+      canEdit() {
         return this.lget(this.value, 'createdBy', 1) === this.lget(this.user, '_id') || this.$isSuperAdmin(this.marketplace) || this.$isAdmin(this.marketplace);
       }
     }
@@ -98,12 +103,12 @@
 </script>
 
 <style scoped lang="scss">
- .__classifieds_card {
-   height: 100%;
-   width: 100%;
-   display: grid;
-   grid-template-columns: 100%;
-   grid-template-rows: 70% 125px;
-   position: relative;
- }
+  .__classifieds_card {
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 70% 125px;
+    position: relative;
+  }
 </style>

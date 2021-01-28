@@ -7,9 +7,9 @@
     <paginate-list
       title="Explore Marketplaces"
       subtitle="Join marketplaces to expand your product reach"
-      search
-      grid
       load-service="crayv-marketplaces"
+      grid
+      adding
       :query-in="{ privacy: 'public', vendorSettings: { $in: lget(vendorContext, 'vendorSettings', []) }
               }"
       :value="null"

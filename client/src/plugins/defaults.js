@@ -191,8 +191,9 @@ module.exports = {
         },
         dollarString(val, test, dec) {
           // console.log('dollar string', val, test)
+          let num = val ? val : 0;
           let decimal = dec || dec === 0 ? dec : 2;
-          let valDec = val.toFixed(decimal);
+          let valDec = num.toFixed(decimal);
           return (test ? test : '') + valDec.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,');
         },
         $dollarString(val, test, dec) {

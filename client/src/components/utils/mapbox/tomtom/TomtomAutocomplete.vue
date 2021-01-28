@@ -6,10 +6,12 @@
 
     <div>
       <q-select
+        :input-class="inputClass"
+        :behavior="behavior"
         :dense="dense"
         ref="addressSelect"
         :label="label"
-        :placeholder="normalizedAddress ? '' : placeholder"
+        :placeholder="normalizedAddress && normalizedAddress[displayPath] ? '' : placeholder"
         :style="{ ...{'max-width': '90vw', width: '100%'}, ...$attrs.inputStyle }"
         hide-bottom-space
         :bg-color="$attrs.bgColor ? $attrs.bgColor : 'white'"
@@ -17,10 +19,11 @@
         :outlined="outlined"
         :hint="hint"
         clearable
+        :use-chips="chips"
         @clear="normalizedAddress = null"
         :dark="dark"
         use-input
-        :value="normalizedAddress ? normalizedAddress.formatted : null"
+        :value="normalizedAddress ? normalizedAddress[displayPath] : null"
         @input-value="setInput"
         @input="geocode"
       >
@@ -51,6 +54,8 @@
   export default {
     name: 'TomtomAutocomplete',
     props: {
+      inputClass: String,
+      behavior: { type: String, default: 'menu' },
       dense: Boolean,
       dark: Boolean,
       label: String,
@@ -84,6 +89,7 @@
         type: Boolean,
         default: true
       },
+      displayPath: { type: String, default: 'formatted' },
       autocomplete: {
         type: String,
         default: 'off'

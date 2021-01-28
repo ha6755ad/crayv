@@ -54,7 +54,7 @@ const relateOto = (
             lset(query, therePath, id);
             let updateObj = { $set: {} };
             lset(updateObj, ['$set', therePath], null);
-            context.app.service(thereService).update(
+            context.app.service(thereService).Model.updateMany(
               { query: query },
               updateObj
             );
@@ -166,7 +166,7 @@ const relateMtm = (
             lset(query, therePath, { $in: [id] });
             let updateObj = { $pull: {} };
             lset(updateObj, ['$pull', therePath], id);
-            context.params.relateMtm_res = context.params.relateMtm_res = await context.app.service(thereService).Model.update(
+            context.params.relateMtm_res = context.params.relateMtm_res = await context.app.service(thereService).Model.updateMany(
               { query: query },
               updateObj
             );
@@ -214,11 +214,11 @@ const relateOtm = (
         if (therePath && thereService) {
           let keyList = flatObjKeyList(hereData);
           if (keyList.includes(herePath)) {
-            let query = {};
+            let query = { _id: { $ne: hereItemId} };
             lset(query, therePath, { $in: [id] });
             let updateObj = { $pull: {} };
             lset(updateObj, ['$pull', therePath], id);
-            context.params.relateOtm_res = context.app.service(thereService).update(
+            context.params.relateOtm_res = context.app.service(thereService).Model.updateMany(
               { query: query },
               updateObj
             );

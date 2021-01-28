@@ -3,7 +3,11 @@
 module.exports = {
   before: {
     all: [],
-    find: [],
+    find: [
+      // context => {
+      //   console.log('before', context.params);
+      // }
+    ],
     get: [],
     create: [],
     update: [],
@@ -13,7 +17,11 @@ module.exports = {
 
   after: {
     all: [],
-    find: [],
+    find: [
+      // context => {
+      //   console.log('after', context.result);
+      // }
+    ],
     get: [],
     create: [],
     update: [],

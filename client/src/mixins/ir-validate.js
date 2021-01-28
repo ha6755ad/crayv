@@ -252,26 +252,26 @@ export const vCheck = {
         let methods = lget(keyProp, 'v');
         if (Array.isArray(methods)) {
           methods.forEach(method => {
-            console.log('checking method', key, form, keyProp);
+            // console.log('checking method', key, form, keyProp);
             let fieldObj = { value: lget(form, key), name: lget(keyProp, 'name', key)};
             let v = method.split(':');
-            console.log('v', v, methods, method);
+            // console.log('v', v, methods, method);
             let prop = v[0];
             let arg = v[1];
-            console.log('prop', prop, validators[prop]);
+            // console.log('prop', prop, validators[prop]);
             let validator = lget(validators, prop);
             let check = validator ? validator['method'](fieldObj, arg) : null;
-            console.log('check', check, fieldObj, arg);
+            // console.log('check', check, fieldObj, arg);
             if (!check) lset(errors, key, validator['err'](fieldObj, arg));
             else {
-              console.log('check success - removing error for ', key);
+              // console.log('check success - removing error for ', key);
               lset(errors, key,  null);
             }
           });
         } else {
 
           let fieldObj = { value: lget(form, key), name: lget(keyProp, 'name', key) };
-          console.log('got field obj', fieldObj, key, form);
+          // console.log('got field obj', fieldObj, key, form);
 
           let prop = lget(methods, 'check');
           let arg = lget(methods, 'arg');
@@ -280,16 +280,16 @@ export const vCheck = {
 
           let format = lget(methods, 'format');
           let error = lget(methods, 'error');
-          console.log('prop', methods, key, prop, validators[prop]);
+          // console.log('prop', methods, key, prop, validators[prop]);
           let validator = lget(validators, prop);
 
           let check = validator ? validator['method'](fieldObj, arg, format) : true;
           // console.log('not array', 'key', key, 'prop', prop, 'arg', arg, 'format', format, 'error', error, 'check', check);
           if (!check){
-            console.log('ggot err', validators[prop].err(fieldObj, arg, error), fieldObj, arg);
+            // console.log('ggot err', validators[prop].err(fieldObj, arg, error), fieldObj, arg);
             lset(errors, key, validator['err'](fieldObj, arg, error));
           } else {
-            console.log('check success - removing error for ', key);
+            // console.log('check success - removing error for ', key);
             lset(errors, key,  null);
           }
         }

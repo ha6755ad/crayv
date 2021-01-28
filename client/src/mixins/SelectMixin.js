@@ -1,3 +1,5 @@
+//options is needed as a local data or computed property for activeValues to work when emitValue is true
+
 export const SelectMixin = {
   data() {
     return {
@@ -11,7 +13,7 @@ export const SelectMixin = {
         this.selected = newVal;
         if (newVal && this.emitValue) {
           setTimeout(() => {
-            if (!this.activeItem) {
+            if (!this.activeItem && this.selectService) {
               if (!this.multiple) {
                 this.$store.dispatch(`${this.selectService}/get`, newVal, this.selectParamsAdders);
               } else if(this.activeIds && this.selectService) {
@@ -60,13 +62,13 @@ export const SelectMixin = {
       return this.selectService ? this.stateActiveItems : this.localActiveItems;
     },
     activeItem() {
-      return this.multiple ? this.lget(this.activeItems, [0]) : this.activeItems;
+      return this.lget(this.activeItems, [0]);
     },
     activeIds() {
       if (this.value) {
         let list = Array.isArray(this.value) ? this.value : [this.value];
         //you an set idval to null to have not map on a non-emitValue component such as when the value is a string or list of strings
-        return !this.emitValue || !this.idVal ? list : list.map(a => a[this.idVal]);
+        return !this.idVal || this.emitValue ? list : list.map(a => a[this.idVal]);
       } else return [];
     },
   },
@@ -77,18 +79,23 @@ export const SelectMixin = {
       this.$emit('rmvInput', val, i);
     },
     isSelected(val) {
-      let id = this.emitValue ? val : val[this.idVal];
+      let id = this.lget(val, this.idVal) ? val[this.idVal] : val;
       return this.activeIds.includes(id);
     },
     selectedIndex(val) {
+      let checkVal = this.idVal ? this.lget(val, this.idVal, val) : val;
       if(this.multiple) {
-        let checkVal = this.idVal ? val[this.idVal] : val;
-        return this.activeIds ? this.activeIds.map(a => JSON.stringify(a)).indexOf(JSON.stringify(checkVal)) : -1;
-      } else return -1;
+        console.log('check val', val, this.activeIds);
+        return this.activeIds && checkVal ? this.activeIds.map(a => JSON.stringify(a)).indexOf(JSON.stringify(checkVal)) : -1;
+      } else if(this.emitValue) {
+        return checkVal === this.value ? 0 : -1;
+      } else {
+        return checkVal === this.lget(this.value[this.idVal], this.value) ? 0 : -1;
+      }
     },
     handleInput(val) {
       let idx = this.selectedIndex(val);
-      console.log('input idx', idx);
+      console.log('input idx', idx, val, this.multiple);
       if (idx === -1) {
         let payload = val;
         if (this.emitValue) {

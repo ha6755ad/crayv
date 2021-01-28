@@ -3,10 +3,7 @@ module.exports = {
     all: [],
     find: [
       context => {
-        console.log('before limit', context.params.query);
-        if (context.params.query.$limit === 9) {
-          console.log('fiind context before', context.params, context.result);
-        }
+        console.log('classifieds before', context.params.query);
       }
     ],
     get: [],
@@ -20,10 +17,7 @@ module.exports = {
     all: [],
     find: [
       context => {
-        console.log('after limit', context.params.query, context.result);
-        if (context.params.query.$limit === 9) {
-          console.log('fiind context after', context.params, context.result);
-        }
+        console.log('classifieds after', context.result);
       }
     ],
     get: [],
@@ -35,7 +29,11 @@ module.exports = {
 
   error: {
     all: [],
-    find: [],
+    find: [
+      context => {
+        console.log('classifieds error', context);
+      }
+    ],
     get: [],
     create: [],
     update: [],

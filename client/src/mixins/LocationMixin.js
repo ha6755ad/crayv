@@ -1,20 +1,22 @@
-import { mapState, mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import lget from 'lodash.get';
 import { LocalStorage } from 'quasar';
 
 export const LocationMixin = {
   mounted(){
-    let state1 = lget(this.coordinates, [1]);
-    console.log('local1', LocalStorage.coordinates);
-    let loc = LocalStorage.coordinates ? LocalStorage.coordinates : null;
-    let local1 = lget(loc, [1]);
-    let coords = state1 ? state1 : local1 ? loc : null;
-    if(coords){
-      if(!lget(this.coordinates, [1])){
-        this.$store.dispatch('setCoordinates', coords);
-      }
-      console.log('coordinates', coords);
-    } else this.setLocation();
+    if(!this.noLocationCheck) {
+      let state1 = lget(this.coordinates, [1]);
+      console.log('local1', LocalStorage.coordinates);
+      let loc = LocalStorage.coordinates ? LocalStorage.coordinates : null;
+      let local1 = lget(loc, [1]);
+      let coords = state1 ? state1 : local1 ? loc : null;
+      if (coords) {
+        if (!lget(this.coordinates, [1])) {
+          this.$store.dispatch('setCoordinates', coords);
+        }
+        console.log('coordinates', coords);
+      } else this.setLocation();
+    }
   },
   data(){
     return {
@@ -26,14 +28,16 @@ export const LocationMixin = {
     latitude: {
       immediate: true,
       handler(newVal){
-        if(this.estimateAddress && newVal && !this.lget(this.address, 'latitude')){
-          this.getAddressFromPoint(this.coordinates);
+        if(!this.noLocationCheck) {
+          if (this.estimateAddress && newVal && !this.lget(this.address, 'latitude')) {
+            this.getAddressFromPoint(this.coordinates);
+          }
         }
       }
     }
   },
   computed: {
-    ...mapState({ coordinates: 'coordinates', address: 'address' }),
+    ...mapGetters({ coordinates: 'coordinates', address: 'address' }),
     latitude(){
       return lget(this.coordinates, [1]);
     },

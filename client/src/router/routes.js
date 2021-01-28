@@ -11,6 +11,11 @@ export default function ({store, ssrContext}) {
           component: () => import('pages/Index.vue')
         },
         {
+          path: 'demo',
+          name: 'demo',
+          component: () => import('../pages/dumbs')
+        },
+        {
           path: 'profile',
           name: 'profile',
           component: () => import('../components/family-pod/personal/ExtendFcProfile')

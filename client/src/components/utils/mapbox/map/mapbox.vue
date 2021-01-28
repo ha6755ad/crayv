@@ -88,6 +88,7 @@
     },
     data() {
       return {
+        mountTries: 0,
         draw: null,
         map: null,
         markers: [],
@@ -123,6 +124,7 @@
       flatPoints: {
         immediate: true,
         handler(newVal) {
+          console.log('flat points change');
           if (newVal && newVal.length > 0 && this.autoZoom) {
             // eslint-disable-next-line no-console
             // console.log('setting view', newVal);
@@ -273,7 +275,7 @@
         this.$emit('pin', lngLat);
       },
       async setMapMarkers(val) {
-        console.log('setting map markers', val);
+        console.log('setting map markers', val, this.customMarker);
         let map = this.map;
         if (this.map && typeof this.map !== 'undefined') {
           await this.markers.forEach(m => {
@@ -306,7 +308,12 @@
           // if (list && list.length > 1) {
           //   this.setBoundingView(val)
           // }
-        } else setTimeout(() => this.setMapMarkers(val), 200);
+        } else {
+          this.mountTries++;
+          if (this.mountTries < 10) {
+            setTimeout(() => this.setMapMarkers(val), 200);
+          } else this.$quickNotify('Unable to display map');
+        }
       },
       setBoundingView(val) {
         // eslint-disable-next-line no-console

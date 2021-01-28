@@ -1,4 +1,5 @@
 const lget = require('lodash.get');
+const lset = require('lodash.set');
 /* eslint-disable no-unused-vars */
 exports.BoundaryFilter = class BoundaryFilter {
   constructor (options) {
@@ -11,7 +12,25 @@ exports.BoundaryFilter = class BoundaryFilter {
 
   async find (params) {
     let service = lget(params, '$boundaryParams.service');
-    return [];
+    let geo = lget(params, '$boundaryParams.geo');
+    let geoField = lget(params, '$boundaryParams.geoField');
+    let query = lget(params, 'query', {});
+    if(geoField) {
+      query[`${geoField}.features.geometry`] = {
+        $geoIntersects: {
+          $geometry: geo
+        }
+      };
+    }
+    console.log('boundary filter', query, service);
+    return await this.app.service(service).find({query: query})
+      .then(res => {
+        console.log('boundary filter res', res);
+        return res;
+      })
+      .catch(err => {
+        throw new Error('boundary filter err ' + err.message)
+      });
   }
 
   async get (id, params) {

@@ -1,23 +1,24 @@
 <template>
   <q-page class="q-pa-md">
 
+    <div class="text-sm text-mb-sm text-weight-bold q-mb-md">Crayv Peer to Peer</div>
+    <div class="row justify-end">
+      <boundary-filter
+        behavior="dialog"
+        flat
+        flex
+        :km="km"
+        @km="km = $event"
+        color="primary"
+        :text-limit="25"
+      ></boundary-filter>
+    </div>
     <top-filter
+      placeholder="Search Listings..."
       v-model="searchInput"
     >
       <template v-slot:bottom>
         <div class="row items-center justify-center">
-          <div class="col-12 col-md-6 col-lg-4">
-            <div class="row justify-center">
-            <boundary-filter
-              flat
-              flex
-              :km="km"
-              @km="km = $event"
-              color="primary"
-              :text-limit="25"
-            ></boundary-filter>
-            </div>
-          </div>
           <div class="col-12 col-md-6 col-lg-4 q-pa-md">
             <div class="row justify-center">
               <div style="width: 100%; max-width: 500px">
@@ -37,23 +38,23 @@
           <div class="col-12 col-md-6 col-lg-4 q-pa-md">
             <div class="row justify-center">
               <div style="width: 100%; max-width: 500px">
-              <div class="row justify-around">
-              <div style="position: relative; width: 200px; max-width: 40%" class="q-mx-sm">
-                <div class="text-xxxs text-mb-xxxs text-weight-light __price_limit">Min Price</div>
-                <q-input @keyup.enter="changeMinMax" @input="minMaxDirty = true" filled dense hide-bottom-space
-                         :clearable="min > 0" @clear="min = 0" v-model.number="min"
-                         input-class="text-xs text-mb-xs text-weight-bold"></q-input>
-              </div>
-              <div style="position: relative; width: 200px; max-width: 40%" class="q-mx-sm">
-                <div class="text-xxxs text-mb-xxxs text-weight-light __price_limit">Max Price</div>
-                <q-input @keyup.enter="changeMinMax" @input="minMaxDirty = true" filled dense hide-bottom-space
-                         clearable
-                         @clear="max = null" v-model.number="max"
-                         input-class="text-xs text-mb-xs text-weight-bold"></q-input>
-              </div>
-              <q-btn color="nice" v-show="minMaxDirty" class="q-mx-xs" push size="sm" label="go"
-                     @click="changeMinMax"></q-btn>
-              </div>
+                <div class="row justify-around">
+                  <div style="position: relative; width: 200px; max-width: 40%" class="q-mx-sm">
+                    <div class="text-xxxs text-mb-xxxs text-weight-light __price_limit">Min Price</div>
+                    <q-input @keyup.enter="changeMinMax" @input="minMaxDirty = true" filled dense hide-bottom-space
+                             :clearable="min > 0" @clear="min = 0" v-model.number="min"
+                             input-class="text-xs text-mb-xs text-weight-bold"></q-input>
+                  </div>
+                  <div style="position: relative; width: 200px; max-width: 40%" class="q-mx-sm">
+                    <div class="text-xxxs text-mb-xxxs text-weight-light __price_limit">Max Price</div>
+                    <q-input @keyup.enter="changeMinMax" @input="minMaxDirty = true" filled dense hide-bottom-space
+                             clearable
+                             @clear="max = null" v-model.number="max"
+                             input-class="text-xs text-mb-xs text-weight-bold"></q-input>
+                  </div>
+                  <q-btn color="nice" v-show="minMaxDirty" class="q-mx-xs" push size="sm" label="go"
+                         @click="changeMinMax"></q-btn>
+                </div>
               </div>
             </div>
           </div>
@@ -61,9 +62,10 @@
       </template>
     </top-filter>
 
+    <q-separator dark class="q-my-md"></q-separator>
     <paginate-list
-      title="Peer to peer Exchange"
-      load-service="crayv-classifieds"
+      load-service="boundary-filter"
+      :params-in="params"
       :query-in="query"
       grid
       :search-input-in="searchInput"
@@ -90,6 +92,7 @@
   import TopFilter from 'components/common/atoms/filters/TopFilter';
   import TagPicker from 'components/common/atoms/pickers/TagPicker';
   import BoundaryFilter from 'components/common/atoms/filters/BoundaryFilter';
+  import {mapGetters} from 'vuex';
 
   export default {
     name: 'ForSale',
@@ -105,13 +108,18 @@
         max: null,
         useMin: 0,
         useMax: null,
-        km: 10
+        km: 40
       };
     },
     computed: {
+      ...mapGetters({ coordinates: 'coordinates' }),
       query() {
         let query = {
-          $sort: { createdAt: -1 }
+          $sort: { createdAt: -1 },
+          // $or: [
+          //   { sold: { $exists: false } },
+          //   { sold: { $in: [undefined, null] } },
+          // ]
         };
         if (this.lget(this.tagFilter, [0])) {
           query.tags = { $in: this.tagFilter };
@@ -123,6 +131,17 @@
           query['price.basePrice'] = { $lte: this.useMin };
         }
         return query;
+      },
+      params(){
+        let geo = this.$createGeoJSONCircle(this.coordinates, this.km);
+        console.log('geo create', geo);
+        return {
+          $boundaryParams: {
+            service: 'crayv-classifieds',
+            geo: geo.features[0].geometry,
+            geoField: 'boundary'
+          }
+        };
       }
     },
     methods: {

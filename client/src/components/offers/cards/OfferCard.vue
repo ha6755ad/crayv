@@ -19,12 +19,7 @@
     </div>
 
     <div class="row justify-end">
-      <div style="width: 20%" class="flex no-wrap justify-end items-center">
-        <q-icon :name="lget(currency, 'icon')"></q-icon>
-        <div class="text-xs text-mb-xs text-weight-medium">
-          {{ dollarString(lget(value, 'price.basePrice', 0), '', 2) }}
-        </div>
-      </div>
+      <price-display :value="value.price"></price-display>
     </div>
     <div class="text-xxs text-mb-xxs">
       <div>{{ value.content }}</div>
@@ -53,10 +48,11 @@
   import Comments from 'components/comments/cards/Comments';
   import OfferActions from 'components/offers/cards/OfferActions';
   import ClassifiedsItem from 'components/classifieds/cards/ClassifiedsItem';
+  import PriceDisplay from 'components/common/atoms/price/PriceDisplay';
 
   export default {
     name: 'OfferCard',
-    components: { ClassifiedsItem, OfferActions, DefaultAvatar, Comments },
+    components: { PriceDisplay, ClassifiedsItem, OfferActions, DefaultAvatar, Comments },
     props: {
       withSubject: Boolean,
       borderColor: String,

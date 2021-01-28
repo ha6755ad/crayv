@@ -8,6 +8,12 @@
         {{ subtitle }}
       </div>
     </div>
+    <div class="row justify-end">
+      <div v-if="adding && !select" class="row justify-end">
+        <q-btn push color="nice" size="sm" :label="addLabel" icon="mdi-plus" @click="addDialog = true"></q-btn>
+      </div>
+    </div>
+    <slot name="top"></slot>
     <load-and-paginate
       :search-input-in="searchInputIn"
       :filter="filter"
@@ -22,11 +28,9 @@
       :search-placeholder="searchPlaceholder"
       :search-label="searchLabel"
       :paginator="paginator"
+      @options="options = $event"
     >
       <template v-slot:list="scope">
-        <div v-if="adding && grid" class="row justify-end">
-          <q-btn push color="nice" size="sm" :label="addLabel" icon="mdi-plus" @click="addDialog = true"></q-btn>
-        </div>
         <div v-if="emptyMessage && (!scope.items || !scope.items.length)"
              class="text-xs text-mb-xs text-italic q-pa-md">{{ emptyMessage }}
         </div>
@@ -35,6 +39,7 @@
           :style="{
             gridTemplateColumns: `repeat(auto-fill, minmax(${colMinMax}`,
             gridTemplateRows: `repeat(auto-fill, minmax(${rowMinMax}`,
+            gridGap: gridGap
              }">
           <div style="width: 100%" v-for="(item, i) in scope.items" :key="`item-${i}`"
           >
@@ -42,7 +47,7 @@
           </div>
         </div>
         <q-list separator v-if="!select && !grid">
-          <add-list-item :dark="dark" :title="addLabel" v-if="adding" @add="addDialog = true"></add-list-item>
+<!--          <add-list-item :dark="dark" :title="addLabel" v-if="adding" @add="addDialog = true"></add-list-item>-->
           <div v-for="(item, i) in scope.items" :key="`product-${i}`" style="width: 100%">
             <slot name="list-item" :scope="scope" :item="item" :index="i" :handleInput="handleInput"></slot>
           </div>
@@ -64,15 +69,15 @@
             <add-list-item :dark="dark" @add="addDialog = true" :title="addLabel"></add-list-item>
           </template>
           <template v-slot:selected-item="selectedScope">
-            <slot name="chip" :scope="selectedScope"></slot>
+            <slot name="chip" :item="selectedScope.opt" :index="selectedScope.index" :handleInput="handleInput" :selectedScope="selectedScope"></slot>
           </template>
           <template v-slot:option="optionScope">
-            <slot name="chip" :scope="optionScope"></slot>
+            <slot name="option" :item="optionScope.opt" :index="optionScope.index" :handleInput="handleInput" :optionScope="optionScope"></slot>
           </template>
         </q-select>
       </template>
       <template v-slot:bottom="scope">
-       <slot name="bottom" :total="scope.total"></slot>
+        <slot name="bottom" :total="scope.total"></slot>
       </template>
     </load-and-paginate>
 
@@ -110,6 +115,7 @@
       dark: Boolean,
       colMinMax: { type: String, default: '330px, 360px' },
       rowMinMax: { type: String, default: '300px, 330px' },
+      gridGap: { type: String, default: '20px' },
       searchPlaceholder: { type: String, default: 'Search...' },
       searchLabel: { type: String },
       paginator: { type: Boolean, default: true },
@@ -134,6 +140,7 @@
         required: false
       },
       emitValue: Boolean,
+      optionValue: String,
       multiple: { type: Boolean, default: true },
       adding: Boolean,
       search: Boolean,
@@ -145,7 +152,7 @@
       queryIn: Object,
       paramsIn: Object,
       value: {
-        required: true
+        required: false
       }
     },
     mounted() {
@@ -154,7 +161,8 @@
     data() {
       return {
         searchInput: '',
-        addDialog: false
+        addDialog: false,
+        options: []
       };
     },
     watch: {
@@ -204,5 +212,6 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(330px, 360px));
     grid-template-rows: repeat( auto-fill, minmax(300px, 330px));
+    grid-gap: 10px;
   }
 </style>

@@ -15,16 +15,11 @@
         <div class="q-pa-md q-pt-xl">
 
           <div class="row justify-end">
-            <div style="width: 20%" class="flex no-wrap justify-end items-center">
-              <q-icon :name="lget(currency, 'icon')"></q-icon>
-              <div class="text-xs text-mb-xs text-weight-medium">
-                {{ dollarString(lget(listing, 'price.basePrice', 0), '', 2) }}
-              </div>
-            </div>
+            <price-display :value="lget(listing, 'price')"></price-display>
           </div>
           <div style="width: 80%" class="q-pr-sm text-sm text-mb-sm text-weight-bold">{{ lget(listing, 'name') }}</div>
 
-          <div class="text-xs text-mb-xs" style="height: 36px">
+          <div class="text-xs text-mb-xs">
             {{ lget(listing, 'description', 'No Description') }}
           </div>
           <div class="row q-my-sm" style="width: 100%; overflow-x: scroll">
@@ -45,6 +40,9 @@
           <div class="text-xs text-mb-xs text-weight-bold text-grey-6">
             {{ lget(listing, 'location.city', 'somewhere') }}, {{ lget(listing, 'location.region') }}
           </div>
+          <div class="row">
+            <q-toggle label="show delivery area" :value="mapShow !== 'pickup'" @input="val => val ? mapShow = 'boundary' : mapShow = 'pickup'"></q-toggle>
+          </div>
           <div class="row justify-center q-my-md">
             <q-card
               :style="{
@@ -53,7 +51,14 @@
             borderRadius: '10px'
           }"
             >
-              <mapbox :max-zoom="14" :zoom="11" custom-marker :markers-in="[latLng]" :center="latLng"></mapbox>
+              <mapbox
+                :max-zoom="mapShow === 'boundary' ? 15 : 12"
+                :zoom="8"
+                :custom-marker="mapShow === 'pickup'"
+                :markers-in="mapShow === 'boundary' ? null : [latLng]"
+                :polygons="mapShow === 'boundary'"
+                :geo-in="lget(listing, 'boundary')"
+                :center="latLng"></mapbox>
             </q-card>
           </div>
 
@@ -83,11 +88,22 @@
   import Mapbox from 'components/utils/mapbox/map/mapbox';
   import OffersCard from 'components/offers/cards/OffersCard';
   import OfferCard from 'components/offers/cards/OfferCard';
+  import PriceDisplay from 'components/common/atoms/price/PriceDisplay';
 
   export default {
-    components: { OfferCard, OffersCard, Mapbox, MultiImageViewer },
+    components: { PriceDisplay, OfferCard, OffersCard, Mapbox, MultiImageViewer },
     props: {
       value: Object
+    },
+    mounted(){
+      if(!this.$lisEmpty(this.lget(this.value, 'boundary'))){
+        this.mapShow = 'boundary';
+      }
+    },
+    data(){
+      return {
+        mapShow: 'pickup'
+      };
     },
     watch: {
       listingId: {

@@ -13,6 +13,7 @@
       :params-in="{$populateParams: { name: 'withSubject' }}"
       grid
       :filter="filter"
+      :value="null"
     >
       <template v-slot:card="scope">
         <offer-card :value="scope.item" with-subject></offer-card>

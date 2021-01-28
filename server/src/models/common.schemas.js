@@ -1,22 +1,20 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const GeoLocation = {
+const GeoLocation = new Schema({
   type: { type: String, default: 'FeatureCollection' },
   allowFeatures: [{ type: String, enum: ['Point', 'MultiPoint', 'Polygon'] }],
   features: [{
-    type: Object, contains: {
-      schedule_items: { type: Array }, //uuid
-      geometry: {
-        type: { type: String, required: true, enum: ['Point', 'Polygon'], default: 'Point' },
-        coordinates: { type: Array, required: false },
-      },
-      properties: { type: Object, required: false },
-      addresses: [],
-    }
-  }
-  ]
-};
+    type: { type: String, enum: ['Feature'] },
+    schedule_items: { type: Array }, //uuid
+    geometry: {
+      type: { type: String, required: true, enum: ['Point', 'Polygon'], default: 'Point' },
+      coordinates: { type: Array, required: false },
+    },
+    properties: { type: Object, required: false },
+    addresses: [],
+  }]
+});
 
 const UniquePhone = new Schema({
   phoneType: { type: String, required: false },
@@ -150,7 +148,12 @@ const Schedule = new Schema({
       times: [Number]
     }
   },
-  blackoutDates: {type: Array, contains: { start: { year: Number, month: Number, date: Number, hour: Number, minute: Number }, end: { year: Number, month: Number, date: Number, hour: Number, minute: Number } }}
+  blackoutDates: { type: Array,
+    contains: {
+      start: { year: Number, month: Number, date: Number, hour: Number, minute: Number },
+      end: { year: Number, month: Number, date: Number, hour: Number, minute: Number }
+    }
+  }
 });
 
 const Pricing = new Schema({
@@ -256,14 +259,14 @@ const taxItem = new Schema({
 const ProductSettings = new Schema({
   trackInventory: { type: Boolean },
   taxExempt: Boolean,
-  capacity: {type: Capacity},
+  capacity: { type: Capacity },
   taxes: [{
     areaIds: [{ type: String }], //'*' for all
     sales: { type: taxItem },
     local: { type: taxItem },
     other: { type: taxItem }
   }],
-  schedule: {type: Schedule},
+  schedule: { type: Schedule },
   boundaries: { type: GeoLocation }
 }, { _id: false });
 
@@ -273,16 +276,16 @@ const VendorSettings = new Schema({
   automateTaxes: Boolean,
   trackInventory: { type: Boolean },
   taxExempt: Boolean,
-  capacity: {type: Capacity},
+  capacity: { type: Capacity },
   taxes: [{
     areaId: { type: String },
     postal_codes: [{ type: String }],
-    cities: [{type: String}],
+    cities: [{ type: String }],
     sales: { type: taxItem },
     local: { type: taxItem },
     other: { type: taxItem }
   }],
-  schedule: {type: Schedule},
+  schedule: { type: Schedule },
 });
 
 const privacyEnum = ['public', 'permission', 'private'];

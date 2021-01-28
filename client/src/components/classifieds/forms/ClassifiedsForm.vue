@@ -97,7 +97,7 @@
               :label="km"
             >
               <q-list>
-                <q-item v-for="i in 10" :key="`level-${i}`" clickable @click="km =  i * 10">
+                <q-item v-for="i in 10" :key="`level-${i}`" clickable @click="addRadius(i * 10)">
                   <q-item-section>
                     <q-item-label class="text-center text-xs text-mb-xs text-weight-bold">{{ i * 10 }}km</q-item-label>
                   </q-item-section>
@@ -157,7 +157,11 @@
       value: Object
     },
     mounted() {
-      if (this.value) Object.assign(this.form, Object.assign({}, this.value));
+      if (this.value){
+        Object.assign(this.form, Object.assign({}, this.value));
+      } else {
+        this.addPoint();
+      }
       if (this.lget(this.value, 'boundary.features', []).some(a => a.name)) {
         this.boundaryType = 'draw';
       }
@@ -199,16 +203,37 @@
           'price.basePrice': { name: 'Price', v: ['notEmpty'] },
           'price.currency': { name: 'Currency', v: ['notEmpty'] },
           tags: { name: 'Tags', v: ['arrayLength:1'] },
-          'location.latitude': { name: 'Location', v: ['notEmpty'] }
+          'location.latitude': { name: 'Location', v: ['notEmpty'] },
+          'boundary.featrues': { name: 'Delivery area or location' }, v: ['arrayLength:1']
         };
       }
     },
     methods: {
+      pointGeo(val) {
+        let point = val ? val : this.coordinates;
+        return {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: point
+              }
+            }
+          ]
+        };
+      },
+      addPoint(val) {
+        this.form.boundary = this.pointGeo(val);
+      },
+
       addRadius(val) {
         this.km = val;
         let geo = this.$createGeoJSONCircle(this.center, val);
+        console.log('add radius', geo);
         if (geo) {
-          this.form.boundary = geo.data;
+          this.form.boundary = geo;
         } else this.$quickNotify('Error setting radius - try again');
       },
       changeType(val) {
@@ -222,16 +247,18 @@
             this.form.boundary = null;
             this.boundaryType = val;
             if (val === 'point') {
+              this.addPoint();
               this.$lset(this.form, 'price.delivery.basePrice', undefined);
-            } else if(val === 'radius'){
+            } else if (val === 'radius') {
               this.addRadius(this.km);
             }
           });
         } else {
           this.boundaryType = val;
           if (val === 'point') {
+            this.addPoint();
             this.$lset(this.form, 'price.delivery.basePrice', undefined);
-          } else if(val === 'radius'){
+          } else if (val === 'radius') {
             this.addRadius(this.km);
           }
         }
@@ -243,6 +270,9 @@
           $addToSet: { addresses: val }
         }]);
         this.addingAddress = false;
+        setTimeout(() => {
+          this.addPoint(this.center);
+        }, 50);
       },
       save() {
         const errors = this.$vCheck(this.form);
@@ -251,8 +281,13 @@
             this.$vErrNotify(err);
           });
         } else {
+          console.log('saving', this.form);
+          // this.$store.dispatch('crayv-classifieds/patch', [this.form._id, {
+          //   boundary: this.form.boundary
+          // }])
           this.form.save()
             .then(res => {
+              console.log('saved', res);
               this.$emit('input', res);
               this.$successNotify('For Sale!');
             })

@@ -1,5 +1,5 @@
 <template>
-  <q-item dense clickable @click="$emit('add')">
+  <q-item clickable @click="$emit('add')">
     <q-item-section avatar>
       <q-btn dense flat :icon="icon" size="sm" :color="color"></q-btn>
     </q-item-section>

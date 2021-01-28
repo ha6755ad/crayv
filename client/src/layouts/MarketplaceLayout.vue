@@ -1,5 +1,6 @@
 <template>
   <q-layout view="HHh LpR FFF">
+    <template v-if="false">
     <q-header>
       <q-toolbar style="box-shadow: 0 0 10px rgba(0,0,0,.15)" class="bg-white">
         <div style="height: 60px; width: 100vw" class="row items-center">
@@ -73,6 +74,36 @@
     <q-page-container>
       <router-view></router-view>
     </q-page-container>
+    </template>
+    <template v-else>
+      <q-page-container>
+      <q-page class="flex flex-center bg-nice">
+        <div style="border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,.4); min-height: 40vh; width: 700px; max-width: 95vw" class="flex flex-center q-pa-md bg-white">
+          <div class="row justify-center q-py-md">
+            <div class="text-sm text-mb-sm text-weight-bold text-center">
+              <div>
+                Looks like your {{$q.screen.lt.md ? 'phone' : 'computer'}} is being stingy with your location
+                .</div>
+              <div class="text-xs text-mb-xs text-weight-light">
+                We can't show you products unless we know who's selling in your area.
+              </div>
+            </div>
+          </div>
+          <div style="width: 500px; max-width: 100%">
+          <tomtom-autocomplete
+            outlined
+            placeholder="Enter Your City..."
+            item_text="formatted"
+            @input="addAddress"
+            display-path="city"
+            :value="address"
+            input-class="text-xs text-mb-xs text-weight-medium"
+          ></tomtom-autocomplete>
+          </div>
+        </div>
+      </q-page>
+      </q-page-container>
+    </template>
   </q-layout>
 </template>
 
@@ -84,11 +115,12 @@
   import Register from 'components/auth/Register';
   import Login from 'components/auth/Login';
   import {LocationMixin} from 'src/mixins/LocationMixin';
+  import TomtomAutocomplete from 'components/utils/mapbox/tomtom/TomtomAutocomplete';
 
   export default {
     name: 'MarketplaceLayout',
     mixins: [MarketPlaceDrawer, LocationMixin],
-    components: { Login, Register, MarketplaceNavItem, MarketplaceDrawer },
+    components: { TomtomAutocomplete, Login, Register, MarketplaceNavItem, MarketplaceDrawer },
     data() {
       return {
         drawer: false,
@@ -168,6 +200,14 @@
 
     },
     methods: {
+      addAddress(val) {
+        let lng = this.lget(val, 'longitude');
+        let lat = this.lget(val, 'latitude');
+        if (lng && lat) {
+          this.$store.dispatch('setCoordinates', [lng, lat]);
+          this.$store.dispatch('setAddress', val);
+        }
+      },
       login(val) {
         this.registering = val;
         this.loginDialog = true;
