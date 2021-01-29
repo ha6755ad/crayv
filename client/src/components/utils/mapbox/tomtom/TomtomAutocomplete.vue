@@ -1,10 +1,6 @@
 <template>
-  <div>
-    <!--    <FeathersVuexFind service="places-query-auto-complete" :query="{input: input}" watch="query"-->
-    <!--                      :queryWhen="() => (input && input.length > 3)">-->
-    <!--      <section class="admin-categories" slot-scope="{ items: addresses }">-->
 
-    <div>
+    <div style="width: 100%;">
       <q-select
         :input-class="inputClass"
         :behavior="behavior"
@@ -19,7 +15,6 @@
         :outlined="outlined"
         :hint="hint"
         clearable
-        :use-chips="chips"
         @clear="normalizedAddress = null"
         :dark="dark"
         use-input
@@ -29,6 +24,9 @@
       >
         <template v-slot:prepend>
           <slot name="prepend"></slot>
+        </template>
+        <template v-slot:selected-item="scope" v-if="chips">
+          <q-chip icon="mdi-map-marker" v-show="scope.opt" square dark :label="scope.opt" removable @remove="removeAddress"></q-chip>
         </template>
         <template v-slot:append>
           <q-spinner size="30px" v-if="loading"></q-spinner>
@@ -43,13 +41,25 @@
       </q-select>
     </div>
 
-    <!--      </section>-->
-    <!--    </FeathersVuexFind>-->
-  </div>
 </template>
 
 <script>
   import {mapState, mapGetters, mapMutations, mapActions} from 'vuex';
+
+  const defaultAddress = () => {
+    return {
+      formatted: '',
+      address1: '',
+      address2: '',
+      region: '',
+      city: '',
+      postal: '',
+      country: '',
+      latitude: null,
+      longitude: null,
+      tomtomAddress: {}
+    };
+  };
 
   export default {
     name: 'TomtomAutocomplete',
@@ -115,18 +125,7 @@
         options: [null],
         geoLoading: false,
         addresses: [],
-        normalizedAddress: {
-          formatted: '',
-          address1: '',
-          address2: '',
-          region: '',
-          city: '',
-          postal: '',
-          country: '',
-          latitude: null,
-          longitude: null,
-          tomtomAddress: {}
-        }
+        normalizedAddress: defaultAddress()
       };
     },
     watch: {
@@ -165,6 +164,10 @@
       ...mapMutations('tomtom-geocode', { clearAddresses: 'clearAll' }),
       // ...mapActions('tomtom-autocomplete', {findAddresses: 'find'}),
       ...mapActions('tomtom-geocode', { findgeocoded: 'find' }),
+      removeAddress(){
+        this.$emit('input', undefined);
+        this.normalizedAddress = defaultAddress();
+      },
       // eslint-disable-next-line no-unused-vars
       async setInput(val) {
         this.input = val;

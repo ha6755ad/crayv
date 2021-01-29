@@ -116,10 +116,10 @@
       query() {
         let query = {
           $sort: { createdAt: -1 },
-          // $or: [
-          //   { sold: { $exists: false } },
-          //   { sold: { $in: [undefined, null] } },
-          // ]
+          $or: [
+            { sold: { $exists: false } },
+            { sold: { $in: [undefined, null] } },
+          ]
         };
         if (this.lget(this.tagFilter, [0])) {
           query.tags = { $in: this.tagFilter };

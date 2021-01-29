@@ -14,7 +14,8 @@
       </div>
     </div>
     <slot name="top"></slot>
-    <load-and-paginate
+    <component
+      :is="activeComponent"
       :search-input-in="searchInputIn"
       :filter="filter"
       :qid-in="qidIn"
@@ -28,9 +29,13 @@
       :search-placeholder="searchPlaceholder"
       :search-label="searchLabel"
       :paginator="paginator"
+      :options="optionsIn"
       @options="options = $event"
     >
       <template v-slot:list="scope">
+        <div v-if="adding && grid" class="row justify-end">
+          <q-btn push color="nice" size="sm" :label="addLabel" icon="mdi-plus" @click="addDialog = true"></q-btn>
+        </div>
         <div v-if="emptyMessage && (!scope.items || !scope.items.length)"
              class="text-xs text-mb-xs text-italic q-pa-md">{{ emptyMessage }}
         </div>
@@ -53,6 +58,7 @@
           </div>
         </q-list>
         <q-select
+          :placeholder="selected ? '' : searchPlaceholder"
           :label="searchLabel"
           v-if="select"
           :options="scope.items"
@@ -77,9 +83,9 @@
         </q-select>
       </template>
       <template v-slot:bottom="scope">
-        <slot name="bottom" :total="scope.total"></slot>
+       <slot name="bottom" :total="scope.total"></slot>
       </template>
-    </load-and-paginate>
+    </component>
 
     <q-dialog :position="formPosition" :maximized="formMax" :transition-hide="transitionHide"
               :transition-show="transitionShow"
@@ -96,14 +102,16 @@
   import {mapGetters} from 'vuex';
   import {SelectMixin} from 'src/mixins/SelectMixin';
   import AddListItem from 'components/common/atoms/search/AddListItem';
+  import Paginate from 'components/common/atoms/loading/Paginate';
 
   export default {
     name: 'PaginateList',
     mixins: [SelectMixin],
     components: { AddListItem, LoadAndPaginate },
     props: {
+      optionsIn: Array,
       filter: Function,
-      emptyMessage: String,
+      emptyMessage: { type: String, default: 'No Options...' },
       formMaximized: Boolean,
       formCardStyle: { type: [String, Object], default: 'width: 600px; max-width: 100vw; height: 100vh' },
       formPosition: { type: String, default: 'right' },
@@ -177,6 +185,9 @@
     },
     computed: {
       ...mapGetters('auth', { user: 'user' }),
+      activeComponent(){
+        return this.loadService ? LoadAndPaginate : Paginate;
+      },
       formMax() {
         return this.formMaximized || this.formMaximized === false ? this.formMaximized : this.$q.screen.lt.sm;
       },

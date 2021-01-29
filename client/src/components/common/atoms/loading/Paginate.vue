@@ -1,10 +1,10 @@
 <template>
   <div class="fill_size">
-    <div class="row justify-end q-my-sm" v-if="paginatorTop">
+    <div class="row justify-end q-my-sm" v-if="paginatorTop && (total > limit)">
       <btn-paginator
         :dark="dark"
-        :pages="itemsPages"
-        v-model="itemsCurrentPage"
+        :pages="pages"
+        v-model="page"
       ></btn-paginator>
     </div>
     <div :class="searchClass" v-if="search">
@@ -20,11 +20,11 @@
       </div>
     </div>
     <slot name="list" :items="useItems"></slot>
-    <div class="row justify-end q-my-sm" v-if="paginator && !paginatorTop && (total > itemsLimit)">
+    <div class="row justify-end q-my-sm" v-if="paginator && !paginatorTop && (total > limit)">
       <btn-paginator
         :dark="dark"
-        :pages="itemsPages"
-        v-model="itemsCurrentPage"
+        :pages="pages"
+        v-model="page"
       ></btn-paginator>
     </div>
     <slot name="bottom" :total="total"></slot>
@@ -33,43 +33,11 @@
 <script>
   import BtnPaginator from 'components/common/atoms/pagination/BtnPaginator';
   import SearchItem from 'components/common/atoms/search/SearchItem';
-  import {makeFindPaginateMixin} from '@ionrev/iy-common-client-lib';
 
 
   export default {
-    name: 'LoadAndPaginate',
-    mixins: [makeFindPaginateMixin({
-      name: 'items',
-      qid: 'items',
-      service() {
-        return this.loadService;
-      },
-      query() {
-        let text = this.searchInput;
-        let query = {};
-        if (text && typeof (text) === 'string' && text.length) {
-          let nameSearch = {
-            $regex: `${text}`,
-            $options: 'igm'
-          };
-          if (this.tagSearch) {
-            let nameObj = {};
-            nameObj[this.filterName] = nameSearch;
-            let tagObj = {};
-            let patternExp = new RegExp(text, 'igm');
-            tagObj[this.useTagPath] = { $in: [patternExp] };
-            query.$or = [nameObj, tagObj];
-          } else {
-            query[this.filterName] = nameSearch;
-          }
-        }
-        console.log('change in query', { ...query, ...this.queryAdders });
-        return { ...query, ...this.queryAdders };
-      },
-      params() {
-        return this.paramsAdders;
-      },
-    })],
+    name: 'Paginate',
+    mixins: [],
     components: { SearchItem, BtnPaginator },
     props: {
       filter: Function,
@@ -80,18 +48,7 @@
         type: Boolean,
         default: false
       },
-      queryAdders: {
-        type: Object,
-        default: () => {
-          return {};
-        }
-      },
-      paramsAdders: {
-        type: Object,
-        default: () => {
-          return {};
-        }
-      },
+      optionsIn: Array,
       rounded: Boolean,
       tagSearch: Boolean,
       loadOnMount: Boolean,
@@ -105,12 +62,8 @@
         type: String,
         default: 'q-my-sm'
       },
-      useTagPath: { type: String, default: 'tags' },
-      loadService: String,
-      //you can simply increment the load event to trigger new load
-      loadWatch: {
-        required: false
-      }
+      limit: { type: Number, default: 15 },
+      useTagPath: { type: String },
     },
     mounted() {
       // this.$watch('qidIn', (newVal) => {
@@ -120,6 +73,7 @@
     data() {
       return {
         searchInput: '',
+        page: 0
         // itemsQid: 'items'
       };
     },
@@ -132,12 +86,6 @@
           }
         }
       },
-      paginateLoading: {
-        immediate: true,
-        handler(newVal) {
-          this.$emit('loading', newVal);
-        }
-      },
       watch: {
         useItems: {
           immediate: true,
@@ -148,19 +96,20 @@
       }
     },
     computed: {
-      useItems(){
-        if(this.filter){
-          return this.filter(this.items);
-        } else return this.items;
+      pages(){
+        return Math.ceil(this.total / this.limit);
       },
-      qid(){
-        return this.qidIn ? this.qidIn : 'items';
+      useItems(){
+        let list = this.optionsIn ? this.optionsIn : [];
+        let filteredList = this.total > this.limit ? list.filter((a,i) => {
+          return i >= this.limit * this.page && i < (this.limit * (this.page + 1));
+        }) : list;
+        let keyList = [this.filterName];
+        if(this.useTagPath) keyList.push(this.useTagPath);
+        return this.searchAndMatch(filteredList, this.searchInput, keyList);
       },
       total(){
-        return this.lget(this.itemsPaginationData, 'default.mostRecent.total', 0);
-      },
-      paginateLoading() {
-        return this.$store.state[this.loadService]['isFindPending'];
+        return this.optionsIn ? this.optionsIn.length : 0;
       },
       // stateItems(){
       //   return this[$lcamelCase(this.name)].map(a => a.clone());

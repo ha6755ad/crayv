@@ -1,107 +1,96 @@
 <template>
   <q-layout view="HHh LpR FFF">
-    <template v-if="false">
-    <q-header>
-      <q-toolbar style="box-shadow: 0 0 10px rgba(0,0,0,.15)" class="bg-white">
-        <div style="height: 60px; width: 100vw" class="row items-center">
-          <q-btn icon="mdi-menu" @click="drawer = !drawer" dense flat color="dark"></q-btn>
-          <q-card style="height: 40px; width: 40px" flat class="bg-transparent q-mx-sm pointer" @click="$routerPreserve({name: 'marketplace-home'})">
-            <q-img contain :src="getAvatar(marketplace, 'avatar')"></q-img>
-          </q-card>
-          <q-space></q-space>
-          <div class="flex items-center text-dark">
-            <template v-if="!user || !user._id">
-              <div class="text-0-9 q-mr-sm text-weight-medium text-uppercase pointer" @click="login(false)">Login</div>
-              <q-separator vertical/>
-              <div class="text-0-9 q-ml-sm q-mr-md text-weight-medium text-uppercase pointer" @click="login(true)">Signup</div>
-              <q-dialog v-model="loginDialog">
-                <q-card style="width: 600px; max-width: 100vw">
-                  <q-btn v-show="!registering" size="sm" flat label="sign up" class="t-r" @click="registering=true"/>
-                  <q-btn v-show="registering" size="sm" flat label="login" class="t-r" @click="registering=false"/>
-                  <template v-if="registering">
-                    <register></register>
-                  </template>
-                  <template v-else>
-                    <login></login>
-                  </template>
-                </q-card>
-              </q-dialog>
-            </template>
-            <template v-else>
-              <div class="text-0-9 q-ml-sm q-mr-md text-weight-medium text-uppercase pointer"
-                   @click="$store.dispatch('auth/logout')">Logout
-              </div>
-            </template>
-            <q-card flat class="bg-transparent" style="height: 30px; width: 30px">
-              <q-img contain src="https://ha6755ad-images.s3-us-west-1.amazonaws.com/crayv_standard.svg"></q-img>
+    <template v-if="latitude">
+      <q-header>
+        <q-toolbar style="box-shadow: 0 0 10px rgba(0,0,0,.15)" class="bg-white">
+          <div style="height: 60px; width: 100vw" class="row items-center">
+            <q-btn icon="mdi-menu" @click="drawer = !drawer" dense flat color="dark"></q-btn>
+            <q-card style="height: 40px; width: 40px" flat class="bg-transparent q-mx-sm pointer"
+                    @click="$routerPreserve({name: 'marketplace-home'})">
+              <q-img contain :src="getAvatar(marketplace, 'avatar')"></q-img>
             </q-card>
-<!--            <q-btn round flat class="q-mx-sm" icon="mdi-cart" @click="cartDrawer = !cartDrawer"></q-btn>-->
+            <q-space></q-space>
+            <div class="flex items-center text-dark">
+              <template v-if="!user || !user._id">
+                <div class="text-0-9 q-mr-sm text-weight-medium text-uppercase pointer" @click="login(false)">Login
+                </div>
+                <q-separator vertical/>
+                <div class="text-0-9 q-ml-sm q-mr-md text-weight-medium text-uppercase pointer" @click="login(true)">
+                  Signup
+                </div>
+                <q-dialog v-model="loginDialog">
+                  <q-card style="width: 600px; max-width: 100vw">
+                    <q-btn v-show="!registering" size="sm" flat label="sign up" class="t-r" @click="registering=true"/>
+                    <q-btn v-show="registering" size="sm" flat label="login" class="t-r" @click="registering=false"/>
+                    <template v-if="registering">
+                      <register></register>
+                    </template>
+                    <template v-else>
+                      <login></login>
+                    </template>
+                  </q-card>
+                </q-dialog>
+              </template>
+              <template v-else>
+                <div class="text-0-9 q-ml-sm q-mr-md text-weight-medium text-uppercase pointer"
+                     @click="$store.dispatch('auth/logout')">Logout
+                </div>
+              </template>
+              <q-card flat class="bg-transparent" style="height: 30px; width: 30px">
+                <q-img contain src="https://ha6755ad-images.s3-us-west-1.amazonaws.com/crayv_standard.svg"></q-img>
+              </q-card>
+              <!--            <q-btn round flat class="q-mx-sm" icon="mdi-cart" @click="cartDrawer = !cartDrawer"></q-btn>-->
+            </div>
           </div>
-        </div>
-      </q-toolbar>
-    </q-header>
-    <q-drawer
-      v-model="drawer"
-      show-if-above
-      bordered
-      content-class="bg-light"
-    >
-      <q-list separator>
-        <template v-if="activeItem">
-          <marketplace-nav-item :value="activeItem">
-            <template v-slot:side>
-              <q-btn icon="mdi-menu-down" dense flat></q-btn>
-            </template>
-            <template v-slot:menu>
-              <marketplace-drawer></marketplace-drawer>
-            </template>
-          </marketplace-nav-item>
-        </template>
-        <q-separator></q-separator>
-      </q-list>
-      <q-slide-transition>
-        <template v-if="!activeItem">
-          <marketplace-drawer></marketplace-drawer>
-        </template>
-      </q-slide-transition>
-      <q-slide-transition>
-        <template v-if="activeItem">
-          <component :is="activeItem.drawer" v-bind="activeItem.drawerAttrs"></component>
-        </template>
-      </q-slide-transition>
-    </q-drawer>
+        </q-toolbar>
+      </q-header>
+      <q-drawer
+        v-model="drawer"
+        show-if-above
+        bordered
+        content-class="bg-light"
+      >
+        <q-list separator>
+          <template v-if="activeItem">
+            <marketplace-nav-item :value="activeItem">
+              <template v-slot:side>
+                <q-btn icon="mdi-menu-down" dense flat></q-btn>
+              </template>
+              <template v-slot:menu>
+                <marketplace-drawer></marketplace-drawer>
+              </template>
+            </marketplace-nav-item>
+          </template>
+          <q-separator></q-separator>
+        </q-list>
+        <q-slide-transition>
+          <template v-if="!activeItem">
+            <marketplace-drawer></marketplace-drawer>
+          </template>
+        </q-slide-transition>
+        <q-slide-transition>
+          <template v-if="activeItem">
+            <component :is="activeItem.drawer" v-bind="activeItem.drawerAttrs"></component>
+          </template>
+        </q-slide-transition>
+      </q-drawer>
 
-    <q-page-container>
-      <router-view></router-view>
-    </q-page-container>
+      <q-page-container>
+        <router-view></router-view>
+      </q-page-container>
     </template>
     <template v-else>
       <q-page-container>
-      <q-page class="flex flex-center bg-nice">
-        <div style="border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,.4); min-height: 40vh; width: 700px; max-width: 95vw" class="flex flex-center q-pa-md bg-white">
-          <div class="row justify-center q-py-md">
-            <div class="text-sm text-mb-sm text-weight-bold text-center">
-              <div>
-                Looks like your {{$q.screen.lt.md ? 'phone' : 'computer'}} is being stingy with your location
-                .</div>
-              <div class="text-xs text-mb-xs text-weight-light">
-                We can't show you products unless we know who's selling in your area.
-              </div>
+        <q-page class="flex flex-center" style="background: white">
+          <div style="position: fixed; top: 0; left: -50vw; height: 100vh; width: 200vw; z-index: 0">
+            <div style="height: 100%; width: 100%">
+            <blobs></blobs>
             </div>
           </div>
-          <div style="width: 500px; max-width: 100%">
-          <tomtom-autocomplete
-            outlined
-            placeholder="Enter Your City..."
-            item_text="formatted"
-            @input="addAddress"
-            display-path="city"
-            :value="address"
-            input-class="text-xs text-mb-xs text-weight-medium"
-          ></tomtom-autocomplete>
+          <div style="z-index: 1">
+         <need-location img="https://ha6755ad-images.s3-us-west-1.amazonaws.com/crayv_standard.svg"></need-location>
           </div>
-        </div>
-      </q-page>
+        </q-page>
       </q-page-container>
     </template>
   </q-layout>
@@ -115,12 +104,13 @@
   import Register from 'components/auth/Register';
   import Login from 'components/auth/Login';
   import {LocationMixin} from 'src/mixins/LocationMixin';
-  import TomtomAutocomplete from 'components/utils/mapbox/tomtom/TomtomAutocomplete';
+  import NeedLocation from 'components/common/atoms/loading/NeedLocation';
+  import Blobs from 'components/common/atoms/custom-icons/Blobs';
 
   export default {
     name: 'MarketplaceLayout',
     mixins: [MarketPlaceDrawer, LocationMixin],
-    components: { TomtomAutocomplete, Login, Register, MarketplaceNavItem, MarketplaceDrawer },
+    components: { Blobs, NeedLocation, Login, Register, MarketplaceNavItem, MarketplaceDrawer },
     data() {
       return {
         drawer: false,
@@ -200,14 +190,6 @@
 
     },
     methods: {
-      addAddress(val) {
-        let lng = this.lget(val, 'longitude');
-        let lat = this.lget(val, 'latitude');
-        if (lng && lat) {
-          this.$store.dispatch('setCoordinates', [lng, lat]);
-          this.$store.dispatch('setAddress', val);
-        }
-      },
       login(val) {
         this.registering = val;
         this.loginDialog = true;

@@ -90,7 +90,7 @@ export const SelectMixin = {
       } else if(this.emitValue) {
         return checkVal === this.value ? 0 : -1;
       } else {
-        return checkVal === this.lget(this.value[this.idVal], this.value) ? 0 : -1;
+        return checkVal === this.lget(this.value, [this.idVal], this.value) ? 0 : -1;
       }
     },
     handleInput(val) {
