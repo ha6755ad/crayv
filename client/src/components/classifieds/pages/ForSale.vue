@@ -70,7 +70,8 @@
       grid
       :search-input-in="searchInput"
       v-model="selected"
-      row-min-max="380px, 420px"
+      row-min="380px"
+      row-max="420px"
       adding
       add-label="New Listing"
     >

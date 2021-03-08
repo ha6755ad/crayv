@@ -10,7 +10,7 @@
       </div>
     </div>
   </div>
-  <q-item clickable @click="$emit('add', value)" style="width: 100%;">
+  <q-item clickable @click="$emit('input', value)" style="width: 100%;">
     <q-item-section avatar>
       <default-avatar :value="lget(value, '_fastjoin.user')"></default-avatar>
     </q-item-section>

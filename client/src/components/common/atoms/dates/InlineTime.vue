@@ -1,52 +1,33 @@
 <template>
-  <q-card flat :dark="dark">
-    <q-select
+  <q-card flat :dark="dark" style="cursor:pointer" class="q-pa-xs">
+    <div class="text-xxxs text-mb-xxxs text-weight-light">{{ label }}</div>
+    <q-chip
+      icon-right="mdi-menu-down"
+      icon="mdi-clock"
+      :square="square"
       :dark="dark"
-      :label="label"
-      use-input
-      new-value-mode="add-unique"
-      hide-bottom-space
-      :input-style="{ height: '30px' }"
-      :bg-color="endErrors ? '#FFCDD2' : '#FAFAFA'"
-      :rules="endRules"
-      :options="times"
-      :dense="dense"
-      :value="useValue"
-      @input="handleInput"
-      @input-value="searchInput = $event"
-      :outlined="outlined"
+      :label="useValue ? useValue : 'No Time...'"
+      :color="endErrors ? 'negative' : color ? color : dark ? 'dark' : 'light'"
+      :size="dense ? 'md' : 'lg'"
+      :outline="outline"
+      :removable="!!useValue"
+      @remove="handleInput(null)"
     >
-      <template v-slot:selected-item>
-        <q-chip :dark="dark" removable @remove="handleInput(null)" v-show="useValue" icon="mdi-clock" :label="useValue"></q-chip>
-      </template>
-      <template v-slot:option="scope">
-        <q-item clickable @click="handleInput(scope.opt)">
-          <q-item-section>
-            <q-item-label>{{parseDateHour(scope.opt, displayFormat)}}</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-separator></q-separator>
-      </template>
-    </q-select>
-<!--    <vue-ctk-date-time-picker-->
-<!--      only-time-->
-<!--      :inline="inline"-->
-<!--      :format="displayFormat"-->
-<!--      :value="useValue"-->
-<!--      @input="handleInput"-->
-<!--      :dark="dark"-->
-<!--      :color="color"-->
-<!--      :buttonColor="buttonColor"-->
-<!--      :noButton="noButton"-->
-<!--      :right="right"-->
-<!--      :noButtonNow="noButtonNow"-->
-<!--      :overlay="overlay"-->
-<!--      :autoClose="autoClose"-->
-<!--      :noHeader="noHeader"-->
-<!--      :inputSize="inputSize"-->
-<!--      :minute-interval="minuteInterval"-->
-<!--      :label="label"-->
-<!--    ></vue-ctk-date-time-picker>-->
+      <q-popup-proxy>
+        <q-list separator>
+          <q-item>
+            <q-input label="Enter Time..." dense v-model="searchInput" @keyup.enter="addTime(searchInput)">
+            </q-input>
+          </q-item>
+          <q-item clickable @click="handleInput(opt)" v-for="(opt, i) in times" :key="`time-opt-${i}`">
+            <q-item-section>
+              <q-item-label>{{ parseDateHour(opt, displayFormat) }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-popup-proxy>
+    </q-chip>
+
   </q-card>
 </template>
 
@@ -54,11 +35,13 @@
 
   export default {
     name: 'InlineTime',
-    components: { },
+    components: {},
     props: {
+      square: Boolean,
+      borderless: Boolean,
       dense: { type: Boolean, default: true },
       endErrors: Boolean,
-      outlined: Boolean,
+      outline: Boolean,
       label: { type: String, default: 'Choose Time' },
       minuteInterval: { type: Number, default: 5 },
       inputSize: String,
@@ -77,13 +60,14 @@
       inline: Boolean,
       format: String,
       dateFormat: String,
-      displayFormat: {type: String, default: 'h:mm a'},
+      displayFormat: { type: String, default: 'h:mm a' },
       value: [Date, String]
     },
-    data(){
+    data() {
       return {
         interval: 15,
-        searchInput: ''
+        searchInput: '',
+        addedTimes: []
       };
     },
     computed: {
@@ -94,7 +78,7 @@
       },
       useValue() {
         let date = this.value;
-        if(this.dateFormat) date = this.extractDate(this.value, this.dateFormat);
+        if (this.dateFormat) date = this.extractDate(this.value, this.dateFormat);
         return this.getDateFormat(date, this.displayFormat);
       },
       intervals() {
@@ -110,7 +94,13 @@
             i < 20 ? list.push(parseInt(this.getDateFormat(this.genDateHour((i + 5), minutes), 'Hmm'))) : list.push(parseInt(this.getDateFormat(this.genDateHour((i - 19), minutes), 'Hmm')));
           }
         }
-        return list;
+        let times = list;
+        if (this.searchInput && times) times = list.filter(a => {
+          let str = this.searchInput.toString().replace(/\s|:/g,'');
+          console.log('str', str);
+          return a.toString().toLowerCase().indexOf(str.toLowerCase().trim()) > -1;
+        });
+        return this.addedTimes ? [...times, ...this.addedTimes] : times;
       },
     },
     methods: {
@@ -121,9 +111,37 @@
 
           let payload = newDate;
           if (this.format) payload = this.getDateFormat(newDate, this.format);
-          console.log('sending time', val, payload);
+          console.log('sending time', val, payload, this.format);
           this.$emit('input', payload);
         } else this.$emit('input', null);
+      },
+      checkValidTime(val) {
+        let t = val.toString().toLowerCase();
+        let r = null;
+        let valid = false;
+        let format = 'h:mm a';
+        let list = ['h', 'h m', 'hm', 'hmm', 'h:m', 'hh', 'hhmm', 'hhm', 'h:mm', 'hh:mm', 'h:mm a', 'h:mm A', 'hh:mm a', 'hh:mm A', 'hmm a', 'hmm A', 'hhmm a', 'hhmm A', 'h:mma', 'hh:mma', 'h:ma', 'h:m a'];
+        for (let i = 0; i < list.length; i++) {
+          let extract = this.extractDate(t.toString(), list[i]);
+          console.log('extract', extract, val);
+          if (this.getDateFormat(extract, list[i]) === t.toString()) {
+            valid = true;
+            r = extract;
+            format = list[i];
+          }
+        }
+        return { valid: valid, date: r, format: format };
+      },
+      addTime(val) {
+        let valid = this.checkValidTime(val);
+        if (valid.valid) {
+          let timeVal = parseInt(this.getDateFormat(valid.date, 'Hmm'));
+          this.handleInput(timeVal);
+          console.log('got valid time', timeVal);
+        } else this.$q.notify({
+          message: 'Time format not recognized - try h:mm a',
+          color: 'info'
+        });
       }
     }
   };

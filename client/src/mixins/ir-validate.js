@@ -12,7 +12,27 @@ const validators = {
       return fieldCheck && typeCheck && formatCheck;
     },
     err: (field, type, error) => {
-      return `${field.name} cannot be empty. ${error ? error: ''}`;
+      return error ? error : `${field.name} cannot be empty.`;
+    }
+  },
+  eq: {
+    method: (field, val, format) => {
+      let fieldCheck = field && field.value === val;
+      let formatCheck = format ? format(field) : true;
+      return fieldCheck && formatCheck;
+    },
+    err: (field, val, error) => {
+      return error ? error : `${field.name} must equal ${val}`;
+    }
+  },
+  ne: {
+    method: (field, val, format) => {
+      let fieldCheck = field && field.value !== val;
+      let formatCheck = format ? format(field) : true;
+      return fieldCheck && formatCheck;
+    },
+    err: (field, val, error) => {
+      return error ? error : `${field.name} cannot equal ${val}.`;
     }
   },
   type: {
@@ -22,7 +42,7 @@ const validators = {
       return typeCheck && formatCheck;
     },
     err: (field, type, error) => {
-      return `${field.name} must be type ${type}. ${error ? error: ''}`;
+      return error ? error : `${field.name} must be type ${type}.`;
     }
   },
   format: {
@@ -32,7 +52,7 @@ const validators = {
       return typeCheck && formatCheck;
     },
     err: (field, type, error) => {
-      return `${field.name} error - ${error ? error: ''}`;
+      return error ? error : `${field.name} - error`;
     }
   },
   sameAs: {
@@ -42,7 +62,7 @@ const validators = {
       return typeCheck && formatCheck;
     },
     err: (field, type, error) => {
-      return `${field.name} error - ${error ? error: ''}`;
+      return error ? error : `${field.name} - error`;
     }
   },
   arrayLength: {
@@ -50,7 +70,7 @@ const validators = {
       return Array.isArray(field.value) && field.value.length >= parseFloat(number);
     },
     err: (field, number, error) => {
-      return `${field.name} requires at least ${number} selection${number === '1' ? '' : 's'}. ${error ? error: ''}`;
+      return `${field.name} requires at least ${number} selection${number === '1' ? '' : 's'}. ${error ? error : ''}`;
     }
   },
   gt: {
@@ -62,7 +82,7 @@ const validators = {
       }
     },
     err: (field, number, error) => {
-      return `${field.name} ${typeof field.value === 'number' ? '' : 'length'} must be greater than ${number}. ${error ? error: ''}`;
+      return `${field.name} ${typeof field.value === 'number' ? '' : 'length'} must be greater than ${number}. ${error ? error : ''}`;
     }
   },
   lt: {
@@ -74,9 +94,23 @@ const validators = {
       }
     },
     err: (field, number, error) => {
-      return `${field.name} ${typeof field.value === 'number' ? '' : 'length'} cannot exceed ${number}. ${error ? error: ''}`;
+      return `${field.name} ${typeof field.value === 'number' ? '' : 'length'} cannot exceed ${number}. ${error ? error : ''}`;
     }
   },
+};
+
+const isEmailRule = (val) => {
+  let reg = /^(([^<>()[\]\\.,;:\s@']+(\.[^<>()[\]\\.,;:\s@']+)*)|('.+'))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/;
+  return !reg.test(val);
+};
+
+const getFormatFromRule = rule => {
+  if (rule === 'email'){
+    return (val) => {
+      return !isEmailRule(val.value);
+    };
+  }
+  else return null;
 };
 
 export const vCheck = {
@@ -93,16 +127,16 @@ export const vCheck = {
     validForm: {
       immediate: true,
       deep: true,
-      handler(newVal, oldVal){
+      handler(newVal, oldVal) {
         // console.log('see changes', newVal, oldVal);
-        if(this.updateValidOnInput) {
+        if (this.updateValidOnInput) {
           this.$vRefreshErrors(newVal, oldVal);
         }
       }
     },
   },
   computed: {
-    validForm(){
+    validForm() {
       return this.vCheckForm ? Object.assign({}, this.vCheckForm) : {};
     },
     $vErrorList() {
@@ -111,7 +145,7 @@ export const vCheck = {
       let errors = this.vErrors;
 
       const pushErr = key => {
-        if(lget(errors, key)) {
+        if (lget(errors, key)) {
           if (lget(errors, key) && typeof lget(errors, key) === 'object') {
             Object.keys(lget(errors, key)).forEach(k => {
               pushErr(`${key}.${k}`);
@@ -121,7 +155,7 @@ export const vCheck = {
       };
 
       list.forEach(key => {
-        if(errors[key]) {
+        if (errors[key]) {
           pushErr(key);
         }
       });
@@ -129,7 +163,7 @@ export const vCheck = {
     }
   },
   methods: {
-    $flatObjKeyList(obj, path){
+    $flatObjKeyList(obj, path) {
       let list = [];
       if (!lisEmpty(obj)) {
         Object.keys(obj).forEach(key => {
@@ -142,20 +176,20 @@ export const vCheck = {
       }
       return this.$flattenArray(list);
     },
-    $getSaveObj(vCheck){
+    $getSaveObj(vCheck) {
       let obj = {};
       let form = vCheck ? vCheck : this.vCheckForm;
-      if(form){
+      if (form) {
         let list = this.$flatObjKeyList(form);
         list.forEach(key => {
-          if(lget(this.isDirty, key)) {
+          if (lget(this.isDirty, key)) {
             lset(obj, key, lget(form, key));
           }
         });
       }
       return obj;
     },
-    $vRefreshErrors(newVal, oldVal){
+    $vRefreshErrors(newVal, oldVal) {
       // console.log('refresh errors', newVal, oldVal);
       let equal = lisequal(newVal, oldVal);
       if (oldVal && !equal && newVal) {
@@ -181,21 +215,21 @@ export const vCheck = {
         console.log('errs', errs);
       }
     },
-    $vErrorCheck(prop){
+    $vErrorCheck(prop) {
       let dirty = this.vDirty ? Object.assign({}, this.vDirty) : {};
-      if(lget(dirty, prop)){
+      if (lget(dirty, prop)) {
         return lget(this.vErrors, prop, false) ? true : false;
       } else return false;
     },
-    $vErrorMessage(prop){
+    $vErrorMessage(prop) {
       let dirty = this.vDirty ? Object.assign({}, this.vDirty) : {};
-      if(lget(dirty, prop)){
+      if (lget(dirty, prop)) {
         return lget(this.vErrors, prop, '');
       } else return '';
     },
-    $vRuleCheck(prop){
+    $vRuleCheck(prop) {
       let dirty = this.vDirty ? Object.assign({}, this.vDirty) : {};
-      if(lget(dirty, prop)){
+      if (lget(dirty, prop)) {
         let err = lget(this.vErrors, prop, false);
         return err ? [err] : true;
       } else return true;
@@ -205,7 +239,7 @@ export const vCheck = {
       let list = errors ? Object.keys(errors) : [];
 
       const pushErr = key => {
-        if(lget(errors, key)) {
+        if (lget(errors, key)) {
           if (lget(errors, key) && typeof lget(errors, key) === 'object') {
             Object.keys(lget(errors, key)).forEach(k => {
               pushErr(`${key}.${k}`);
@@ -215,7 +249,7 @@ export const vCheck = {
       };
 
       list.forEach(key => {
-        if(errors[key]) {
+        if (errors[key]) {
           pushErr(key);
         }
       });
@@ -253,7 +287,7 @@ export const vCheck = {
         if (Array.isArray(methods)) {
           methods.forEach(method => {
             // console.log('checking method', key, form, keyProp);
-            let fieldObj = { value: lget(form, key), name: lget(keyProp, 'name', key)};
+            let fieldObj = { value: lget(form, key), name: lget(keyProp, 'name', key) };
             let v = method.split(':');
             // console.log('v', v, methods, method);
             let prop = v[0];
@@ -265,7 +299,7 @@ export const vCheck = {
             if (!check) lset(errors, key, validator['err'](fieldObj, arg));
             else {
               // console.log('check success - removing error for ', key);
-              lset(errors, key,  null);
+              lset(errors, key, null);
             }
           });
         } else {
@@ -278,24 +312,24 @@ export const vCheck = {
 
           //For format functions remember that the field value is at .value
 
-          let format = lget(methods, 'format');
+          let format = lget(methods, 'format', getFormatFromRule(lget(methods, 'rule')));
           let error = lget(methods, 'error');
           // console.log('prop', methods, key, prop, validators[prop]);
           let validator = lget(validators, prop);
 
           let check = validator ? validator['method'](fieldObj, arg, format) : true;
           // console.log('not array', 'key', key, 'prop', prop, 'arg', arg, 'format', format, 'error', error, 'check', check);
-          if (!check){
+          if (!check) {
             // console.log('ggot err', validators[prop].err(fieldObj, arg, error), fieldObj, arg);
             lset(errors, key, validator['err'](fieldObj, arg, error));
           } else {
             // console.log('check success - removing error for ', key);
-            lset(errors, key,  null);
+            lset(errors, key, null);
           }
         }
       });
       // console.log('set errors', errors);
-      this.vErrors = this.vErrors ? {...this.vErrors, ...errors} : Object.assign({}, errors);
+      this.vErrors = this.vErrors ? { ...this.vErrors, ...errors } : Object.assign({}, errors);
       return this.$vGetErrorList(errors);
     }
   }

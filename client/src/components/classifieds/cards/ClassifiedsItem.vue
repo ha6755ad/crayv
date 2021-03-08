@@ -1,5 +1,5 @@
 <template>
-  <q-item clickable class="__classifieds_item" @click="$emit('add', value)">
+  <q-item clickable class="__classifieds_item" @click="$emit('input', value)">
 
     <q-item-section avatar>
       <div style="height: 100px; width: 100px">

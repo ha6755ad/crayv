@@ -15,8 +15,17 @@
       <inline-time  label="@ (time)" v-bind="endProps" @input="handleEnd"></inline-time>
     </div>
     </div>
+    <div>
+      <q-btn dense flat @click="setRules = !setRules" :style="{ color: setRules === 0 ? 'var(--ir-grey-6)' : 'var(--q-color-nice)' }" class="q-pa-sm q-mr-sm"
+             icon="mdi-repeat"></q-btn>
+      <q-slide-transition>
+        <div v-if="setRules">
+          <r-rule-form :dark="dark" @input="handleRecurrence" :value="form.recurrence"></r-rule-form>
+        </div>
+      </q-slide-transition>
+    </div>
     <div class="row justify-end q-pa-sm" v-if="requireSave">
-      <q-btn label="save" size="sm" push glossy color="primary" @click="$emit('input', localDate)"></q-btn>
+      <q-btn label="save" size="sm" push glossy color="primary" @click="$emit('input', form)"></q-btn>
     </div>
   </q-card>
 </template>
@@ -24,9 +33,10 @@
 <script>
   import InLineDate from './inLineDate';
   import InlineTime from './inlineTime';
+  import RRuleForm from 'components/common/recurrance/RRuleForm';
   export default {
     name: 'InlinePicker',
-    components: { InlineTime, InLineDate },
+    components: { RRuleForm, InlineTime, InLineDate },
     props: {
       cols: { type: Number, default: 12 },
       sm: { type: Number, default: 6 },
@@ -58,43 +68,51 @@
     },
     data(){
       return {
-        localDate: new Date()
+        form: { start: new Date(), end: new Date(), recurrence: undefined },
+        setRules: false
       };
     },
     watch: {
       value: {
         immediate: true,
         handler(newVal){
-          if(newVal) this.localDate = newVal;
+          if(newVal) this.form = newVal;
         }
       }
     },
     computed: {
       startProps(){
         let obj = Object.assign({}, this.$props);
-        obj.value = this.lget(this.localDate, 'start', new Date());
+        obj.value = this.lget(this.form, 'start', new Date());
         return obj;
       },
       endProps(){
         let obj = Object.assign({}, this.$props);
-        obj.value = this.lget(this.localDate, 'end', new Date());
+        obj.value = this.lget(this.form, 'end', new Date());
         return obj;
       },
     },
     methods: {
       handleStart(date){
-        let val = this.localDate ? Object.assign({}, this.localDate) : {};
+        let val = this.form ? Object.assign({}, this.form) : {};
         val.start = date;
         console.log('emit start', val, date);
-        this.localDate = val;
+        this.form = val;
         if(!this.requireSave) {
           this.$emit('input', val);
         }
       },
+      handleRecurrence(val){
+        console.log('handle recurrence', val);
+        this.form.recurrence = val;
+        if(!this.requireSave) {
+          this.$emit('input', this.form);
+        }
+      },
       handleEnd(date){
-        let val = this.localDate ? Object.assign({}, this.localDate) : {};
+        let val = this.form ? Object.assign({}, this.form) : {};
         val.end = date;
-        this.localDate = val;
+        this.form = val;
         if(!this.requireSave) {
           this.$emit('input', val);
         }

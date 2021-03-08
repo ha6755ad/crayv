@@ -5,7 +5,7 @@
       <q-btn v-if="active" size="sm" flat dense icon="mdi-checkbox-marked-outline" color="positive"></q-btn>
     </div>
 
-    <q-item clickable @click="$emit('add', value)">
+    <q-item clickable @click="$emit('input', value)">
       <q-item-section avatar>
         <default-avatar :value="value" square></default-avatar>
       </q-item-section>
@@ -13,7 +13,7 @@
         <q-item-label class="text-xxs text-mb-xs text-weight-medium">{{lget(value, 'name', 'Untitled')}}</q-item-label>
         <q-item-label class="text-xxxs text-mb-xxx" caption>
           <div class="__one-liner">
-            {{lget(value, 'description', 'Untitled')}}
+            {{lget(value, subtitlePath, 'Untitled')}}
           </div>
         </q-item-label>
       </q-item-section>
@@ -38,6 +38,7 @@
     name: 'VendorItem',
     components: { VendorForm, DefaultAvatar },
     props: {
+      subtitlePath: { type: String, default: 'description' },
       active: Boolean,
       value: Object,
       flat: Boolean,

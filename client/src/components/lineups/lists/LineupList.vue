@@ -41,10 +41,10 @@
           @input-value="searchInput = $event"
         >
           <template v-slot:no-option>
-            <add-list-item v-if="editing" @add="addDialog = true"></add-list-item>
+            <add-list-item v-if="editing" @input="addDialog = true"></add-list-item>
           </template>
           <template v-slot:before-options>
-            <add-list-item v-if="editing" @add="addDialog = true"></add-list-item>
+            <add-list-item v-if="editing" @input="addDialog = true"></add-list-item>
           </template>
           <template v-slot:selected-item="{ opt, index }">
             <q-chip dark removable @remove="removeItem(index, opt)">

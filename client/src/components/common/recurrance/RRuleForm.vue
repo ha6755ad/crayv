@@ -1,8 +1,8 @@
 <template>
-  <q-card flat class="bg-transparent">
+  <q-card :dark="dark" flat class="bg-transparent">
 
     <div class="row justify-end" v-if="form.FREQ && !ruleSet">
-      <q-btn color="ir-blue-grey-8" label="save rule" size="sm" flat icon="mdi-content-save" @click="saveRule"/>
+      <q-btn :color="dark ? 'white' : 'dark'" label="save rule" size="sm" flat icon="mdi-content-save" @click="saveRule"/>
     </div>
 
     <template v-if="ruleSet && !noDisplay">
@@ -18,18 +18,18 @@
     </template>
     <template v-else-if="!ruleSet || noDisplay">
       <!--    FREQUENCY-->
-      <q-select v-model="form.FREQ" label="Frequency" :options="frequency" emit-value dense
+      <q-select :dark="dark" v-model="form.FREQ" label="Frequency" :options="frequency" emit-value dense
                 @input="(val) => setDefaults(val)">
         <template v-slot:selected-item="scope">
-          <q-chip :label="getSelectItemLabel(scope.opt, frequency)" removable @remove="clearForm"
+          <q-chip :dark="dark" :label="getSelectItemLabel(scope.opt, frequency)" removable @remove="clearForm"
                   class="bg-light text-dark"/>
         </template>
       </q-select>
 
       <!--    INTERVAL-->
-      <q-select dense :options="interval" label="Interval" emit-value v-model="form.INTERVAL">
+      <q-select :dark="dark" dense :options="interval" label="Interval" emit-value v-model="form.INTERVAL">
         <template v-slot:selected-item="scope">
-          <q-chip :label="getSelectItemLabel(scope.opt, interval)" removable @remove="form.INTERVAL = 1"
+          <q-chip :dark="dark" :label="getSelectItemLabel(scope.opt, interval)" removable @remove="form.INTERVAL = 1"
                   class="bg-light text-dark"/>
         </template>
       </q-select>
@@ -41,9 +41,9 @@
 
       <!--    BYMONTH-->
       <template v-if="byMonth && byMonth.length">
-        <q-select multiple dense :options="byMonth" label="Month" emit-value v-model="form.BYMONTH">
+        <q-select :dark="dark" multiple dense :options="byMonth" label="Month" emit-value v-model="form.BYMONTH">
           <template v-slot:selected-item="scope">
-            <q-chip :label="getSelectItemLabel(scope.opt, byMonth)" removable @remove="scope.removeAtIndex(scope.index)"
+            <q-chip :dark="dark" :label="getSelectItemLabel(scope.opt, byMonth)" removable @remove="scope.removeAtIndex(scope.index)"
                     class="bg-light text-dark"/>
           </template>
         </q-select>
@@ -51,9 +51,9 @@
 
       <!--    BYDAY-->
       <template v-if="byDay && byDay.length">
-        <q-select multiple dense :options="byDay" label="Day" emit-value v-model="form.BYDAY">
+        <q-select :dark="dark" multiple dense :options="byDay" label="Day" emit-value v-model="form.BYDAY">
           <template v-slot:selected-item="scope">
-            <q-chip :label="getSelectItemLabel(scope.opt, byDay)" removable @remove="scope.removeAtIndex(scope.index)"
+            <q-chip :dark="dark" :label="getSelectItemLabel(scope.opt, byDay)" removable @remove="scope.removeAtIndex(scope.index)"
                     class="bg-light text-dark"/>
           </template>
         </q-select>
@@ -61,9 +61,9 @@
 
       <!--    BYMONTHDAY-->
       <template v-if="byMonthDay && byMonthDay.length">
-        <q-select multiple dense :options="byMonthDay" label="Date" emit-value v-model="form.BYMONTHDAY">
+        <q-select :dark="dark" multiple dense :options="byMonthDay" label="Date" emit-value v-model="form.BYMONTHDAY">
           <template v-slot:selected-item="scope">
-            <q-chip :label="getSelectItemLabel(scope.opt, byMonthDay)" removable
+            <q-chip :dark="dark" :label="getSelectItemLabel(scope.opt, byMonthDay)" removable
                     @remove="scope.removeAtIndex(scope.index)"
                     class="bg-light text-dark"/>
           </template>
@@ -71,11 +71,11 @@
       </template>
 
       <div class="row" v-if="!setOcc">
-        <q-checkbox label="Set End Date" v-model="setEnd"
+        <q-checkbox :dark="dark" label="Set End Date" v-model="setEnd"
                     @input="(val) => val ? form.COUNT = null : form.UNTIL = null"/>
       </div>
       <div class="row" v-if="!setEnd">
-        <q-checkbox label="Limit Occurrences" v-model="setOcc"
+        <q-checkbox :dark="dark" label="Limit Occurrences" v-model="setOcc"
                     @input="(val) => val ? form.UNTIL = null : form.COUNT = null"/>
       </div>
       <template v-if="setEnd">
@@ -146,6 +146,7 @@
         type: String,
         default: 'dark'
       },
+      dark: Boolean,
       outlined: Boolean,
       noDisplay: Boolean,
       value: Object,

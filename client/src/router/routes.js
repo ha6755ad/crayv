@@ -60,7 +60,7 @@ export default function ({store, ssrContext}) {
               path: 'marketplaces',
               name: 'marketplaces',
               component: () => import('components/marketplace/pages/Marketplaces')
-            },
+            }
           ]
         },
       ]
@@ -79,6 +79,27 @@ export default function ({store, ssrContext}) {
           path: 'product-store',
           name: 'product-store',
           component: () => import('../components/products/pages/ShopProducts')
+        },
+        {
+          path: '/crowd-store',
+          component: () => import('../components/crowd-buy/pages/CrowdShop'),
+          children: [
+            {
+              path: '',
+              name: 'crowd-store',
+              component: () => import('../components/crowd-buy/pages/CrowdStore')
+            },
+            {
+              path: 'my-crowd-buys',
+              name: 'my-crowd-buys',
+              component: () => import('../components/crowd-buy/pages/MyCrowdBuys')
+            },
+            {
+              path: 'my-crowd-offers',
+              name: 'my-crowd-offers',
+              component: () => import('../components/crowd-buy/pages/MyCrowdOffers')
+            }
+          ]
         },
         {
           path: 'classifieds',

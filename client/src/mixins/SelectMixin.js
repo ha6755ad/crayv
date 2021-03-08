@@ -62,7 +62,7 @@ export const SelectMixin = {
       return this.selectService ? this.stateActiveItems : this.localActiveItems;
     },
     activeItem() {
-      return this.lget(this.activeItems, [0]);
+      return this.multiple ? this.lget(this.activeItems, [0]) : this.activeItems;
     },
     activeIds() {
       if (this.value) {
@@ -99,7 +99,7 @@ export const SelectMixin = {
       if (idx === -1) {
         let payload = val;
         if (this.emitValue) {
-          payload = val[this.idVal];
+          payload = val ? val[this.idVal] : undefined;
         }
         if (this.multiple) {
           this.selected ? this.selected.push(payload) : this.selected = [payload];

@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -71,6 +72,37 @@ const Images = new Schema({
     _id: { type: Schema.Types.ObjectId, required: false, ref: 'file-uploader' },
     file: { type: String, required: false }
   }
+}, { _id: false });
+
+const HSLA = {
+  h: { type: mongoose.Types.Decimal128, required: false, min: 0, max: 1 },
+  s: { type: mongoose.Types.Decimal128, required: false, min: 0, max: 1 },
+  l: { type: mongoose.Types.Decimal128, required: false, min: 0, max: 1 },
+  a: { type: mongoose.Types.Decimal128, required: false, min: 0, max: 1 },
+};
+
+const HSVA = {
+  h: { type: mongoose.Types.Decimal128, required: false, min: 0, max: 1 },
+  s: { type: mongoose.Types.Decimal128, required: false, min: 0, max: 1 },
+  l: { type: mongoose.Types.Decimal128, required: false, min: 0, max: 1 },
+  a: { type: mongoose.Types.Decimal128, required: false, min: 0, max: 1 },
+};
+
+const RGBA = {
+  h: { type: mongoose.Types.Decimal128, required: false, min: 0, max: 1 },
+  s: { type: mongoose.Types.Decimal128, required: false, min: 0, max: 1 },
+  l: { type: mongoose.Types.Decimal128, required: false, min: 0, max: 1 },
+  a: { type: mongoose.Types.Decimal128, required: false, min: 0, max: 1 },
+};
+
+const Color = new Schema({
+  hue: { type: mongoose.Types.Decimal128, required: false, min: 0, max: 1 },
+  alpha: { type: mongoose.Types.Decimal128, required: false },
+  hex: { type: String, required: false, match: /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/ },
+  hexa: { type: String, required: false, match: /^#([A-Fa-f0-9]{8}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/ },
+  hsla: { HSLA },
+  hsva: { HSVA },
+  rgba: { RGBA }
 }, { _id: false });
 
 const Address = new Schema({
@@ -150,8 +182,9 @@ const Schedule = new Schema({
   },
   blackoutDates: { type: Array,
     contains: {
-      start: { year: Number, month: Number, date: Number, hour: Number, minute: Number },
-      end: { year: Number, month: Number, date: Number, hour: Number, minute: Number }
+      start: Date,
+      end: Date,
+      recurrence: RRULE
     }
   }
 });
@@ -191,10 +224,36 @@ const Capacity = new Schema({
   month: { type: Number, default: 1, min: 1 },
 }, { _id: false });
 
+const taxTypes = ['percentage', 'flat'];
+
+const taxItem = new Schema({
+  percentage: Number,
+  flat: Number,
+  use: { type: String, enum: taxTypes },
+  notes: String
+});
+
+const TaxSettings = new Schema({
+  automateTaxes: Boolean,
+  taxExempt: Boolean,
+  taxes: [{
+    areaId: { type: String },
+    postal_codes: [{ type: String }],
+    cities: [{ type: String }],
+    sales: { type: taxItem },
+    local: { type: taxItem },
+    other: { type: taxItem }
+  }],
+}, { _id: false });
+
 const ProductInventory = new Schema({
   updatedAt: Date,
   stock: { type: Number },
   pending: { type: Number }
+}, { _id: false });
+
+const InventorySettings = new Schema({
+  trackInventory: { type: Boolean },
 }, { _id: false });
 
 const productOrder = new Schema({
@@ -247,25 +306,10 @@ const productOrder = new Schema({
   }
 }, { timestamps: true });
 
-const taxTypes = ['percentage', 'flat'];
-
-const taxItem = new Schema({
-  percentage: Number,
-  flat: Number,
-  use: { type: String, enum: taxTypes },
-  notes: String
-});
-
 const ProductSettings = new Schema({
-  trackInventory: { type: Boolean },
-  taxExempt: Boolean,
   capacity: { type: Capacity },
-  taxes: [{
-    areaIds: [{ type: String }], //'*' for all
-    sales: { type: taxItem },
-    local: { type: taxItem },
-    other: { type: taxItem }
-  }],
+  tax: { type: TaxSettings },
+  inventory: { type: InventorySettings },
   schedule: { type: Schedule },
   boundaries: { type: GeoLocation }
 }, { _id: false });
@@ -273,25 +317,24 @@ const ProductSettings = new Schema({
 
 //TODO: need to dedup postal codes
 const VendorSettings = new Schema({
-  automateTaxes: Boolean,
-  trackInventory: { type: Boolean },
-  taxExempt: Boolean,
+  onSitePickup: { type: Boolean, default: true },
+  boundary: { type: GeoLocation },
   capacity: { type: Capacity },
-  taxes: [{
-    areaId: { type: String },
-    postal_codes: [{ type: String }],
-    cities: [{ type: String }],
-    sales: { type: taxItem },
-    local: { type: taxItem },
-    other: { type: taxItem }
-  }],
+  inventory: { type: InventorySettings },
+  tax: {type: TaxSettings},
   schedule: { type: Schedule },
+});
+
+const CrowdBuySettings = new Schema({
+  onSitePickup: { type: Boolean, default: true },
+  boundary: { type: GeoLocation }
 });
 
 const privacyEnum = ['public', 'permission', 'private'];
 const currencyEnum = ['usd', 'ngn'];
 
 module.exports = {
+  Color,
   Phone,
   Images,
   RRULE,
@@ -303,6 +346,7 @@ module.exports = {
   ProductVariant,
   productOrder,
   VendorSettings,
+  CrowdBuySettings,
   GeoLocation,
   UniquePhone,
   privacyEnum,

@@ -1,7 +1,7 @@
 <template>
-  <q-item clickable @click="$emit('add')">
+  <q-item clickable @click="$emit('input')">
     <q-item-section avatar>
-      <q-btn dense flat :icon="icon" size="sm" :color="color"></q-btn>
+      <q-btn dense flat :icon="icon" :size="size" :color="color"></q-btn>
     </q-item-section>
     <q-item-section>
       <q-item-label>{{ title }}</q-item-label>
@@ -13,6 +13,10 @@
   export default {
     name: 'AddListItem',
     props: {
+      size: {
+        type: String,
+        default: 'xs'
+      },
       color: {
         type: String,
         default: 'dark'

@@ -18,7 +18,7 @@ module.exports = function (app) {
     }],
     type: [{type: String, enum: ['a-la-carte', 'package', 'combo']}],
     price: { type: Common.Pricing },
-    lineups: [{type: Schema.Types.ObjectId, ref: 'crayv-lineups'}],
+    productLineups: [{type: Schema.Types.ObjectId, ref: 'crayv-lineups'}],
     images: [{type: Common.Images}],
     vendorId: {type: Schema.Types.ObjectId, ref: 'crayv-vendors'},
     parent: {type: Schema.Types.ObjectId, ref: 'crayv-product-groups'}, //TODO: add parent children workflow to the UI

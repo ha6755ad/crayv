@@ -38,22 +38,28 @@ const namedQueries = {
 };
 
 const relateGroupOrder = async context => {
+  let orders = 0;
+
+  lget(context, 'result.products', []).forEach(product => {
+    if(product.quantity) orders += product.quantity;
+  })
+
+  let thereObj = {
+    id: context.result._id,
+    price: context.result.subtotal,
+    quantity: orders
+  };
   let config = {
     herePath: 'group_order',
     therePath: 'orders',
-    thereService: 'crayv-group-orders'
+    thereService: 'crayv-crowd-buys',
+    thereObj: thereObj,
+    thereObjId: 'id'
   };
+  if(context.method === 'remove') return await removeOtm(config)(context);
   return await relateOtm(config)(context);
 };
 
-const removeGroupOrder = async context => {
-  let config = {
-    herePath: 'group_order',
-    therePath: 'orders',
-    thereService: 'crayv-group-orders'
-  };
-  return await removeOtm(config)(context);
-};
 
 const inactivateCart = async context => {
   let cart = lget(context, 'result.cart', null);
@@ -89,7 +95,7 @@ module.exports = {
     create: [inactivateCart, relateGroupOrder],
     update: [relateGroupOrder],
     patch: [relateGroupOrder],
-    remove: [removeGroupOrder]
+    remove: [relateGroupOrder]
   },
 
   error: {

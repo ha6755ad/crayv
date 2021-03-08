@@ -278,7 +278,7 @@
         console.log('searching', query);
         // let queryString = encodeQueryData(query);
         // await this.axiosFeathers.get(`/${this.serviceIn}?${queryString}`)
-        this.$store.dispatch('crayv-classifieds/find', { query: query })
+        this.$store.dispatch(`${this.serviceIn}/find`, { query: query })
           .then(res => {
             console.log('tag res', res);
             this.loading = false;

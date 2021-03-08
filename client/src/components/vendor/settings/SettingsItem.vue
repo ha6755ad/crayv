@@ -3,7 +3,7 @@
     <div class="t-r">
       <q-btn v-if="editing" icon="mdi-pencil-box" @click="editDialog = true" dense flat size="sm"></q-btn>
     </div>
-    <q-item clickable @click="$emit('add', value)">
+    <q-item clickable @click="$emit('input', value)">
       <q-item-section avatar>
         <default-avatar :value="value"></default-avatar>
       </q-item-section>

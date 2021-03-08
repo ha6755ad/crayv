@@ -15,6 +15,7 @@
     </div>
     <slot name="top"></slot>
     <component
+      :dense="dense"
       :is="activeComponent"
       :search-input-in="searchInputIn"
       :filter="filter"
@@ -30,20 +31,18 @@
       :search-label="searchLabel"
       :paginator="paginator"
       :options="optionsIn"
-      @options="options = $event"
+      @options="setOptions"
     >
       <template v-slot:list="scope">
-        <div v-if="adding && grid" class="row justify-end">
-          <q-btn push color="nice" size="sm" :label="addLabel" icon="mdi-plus" @click="addDialog = true"></q-btn>
-        </div>
-        <div v-if="emptyMessage && (!scope.items || !scope.items.length)"
+        <div v-if="emptyMessage && !select && (!scope.items || !scope.items.length)"
              class="text-xs text-mb-xs text-italic q-pa-md">{{ emptyMessage }}
         </div>
+        <slot name="freeForm" :handleInput="handleInput" :items="scope.items"></slot>
         <div
-          v-if="grid" class="__paginate_grid q-py-md"
+          v-if="grid" class="__paginate_grid q-py-lg"
           :style="{
-            gridTemplateColumns: `repeat(auto-fill, minmax(${colMinMax}`,
-            gridTemplateRows: `repeat(auto-fill, minmax(${rowMinMax}`,
+            gridTemplateColumns: `repeat(auto-fill, minmax(${colMin},${$q.screen.lt.sm ? '100%' : colMax}`,
+            gridTemplateRows: `repeat(auto-fill, minmax(${rowMin},${$q.screen.lt.sm ? '100%' : rowMax}`,
             gridGap: gridGap
              }">
           <div style="width: 100%" v-for="(item, i) in scope.items" :key="`item-${i}`"
@@ -52,13 +51,15 @@
           </div>
         </div>
         <q-list separator v-if="!select && !grid">
-<!--          <add-list-item :dark="dark" :title="addLabel" v-if="adding" @add="addDialog = true"></add-list-item>-->
+<!--          <add-list-item :dark="dark" :title="addLabel" v-if="adding" @input="addDialog = true"></add-list-item>-->
           <div v-for="(item, i) in scope.items" :key="`product-${i}`" style="width: 100%">
             <slot name="list-item" :scope="scope" :item="item" :index="i" :handleInput="handleInput"></slot>
           </div>
         </q-list>
         <q-select
-          :placeholder="selected ? '' : searchPlaceholder"
+          :dense="dense"
+          :placeholder="activeItem ? null : searchPlaceholder"
+          :input-style="activeItem ? { height: 0 } : {}"
           :label="searchLabel"
           v-if="select"
           :options="scope.items"
@@ -69,16 +70,18 @@
           @input-value="searchInput = $event"
         >
           <template v-slot:no-option v-if="adding">
-            <add-list-item :dark="dark" @add="addDialog = true" :title="addLabel"></add-list-item>
+            <add-list-item :dark="dark" @input="addDialog = true" :title="addLabel"></add-list-item>
+            <div v-if="emptyMessage" class="text-xxs text-mb-xxs text-italic q-pa-md">{{ emptyMessage }}
+            </div>
           </template>
           <template v-slot:before-options v-if="adding">
-            <add-list-item :dark="dark" @add="addDialog = true" :title="addLabel"></add-list-item>
+            <add-list-item :dark="dark" @input="addDialog = true" :title="addLabel"></add-list-item>
           </template>
           <template v-slot:selected-item="selectedScope">
-            <slot name="chip" :item="selectedScope.opt" :index="selectedScope.index" :handleInput="handleInput" :selectedScope="selectedScope"></slot>
+            <slot name="chip" :item="multiple ? activeItems[selectedScope.index] : activeItems" :index="selectedScope.index" :handleInput="handleInput" :selectedScope="selectedScope"></slot>
           </template>
           <template v-slot:option="optionScope">
-            <slot name="option" :item="optionScope.opt" :index="optionScope.index" :handleInput="handleInput" :optionScope="optionScope"></slot>
+            <slot name="option" :item="optionScope.opt" :index="optionScope.index" :selected="isSelected(optionScope.opt)" :handleInput="handleInput" :optionScope="optionScope"></slot>
           </template>
         </q-select>
       </template>
@@ -121,8 +124,10 @@
       loadService: String,
       addLabel: { type: String, default: 'Add New' },
       dark: Boolean,
-      colMinMax: { type: String, default: '330px, 360px' },
-      rowMinMax: { type: String, default: '300px, 330px' },
+      colMin: { type: String, default: '330px' },
+      colMax: { type: String, default: '360px' },
+      rowMin: { type: String, default: '300px'},
+      rowMax: { type: String, default: '330px'},
       gridGap: { type: String, default: '20px' },
       searchPlaceholder: { type: String, default: 'Search...' },
       searchLabel: { type: String },
@@ -161,7 +166,8 @@
       paramsIn: Object,
       value: {
         required: false
-      }
+      },
+      dense: Boolean
     },
     mounted() {
 
@@ -205,6 +211,10 @@
       }
     },
     methods: {
+      setOptions(val){
+        this.options = val;
+        this.$emit('options', val);
+      },
       handleRmv(val) {
         this.$emit('rmv', val);
       }
@@ -224,5 +234,7 @@
     grid-template-columns: repeat(auto-fill, minmax(330px, 360px));
     grid-template-rows: repeat( auto-fill, minmax(300px, 330px));
     grid-gap: 10px;
+    align-items: center;
+    justify-items: center;
   }
 </style>

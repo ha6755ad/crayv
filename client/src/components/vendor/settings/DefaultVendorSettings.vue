@@ -7,44 +7,17 @@
 
     <q-slide-transition>
       <div v-if="on">
-        <div class="q-py-md">
-          <q-item v-if="!form.taxExempt">
-            <q-item-section avatar>
-              <q-checkbox color="nice" v-model="form.automateTaxes" @input="update('automateTaxes', ...arguments)"></q-checkbox>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Automate tax rates</q-item-label>
-              <q-item-label caption>
-                {{
-                  form.automateTaxes ? 'You are allowing our smart tax database to decide your tax rates.' : 'Its up to you to dictate your tax rates and boundaries'
-                }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-separator></q-separator>
-          <q-item>
-            <q-item-section avatar>
-              <q-checkbox color="nice" v-model="form.taxExempt" @input="update('taxExempt', ...arguments)"></q-checkbox>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Tax Exempt</q-item-label>
-            </q-item-section>
-          </q-item>
-        </div>
-
-        <div class="row q-my-sm">
-          <q-checkbox color="nice" @input="update('trackInventory', ...arguments)" label="Track Inventory" v-model="form.trackInventory"></q-checkbox>
-        </div>
-
-        <capacity-picker color="nice" v-model="form.capacity"></capacity-picker>
-
-        <custom-tax-form></custom-tax-form>
-        <div class="q-my-md q-pa-sm" style="max-height: 600px; overflow-y: scroll">
-          <div class="text-xs text-mb-xs">Hours of Operation</div>
-          <schedule-picker
-            v-model="form.schedule"
-            @input="updateSchedule('schedule', ...arguments)"
-          ></schedule-picker>
+        <div class="__section" v-for="(section, i) in sections" :key="`section-${i}`">
+          <div class="__section_header"  @click.stop="toggleOpen(section.label)">
+            <div class="text-xs text-mb-xs text-weight-bold">{{ section.label }}</div>
+            <q-space></q-space>
+            <q-btn dense flat :icon="open.includes(section.label) ? 'mdi-menu-up' : 'mdi-menu-down'"></q-btn>
+          </div>
+          <q-slide-transition>
+            <div class="q-py-md q-px-sm" v-if="open.includes(section.label)">
+              <component :is="section.component" v-bind="section.attrs" @input="update(section.update, ...arguments)"></component>
+            </div>
+          </q-slide-transition>
         </div>
       </div>
     </q-slide-transition>
@@ -54,12 +27,13 @@
 <script>
   import common from '../../../store/schemas/common';
   import SchedulePicker from 'components/common/atoms/pickers/SchedulePicker';
-  import CustomTaxForm from 'components/products/tax/CustomTaxForm';
   import CapacityPicker from 'components/products/forms/CapacityPicker';
+  import TaxSettings from 'components/vendor/settings/tax/TaxSettings';
+  import InventorySettings from 'components/vendor/settings/inventory/InventorySettings';
 
   export default {
     name: 'DefaultVendorSettings',
-    components: { CapacityPicker, CustomTaxForm, SchedulePicker },
+    components: { CapacityPicker, SchedulePicker },
     props: {
       startOn: Boolean,
       value: Object,
@@ -76,6 +50,7 @@
     },
     data() {
       return {
+        open: [],
         on: false,
         form: common.VendorSettings,
         scheduleUpdates: 0
@@ -86,24 +61,74 @@
         immediate: true,
         handler(newVal) {
           if (newVal) {
-            Object.assign(this.form, Object.assign({}, newVal));
+            this.form = Object.assign({}, newVal);
+            // Object.assign(this.form, Object.assign({}, newVal));
           }
         }
       },
       startOn: {
         immediate: true,
-        handler(newVal, oldVal){
-          if(newVal !== oldVal){
+        handler(newVal, oldVal) {
+          if (newVal !== oldVal) {
             this.on = newVal;
           }
         }
       }
     },
+    computed: {
+      sections(){
+        return [
+          {
+            label: 'Taxes',
+            icon: '',
+            component: TaxSettings,
+            attrs: {
+              value: this.form.tax
+            },
+            update: 'tax'
+          },
+          {
+            label: 'Inventory',
+            icon: '',
+            component: InventorySettings,
+            attrs: {
+              value: this.form.inventory
+            },
+            update: 'inventory'
+          },
+          {
+            label: 'Capacity',
+            icon: '',
+            component: CapacityPicker,
+            attrs: {
+              value: this.form.capacity,
+              color: 'nice'
+            },
+            update: 'capacity'
+          },
+          {
+            label: 'Schedule',
+            icon: '',
+            component: SchedulePicker,
+            attrs: {
+              value: this.form.schedule,
+            },
+            update: 'schedule'
+          }
+        ];
+      }
+    },
     methods: {
+      toggleOpen(val) {
+        let idx = this.open ? this.open.indexOf(val) : -1;
+        if (idx > -1) this.open.splice(idx, 1);
+        else this.open ? this.open.push(val) : this.open = [val];
+      },
       updateSchedule() {
         this.$emit('input', this.form);
       },
       update(key, val) {
+        this.form[key] = val;
         this.$emit('input', this.form);
         if (this.saveOnChange) {
           let patchObj = {};
@@ -116,6 +141,19 @@
   };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+  .__section {
 
+    .__section_header {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 14px;
+      border-bottom: solid 1px rgba(0,0,0,.4);
+
+      &:hover {
+        background: rgba(66, 66, 66, .15);
+      }
+    }
+  }
 </style>

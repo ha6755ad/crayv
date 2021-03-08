@@ -76,7 +76,7 @@ export default function (/* { ssrContext } */) {
         try {
           LocalStorage.set('marketplaceId', payload._id);
         } catch(e) {
-          console.log('error setting local storage vendorId', e);
+          console.log('error setting local storage marketplaceId', e);
         }
         try {
           SessionStorage.set('marketplaceId', payload._id);

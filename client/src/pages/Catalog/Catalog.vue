@@ -18,7 +18,7 @@
               v-bind="page.itemAttrs"
               :is="page.item"
               :value="item"
-              @add="handleInput"
+              @input="handleInput"
             ></component>
           </template>
 
@@ -27,7 +27,7 @@
               v-bind="page.cardAttrs"
               :is="page.card"
               :value="item"
-              @add="handleInput"
+              @input="handleInput"
             ></component>
           </template>
 

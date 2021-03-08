@@ -1,5 +1,5 @@
 <template>
-  <q-card :flat="flat" class="bg-light __p_group_grid" style="border-radius: 10px; overflow: hidden" @click.stop="$emit('add', value)">
+  <q-card :flat="flat" class="bg-light __p_group_grid" style="border-radius: 10px; overflow: hidden" @click.stop="$emit('input', value)">
 
     <div class="t-l flex items-center">
       <q-btn dense push size="sm" color="positive" icon="mdi-checkbox-marked-outline" v-if="active"></q-btn>

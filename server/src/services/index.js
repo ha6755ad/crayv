@@ -33,6 +33,10 @@ const fvYoutube = require('./fv-youtube/fv-youtube.service');
 
 const boundaryFilter = require('./boundary-filter/boundary-filter.service.js');
 
+const iyEvents = require('./iy-events/iy-events.service.js');
+
+const crayvCrowdBuys = require('./crayv-crowd-buys/crayv-crowd-buys.service.js');
+
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
   app.configure(crayvProducts);
@@ -63,4 +67,6 @@ module.exports = function (app) {
   app.configure(fvYoutube);
   app.configure(irComments);
   app.configure(boundaryFilter);
+  app.configure(iyEvents);
+  app.configure(crayvCrowdBuys);
 };

@@ -106,7 +106,7 @@
         }) : list;
         let keyList = [this.filterName];
         if(this.useTagPath) keyList.push(this.useTagPath);
-        return this.searchAndMatch(filteredList, this.searchInput, keyList);
+        return this.$searchAndMatch(filteredList, this.searchInput, keyList);
       },
       total(){
         return this.optionsIn ? this.optionsIn.length : 0;

@@ -11,7 +11,7 @@
         </q-item-section>
         <q-item-section side v-if="addBtn">
           <q-item-section>
-            <q-btn size="sm" round :color="color" icon="mdi-plus" @click="$emit('add')">
+            <q-btn size="sm" round :color="color" icon="mdi-plus" @click="$emit('input')">
               <q-popup-proxy>
                 <div style="width: 100%">
                   <drag-upload @input="handleInput" :value="value"></drag-upload>

@@ -1,5 +1,5 @@
 <template>
-  <q-card class="q-pa-sm" @click.stop="$emit('add', value)">
+  <q-card class="q-pa-sm" @click.stop="$emit('input', value)">
 
 <!--    EDIT MENU-->
     <div class="t-r-a flex items-center" style="z-index: 10">

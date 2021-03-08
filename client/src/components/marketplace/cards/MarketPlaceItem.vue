@@ -1,6 +1,6 @@
 <template>
   <q-card flat :dark="dark">
-  <q-item flat style="border-radius: inherit; overflow: hidden" clickable @click.stop="$emit('add', value)">
+  <q-item flat style="border-radius: inherit; overflow: hidden" clickable @click.stop="$emit('input', value)">
 
     <div class="flex items-center bg-shade-4 t-r text-white">
       <q-btn

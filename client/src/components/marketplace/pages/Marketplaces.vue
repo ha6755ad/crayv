@@ -16,7 +16,7 @@
     >
       <template v-slot:card="{item, handleInput}">
         <q-card style="width: 100%; height: 320px">
-        <marketplace-card :value="item" @add="handleInput" editing></marketplace-card>
+        <marketplace-card :value="item" @input="handleInput" editing></marketplace-card>
         </q-card>
       </template>
 

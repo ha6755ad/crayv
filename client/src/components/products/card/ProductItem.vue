@@ -5,7 +5,7 @@
       <q-btn v-if="active" size="sm" flat dense icon="mdi-checkbox-marked-outline" color="positive"></q-btn>
     </div>
 
-    <q-item clickable @click="$emit('add', value)">
+    <q-item clickable @click="$emit('input', value)">
       <q-item-section avatar>
         <default-avatar :value="value" avatar-path="images" square></default-avatar>
       </q-item-section>

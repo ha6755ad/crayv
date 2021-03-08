@@ -22,7 +22,7 @@ module.exports = function (app) {
         appName: String
       }
     }],
-    lineups: [{ type: Schema.Types.ObjectId, ref: 'crayv-lineups' }],
+    productLineups: [{ type: Schema.Types.ObjectId, ref: 'crayv-lineups' }],
     variants: [{ type: Common.ProductVariant }],
     options: [{ type: Common.ProductOption }],
     productGroups: [{ type: Schema.Types.ObjectId, ref: 'crayv-product-groups' }],

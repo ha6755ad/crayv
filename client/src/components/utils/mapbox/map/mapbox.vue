@@ -326,7 +326,6 @@
         this.map.fitBounds(bounds, {
           padding: 20,
           maxZoom: this.maxZoom,
-          zoom: this.zoom
         });
       },
     }

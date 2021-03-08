@@ -19,7 +19,7 @@ module.exports = function (app) {
     cart: {type: Schema.Types.ObjectId, ref: 'crayv-carts'},
     person: {type: Schema.Types.ObjectId, ref: 'users'},
     vendorSettings: { type: Schema.Types.ObjectId, ref: 'crayv-vendor-settings' },
-    group_order: {type: Schema.Types.ObjectId, ref: 'group_orders'},
+    group_order: {type: Schema.Types.ObjectId, ref: 'crayv-crowd-buys'},
     products: [{type: Common.productOrder}],
     location: {type: Common.Address, required: false},
     reference: {

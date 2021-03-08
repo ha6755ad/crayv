@@ -1,5 +1,5 @@
 const lget = require('lodash.get');
-const lset = require('lodash.set');
+// const lset = require('lodash.set');
 /* eslint-disable no-unused-vars */
 exports.BoundaryFilter = class BoundaryFilter {
   constructor (options) {
@@ -15,6 +15,11 @@ exports.BoundaryFilter = class BoundaryFilter {
     let geo = lget(params, '$boundaryParams.geo');
     let geoField = lget(params, '$boundaryParams.geoField');
     let query = lget(params, 'query', {});
+    // geo should be like
+    // geometry: {
+    //   type: 'Polygon',
+    //     coordinates: [[lng,lat]]
+    // }
     if(geoField) {
       query[`${geoField}.features.geometry`] = {
         $geoIntersects: {

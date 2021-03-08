@@ -38,11 +38,10 @@ const ProductOptions = {
   }
 };
 const ProductSettings = {
-  trackInventory: undefined,
-  taxExempt: undefined,
+  inventory: undefined,
+  tax: undefined,
   syncSettings: undefined,
   capacity: undefined,
-  taxes: undefined,
   schedule: {
     days: undefined,
     blackoutDates: undefined
@@ -50,12 +49,11 @@ const ProductSettings = {
 };
 
 const VendorSettings = {
-  trackInventory: undefined,
+  inventory: undefined,
+  tax: undefined,
   automateTaxes: undefined,
   capacity: undefined,
-  taxExempt: undefined,
   syncSettings: undefined,
-  taxes: undefined,
   schedule: {
     days: undefined,
     blackoutDates: undefined

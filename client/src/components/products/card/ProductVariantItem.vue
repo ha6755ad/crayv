@@ -6,7 +6,7 @@
       <q-btn v-if="closeable" icon="mdi-close" size="sm" dense flat @click="$emit('close')"
       ></q-btn>
     </div>
-    <q-item clickable @click="$emit('add', value)">
+    <q-item clickable @click="$emit('input', value)">
       <q-item-section avatar>
         <default-avatar :value="value" avatar-path="images">
           <template v-slot:menu>

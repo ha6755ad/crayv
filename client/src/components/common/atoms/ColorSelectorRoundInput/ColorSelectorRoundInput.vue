@@ -13,12 +13,12 @@
 </template>
 
 <script>
-  import ColorSelectorRound from '../colorSelectorRound/colorSelectorRound.vue';
+  import colorSelectorRound from '../colorSelectorRound/colorSelectorRound';
 
   export default {
     name: 'ColorSelectorRoundInput',
     inheritAttrs: false,
-    components: {ColorSelectorRound},
+    components: {colorSelectorRound},
     props: {
       value: {
         type: [Object, String],
@@ -50,9 +50,7 @@
           };
         }
       },
-      path: {
-        required: true
-      },
+      path: String,
       slots: {
         type: Array,
         default() {

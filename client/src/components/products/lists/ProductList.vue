@@ -19,13 +19,13 @@
   >
     <template v-slot:list="scope">
       <q-list separator v-if="!select">
-        <add-list-item v-if="editing" @add="addDialog = true"></add-list-item>
+        <add-list-item v-if="editing" @input="addDialog = true"></add-list-item>
         <q-item v-for="(item, i) in scope.items" :key="`product-${i}`">
           <product-item
             :flat="flat"
             :value="item"
             :editing="editing"
-            @add="handleInput"
+            @input="handleInput"
             :active="isSelected(item)"
           >
             <!--          TODO: this slot not working-->
@@ -46,10 +46,10 @@
         @input-value="searchInput = $event"
       >
         <template v-slot:no-option v-if="editing">
-          <add-list-item @add="addDialog = true"></add-list-item>
+          <add-list-item @input="addDialog = true"></add-list-item>
         </template>
         <template v-slot:before-options v-if="editing">
-          <add-list-item @add="addDialog = true"></add-list-item>
+          <add-list-item @input="addDialog = true"></add-list-item>
         </template>
         <template v-slot:selected-item="{ opt, index }">
           <q-chip dark removable @remove="removeItem(index, opt)">
@@ -58,7 +58,7 @@
           </q-chip>
         </template>
         <template v-slot:option="{ opt, index }">
-          <product-item :value="opt" @add="handleInput" :editing="editing">
+          <product-item :value="opt" @input="handleInput" :editing="editing">
 <!--          TODO: this slot not working-->
             <template v-if="$scopedSlots.side" v-slot:side>
               <slot name="side" :item="opt" :index="index">

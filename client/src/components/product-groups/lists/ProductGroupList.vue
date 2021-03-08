@@ -26,7 +26,7 @@
         <div v-if="!select" :class="`row ${noWrap ? 'no-wrap' : ''}`" :style="noWrap ? { overflowX: 'scroll'} : {}">
           <div :class="`col-${cols} col-sm-${sm} col-md-${md} col-lg-${lg} col-xl-${xl} q-pa-sm`" v-for="(pg, i) in scope.items" :key="`pg-${i}`">
             <q-card style="height: 380px; width: 100%; border-radius: 10px">
-            <product-group-card @add="handleInput" :value="pg"></product-group-card>
+            <product-group-card @input="handleInput" :value="pg"></product-group-card>
             </q-card>
           </div>
         </div>
@@ -41,10 +41,10 @@
           @input-value="searchInput = $event"
         >
           <template v-slot:no-option>
-            <add-list-item v-show="editing" @add="addDialog = true"></add-list-item>
+            <add-list-item v-show="editing" @input="addDialog = true"></add-list-item>
           </template>
           <template v-slot:before-options>
-            <add-list-item v-show="editing" @add="addDialog = true"></add-list-item>
+            <add-list-item v-show="editing" @input="addDialog = true"></add-list-item>
           </template>
           <template v-slot:selected-item="{ opt, index }">
             <q-chip removable @remove="removeItem(index, opt)">
@@ -53,7 +53,7 @@
             </q-chip>
           </template>
           <template v-slot:option="{ opt, index }">
-            <product-group-item :value="opt" @add="handleInput" :editing="editing">
+            <product-group-item :value="opt" @input="handleInput" :editing="editing">
               <!--          TODO: this slot not working-->
               <template v-if="$scopedSlots.side" v-slot:side>
                 <slot name="side" :item="opt" :index="index"></slot>

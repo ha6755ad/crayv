@@ -49,7 +49,7 @@
                            icon="mdi-checkbox-marked-outline"></q-btn>
                     <reputation-item
                       flat
-                      @add="handleInput"
+                      @input="handleInput"
                       :value="score"
                     >
                     </reputation-item>
@@ -61,7 +61,7 @@
                   <div class="q-pa-sm col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2" v-for="(score, i) in scope.items"
                        :key="`item-${i}`">
                     <q-card>
-                      <score-card @add="handleInput" :value="score"></score-card>
+                      <score-card @input="handleInput" :value="score"></score-card>
                     </q-card>
                   </div>
                 </div>

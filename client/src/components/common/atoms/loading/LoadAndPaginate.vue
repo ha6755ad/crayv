@@ -11,6 +11,7 @@
       <div style="width: 600px; max-width: 100%">
         <search-item
           :dark="dark"
+          :dense="dense"
           :rounded="rounded"
           :outlined="outlined"
           v-model="searchInput"
@@ -20,7 +21,7 @@
       </div>
     </div>
     <slot name="list" :items="useItems"></slot>
-    <div class="row justify-end q-my-sm" v-if="paginator && !paginatorTop && (total > itemsLimit)">
+    <div class="row justify-end q-my-sm" v-if="paginator && !paginatorTop && (total > itemsLimit)">im opp
       <btn-paginator
         :dark="dark"
         :pages="itemsPages"
@@ -72,6 +73,7 @@
     })],
     components: { SearchItem, BtnPaginator },
     props: {
+      dense: Boolean,
       filter: Function,
       qidIn: String,
       dark: Boolean,

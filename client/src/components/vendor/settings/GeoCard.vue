@@ -1,6 +1,6 @@
 <template>
   <q-card flat style="height: 100%; width: 100%; border-radius: 10px; overflow: hidden" class="pointer"
-          @click="$emit('add', value)">
+          @click="$emit('input', value)">
 
     <div class="__info_box flex flex-center q-pa-md">
 
@@ -38,7 +38,7 @@
 <script>
   import Mapbox from '../../utils/mapbox/map/mapbox';
   import {mapGetters} from 'vuex';
-  import VendorSettingsForm from 'components/vendor/settings/VendorSettingsForm';
+  import VendorSettingsForm from 'components/vendor/settings/vendor-settings/VendorSettingsForm';
   import DefaultAvatar from 'components/common/atoms/avatars/DefaultAvatar';
   import MarketplaceItem from 'components/marketplace/cards/MarketPlaceItem';
 

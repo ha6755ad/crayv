@@ -22,7 +22,7 @@
         <offer-card border-color="rgba(0,0,0,.3)" :subject="subject" :value="item"></offer-card>
         </template>
         <template v-else>
-          <offer-item @add="handleInput" :value="item" :subject="subject"></offer-item>
+          <offer-item @input="handleInput" :value="item" :subject="subject"></offer-item>
         </template>
       </template>
       <template v-slot:form="{close}">

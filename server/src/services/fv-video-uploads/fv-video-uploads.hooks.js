@@ -12,10 +12,10 @@ const creatorResolvers = {
       let userObject =
         await context.app.service('users').find({
           query: {
-            _id: {$in: video.creator}
-          }
-        });
-      lset(video,'_fastjoin.creator', { _id: lget(userObject, '_id'), name: lget(userObject, 'name', lget(userObject, 'username', lget(video, 'author'))), avatar: lget(userObject, 'avatar') });
+            _id: {$in: video.creator},
+          },
+        }).data;
+      lset(video,'_fastjoin.creator', { _id: lget(userObject, [0, '_id']), name: lget(userObject, [0, 'name'], lget(userObject, [0, 'username'], lget(video, [0, 'author']))), avatar: lget(userObject, [0, 'avatar']) });
     }
   }
 };

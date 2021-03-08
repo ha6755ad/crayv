@@ -1,5 +1,5 @@
 <template>
-  <div :id="id" class="bg-transparent __video_card pointer" @click="$emit('add')" :style="{ gridTemplateRows: rows }">
+  <div :id="id" class="bg-transparent __video_card pointer" @click="$emit('input')" :style="{ gridTemplateRows: rows }">
     <q-card class="bg-black glossy __video_container"
             :style="{ minWidth: '250px', height: vidHeight, width: width, maxWidth: '100%' }">
 

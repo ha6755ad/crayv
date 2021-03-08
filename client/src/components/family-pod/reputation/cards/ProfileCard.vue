@@ -2,7 +2,7 @@
   <q-card flat style="border-radius: 10px; perspective: 1000px; height: 275px">
 
     <div class="t-r">
-      <q-btn flat dense icon="mdi-eye" @click.stop="$emit('add')" color="white"></q-btn>
+      <q-btn flat dense icon="mdi-eye" @click.stop="$emit('input')" color="white"></q-btn>
     </div>
 
     <div class="t-l">

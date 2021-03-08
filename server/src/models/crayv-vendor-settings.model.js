@@ -19,7 +19,6 @@ module.exports = function (app) {
     settingsName: String,
     vendor: {type: Schema.Types.ObjectId, ref: 'crayv-vendors'},
     address: { type: Common.Address },
-    geo: { type: Common.GeoLocation },
     settings: {
       vendorSettings: { type: Common.VendorSettings }
     },

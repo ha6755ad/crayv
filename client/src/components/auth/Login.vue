@@ -126,10 +126,12 @@
           this.authenticate({ ...this.form, strategy: 'local' })
             // eslint-disable-next-line no-unused-vars
             .then(res => {
+              this.$isLoading(false);
               this.$successNotify(`Welcome Back ${this.lget(res, 'name', '')}`);
               // this.$q.notify('Successfully Logged in', 'positive', 3000);
             })
             .catch(error => {
+              this.$isLoading(false);
               this.$errNotify('Login Error ' + error.message);
             });
         }

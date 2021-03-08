@@ -19,7 +19,7 @@ const Fingerprint = {
         async $generateContact(path){
           let contact = new models.api.LLContacts().clone();
           contact.fingerprint = this.getFingerprint();
-          await this.$store.dispatch('ll-contacts/find', {
+          await this.$store.dispatch('contacts/find', {
             query: {
               fingerprint: contact.fingerprint
             }

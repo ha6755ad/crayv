@@ -4,11 +4,11 @@
       v-bind="page.attrs"
     >
       <template v-if="page.item" v-slot:list-item="{item, handleInput}">
-        <component v-bind="page.itemAttrs" :is="page.item" :value="item" @add="handleInput"></component>
+        <component v-bind="page.itemAttrs" :is="page.item" :value="item" @input="handleInput"></component>
       </template>
 
       <template v-if="page.card && page.attrs.grid" v-slot:card="{item, handleInput}">
-        <component v-bind="page.cardAttrs" :is="page.card" :value="item" @add="handleInput"></component>
+        <component v-bind="page.cardAttrs" :is="page.card" :value="item" @input="handleInput"></component>
       </template>
 
       <template v-slot:form="{close}">

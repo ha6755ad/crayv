@@ -1,5 +1,5 @@
 <template>
-  <q-card :flat="flat" style="width: 100%" @click.stop="$emit('add', value)">
+  <q-card :flat="flat" style="width: 100%" @click.stop="$emit('input', value)">
 
     <div class="t-r-a flex items-center" style="z-index: 10">
       <q-btn round flat icon="mdi-dots-vertical" size="sm" v-if="canEdit">

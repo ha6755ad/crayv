@@ -1,5 +1,5 @@
 <template>
-  <q-card :id="`card-${value._id}`" :flat="flat" class="bg-light __p_group_grid" :style="{borderRadius: '10px', overflow: 'hidden', height: width * 1.1 + 'px' }" @click.stop="$emit('add', value)">
+  <q-card :id="`card-${value._id}`" :flat="flat" class="bg-light __p_group_grid" :style="{borderRadius: '10px', overflow: 'hidden', height: width * 1.1 + 'px' }" @click.stop="$emit('input', value)">
 
     <div class="t-l flex items-center">
       <q-btn

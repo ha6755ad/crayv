@@ -6,7 +6,7 @@
       </div>
       <q-space />
       <div>
-        Add A Card <span><q-btn @click.stop="$emit('add')" icon="mdi-plus" flat/></span>
+        Add A Card <span><q-btn @click.stop="$emit('input')" icon="mdi-plus" flat/></span>
       </div>
     </div>
     <div>

@@ -198,9 +198,11 @@ module.exports = {
         },
         $dollarString(val, test, dec) {
           // console.log('dollar string', val, test)
-          let decimal = dec || dec === 0 ? dec : 2;
-          let valDec = val.toFixed(decimal);
-          return (test ? test : '') + valDec.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,');
+          if(val || val === 0) {
+            let decimal = dec || dec === 0 ? dec : 2;
+            let valDec = val.toFixed(decimal);
+            return (test ? test : '') + valDec.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,');
+          } else return null;
         },
         isIonrev(email) {
           if (email.split('@').length) {

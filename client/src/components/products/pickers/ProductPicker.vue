@@ -25,7 +25,7 @@
     </template>
     <template v-else>
       <q-card style="height: 250px" flat class="flex flex-center text-xs text-mb-xs text-weight-bold">
-        <span>No Products - <q-btn @click="$emit('add')" flat label="Add Some"/></span>
+        <span>No Products - <q-btn @click="$emit('input')" flat label="Add Some"/></span>
       </q-card>
     </template>
   </q-list>

@@ -136,6 +136,14 @@
           }
         }
       },
+      marketplaceId: {
+        immediate: true,
+        handler(newVal){
+          if(newVal && !this.lget(this.marketplace, '_id')){
+            this.$store.dispatch('crayv-marketplaces/get', newVal);
+          }
+        }
+      },
       marketplaceName: {
         immediate: true,
         async handler(newVal) {

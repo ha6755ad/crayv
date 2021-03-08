@@ -5,6 +5,7 @@ import WalletIcon from 'components/common/atoms/custom-icons/WalletIcon';
 import CartIcon from 'components/common/atoms/custom-icons/CartIcon';
 import HistoryIcon from 'components/common/atoms/custom-icons/HistoryIcon';
 import ClassifiedsDrawer from 'components/marketplace/drawers/ClassifiedsDrawer';
+import CrowdShopDrawer from 'components/marketplace/drawers/CrowdShopDrawer';
 
 export const MarketPlaceDrawer = {
   computed: {
@@ -23,12 +24,13 @@ export const MarketPlaceDrawer = {
           }
         },
         {
-          label: 'Crayv Events',
+          label: 'Crowd Store',
           caption: 'Buy in groups for big savings',
           iconComponent: EventIcon,
-          active: this.$route.name === 'event-store',
+          drawer: CrowdShopDrawer,
+          active: this.$route.path.indexOf('/crowd-store') > -1,
           click: () => {
-            this.$router.push({name: 'event-store', query: this.$route.query, params: this.$route.params });
+            this.$routerPreserve({name: 'crowd-store'});
           }
         },
         {

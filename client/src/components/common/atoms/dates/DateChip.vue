@@ -1,6 +1,6 @@
 <template>
   <div :class="`flex items-center q-px-${hideText ? 'xs' : 'sm'} q-py-${hideText ? 'xs' : 'sm'} bg-${dark ? 'dark' : 'light'}`" :style="`border-radius:${borderRadius}; box-shadow:${boxShadow}; position: relative`">
-    <div :style="{ height: size, width: size, borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'flex-center' }" :class="`${dark ? bgIn ? 'bg-' + bgIn + ' text-dark' : 'bg-light' + ' text-dark' : bgIn ? 'bg-' + bgIn + ' text-light' : 'bg-dark' + ' text-light'} flex flex-center`"
+    <div :style="{ height: size, width: size, borderRadius: '3px', display: 'flex', flexDirection: 'column', alignItems: 'flex-center' }" :class="`${dark ? bgIn ? 'bg-' + bgIn + ' text-dark' : 'bg-dark' + ' text-light' : bgIn ? 'bg-' + bgIn + ' text-light' : 'bg-light' + ' text-dark'} flex flex-center`"
     >
       <div>
       <div class="row justify-center items-center" style="font-size: .6rem">{{month}}</div>
@@ -8,7 +8,7 @@
       </div>
     </div>
     <div v-if="!hideText" :class="textClass">{{date}}</div>
-    <div class="t-r-a close_btn pointer flex flex-center bg-shade-4 text-white" v-if="removable" @click="$emit('remove', value)">
+    <div class="t-r-a close_btn pointer flex flex-center bg-shade-4 text-white" v-if="removable" @click.stop="$emit('remove', value)">
       <q-icon size="14px" color="white" name="mdi-close"></q-icon>
     </div>
   </div>
@@ -34,7 +34,7 @@
         type: String,
         default: 'text-xxs text-mb-xxs text-weight-medium q-ml-sm'
       },
-      value: Date,
+      value: [Date, String],
       format: {
         type: String,
         default: 'MMM DD, YYYY'

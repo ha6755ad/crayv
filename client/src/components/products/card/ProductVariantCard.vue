@@ -1,5 +1,5 @@
 <template>
-  <q-card flat :style="styleIn" @click="$emit('add', value)" class="fill_size">
+  <q-card flat :style="styleIn" @click="$emit('input', value)" class="fill_size">
     <multi-image-viewer
       avatar-path="images"
       :value="value"

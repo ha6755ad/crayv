@@ -222,6 +222,7 @@
         deep: true,
         handler(newVal){
           if(newVal){
+            console.log('state vendor change');
             this.$store.dispatch('setVendorContext', newVal);
           }
         }

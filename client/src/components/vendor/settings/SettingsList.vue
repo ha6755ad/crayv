@@ -41,10 +41,10 @@
           @input-value="searchInput = $event"
         >
           <template v-slot:no-option>
-            <add-list-item v-show="editing" @add="addDialog = true"></add-list-item>
+            <add-list-item v-show="editing" @input="addDialog = true"></add-list-item>
           </template>
           <template v-slot:before-options>
-            <add-list-item v-show="editing" @add="addDialog = true"></add-list-item>
+            <add-list-item v-show="editing" @input="addDialog = true"></add-list-item>
           </template>
           <template v-slot:selected-item="{ opt, index }">
             <q-chip removable @remove="removeItem(index, opt)">
@@ -53,7 +53,7 @@
             </q-chip>
           </template>
           <template v-slot:option="{ opt }">
-            <settings-item :value="opt" @add="handleInput"></settings-item>
+            <settings-item :value="opt" @input="handleInput"></settings-item>
           </template>
         </q-select>
       </template>
@@ -75,7 +75,7 @@
   import DefaultAvatar from 'components/common/atoms/avatars/DefaultAvatar';
   import GeoCard from 'components/vendor/settings/GeoCard';
   import SettingsItem from 'components/vendor/settings/SettingsItem';
-  import VendorSettingsForm from 'components/vendor/settings/VendorSettingsForm';
+  import VendorSettingsForm from 'components/vendor/settings/vendor-settings/VendorSettingsForm';
 
   export default {
     name: 'SettingsList',

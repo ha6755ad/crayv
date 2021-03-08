@@ -1,44 +1,41 @@
 <template>
-  <q-card style="height: 100%; width: 100%" flat dark>
+  <q-card style="height: 100%; width: 100%" flat :dark="dark">
 
     <div class="q-pa-md" v-if="!hideBlackout">
       <div class="text-xxs text-mb-xxs text-weight-medium">
         <div class="flex items-center">
           <div>Unavailable Dates</div>
-          <q-btn-dropdown size="sm" flat dense color="white" push icon="mdi-plus" class="q-mx-lg">
+          <q-btn size="sm" dense :color="dark ? 'white' : 'dark'" push icon="mdi-plus" class="q-mx-lg" @click="blackoutDialog = true">
+            <q-dialog @close="addingBlackout = defaultBlackout()" v-model="blackoutDialog" :maximized="$q.screen.lt.sm">
+              <q-card :dark="dark" class="q-pa-md" style="width: 800px; max-width: 100%">
+                <q-btn class="t-r-f bg-dark text-light" dense flat size="sm" icon="mdi-close" @click="blackoutDialog = false"/>
 
-            <q-card dark class="q-pa-md">
-              <div class="text-xs text-mb-xs text-weight-bold q-mb-lg">Choose Date Range</div>
+                <div class="text-xs text-mb-xs text-weight-bold q-mb-lg">Choose Date Range</div>
 
-              <inline-picker
-                require-save
-                dark
-                v-model="addingBlackout"
-                @input="newBlackout"
-              ></inline-picker>
+                <inline-picker
+                  require-save
+                  :dark="dark"
+                  v-model="addingBlackout"
+                  @input="newBlackout"
+                ></inline-picker>
 
-            </q-card>
-          </q-btn-dropdown>
+              </q-card>
+            </q-dialog>
+          </q-btn>
         </div>
       </div>
       <div class="row items-center">
         <template v-for="(range, i) in blackoutList">
-          <div class="flex items-center" v-if="lget(form, 'blackoutDates[0]')" :key="`date-${i}`">
-            <date-chip
-              size-in="35px"
-              hide-text
+          <div class="flex items-center relative-position q-pa-sm" v-if="lget(form, 'blackoutDates[0]')" :key="`date-${i}`">
+            <q-chip
+              @click="editBlackout(range, i)"
+              icon="mdi-calendar"
               dark
-              :value="$buildDate(range.start)"
-            ></date-chip>
-            <div class="text-md text-mb-md text-weight-bolder">-</div>
-            <date-chip
-              size-in="35px"
-              hide-text
-              dark
-              :value="$buildDate(range.end)"
               removable
-              @remove="form.blackoutDates.splice(i, 1)"
-            ></date-chip>
+              @remove="form.blackoutDates.splice(i , 1)"
+              :label="range.recurrence ? $recurrenceString(range.recurrence) : getDateFormat(range.start, 'MMM-DD h:mm a') + ' - ' + getDateFormat(range.end, 'MMM-DD h:mm a')"
+            >
+            </q-chip>
           </div>
         </template>
       </div>
@@ -51,7 +48,7 @@
           <div class="flex items-center" v-for="(int, i) in intervals" :key="`int-${i}`">
             <q-btn :push="interval === int" :flat="interval !== int" :label="int" @click="interval = int"
                    :color="interval !== int ? 'grey-6' : 'nice'"></q-btn>
-            <q-separator dark v-if="i < intervals.length - 1" vertical></q-separator>
+            <q-separator :dark="dark" v-if="i < intervals.length - 1" vertical></q-separator>
           </div>
         </div>
       </div>
@@ -65,7 +62,7 @@
 
         <q-btn :label="day" flat/>
 
-        <q-card dark>
+        <q-card :dark="dark">
           <q-btn-dropdown icon="mdi-content-copy" size="sm" round flat>
             <q-tooltip>Copy previous day</q-tooltip>
             <q-list dense separator>
@@ -93,11 +90,11 @@
           <!--                                TIMES-->
 
           <div class="timeList">
-            <div class="times" :style="colorTime(day, time) ? {color: '#a6f5a9'} : ''" v-for="time in times"
+            <div class="times" :style="colorTime(day, time) ? {color: 'mediumseagreen'} : ''" v-for="time in times"
                  :key="time" @click="pushTime(time, day)">
               <div class="q-pa-sm">{{ parseDateHour(time) }}</div>
               <q-icon v-if="colorTime(day, time)" name="mdi-checkbox-marked-circle-outline"
-                      style="color: #b5f5b7"/>
+                      style="color: mediumseagreen"/>
             </div>
           </div>
 
@@ -109,18 +106,18 @@
 
 <script>
 
-  import DateChip from 'components/common/atoms/dates/DateChip';
   import 'vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
   import InlinePicker from 'components/common/atoms/dates/InlinePicker';
 
   const defaultBlackout = () => {
-    return { start: new Date(), end: new Date() };
+    return { start: new Date(), end: new Date(), recurrence: undefined };
   };
 
   export default {
     name: 'SchedulePicker',
-    components: { InlinePicker, DateChip },
+    components: { InlinePicker },
     props: {
+      dark: Boolean,
       value: Object,
       hideBlackout: Boolean
     },
@@ -129,6 +126,7 @@
     },
     data() {
       return {
+        blackoutDialog: false,
         addingBlackout: defaultBlackout(),
         interval: 60,
         form: {
@@ -165,15 +163,16 @@
         immediate: true,
         handler(newVal) {
           if (newVal) {
-            this.form = Object.assign({}, newVal);
+            Object.assign(this.form, Object.assign({}, newVal));
           }
         }
       }
     },
     computed: {
       blackoutList() {
-        return this.lget(this.form, 'blackoutDates', []).sort((a, b) => {
-          return this.$buildDate(a) - this.$buildDate(b);
+        let list = JSON.parse(JSON.stringify(this.lget(this.form, 'blackoutDates', [])));
+        return list.sort((a, b) => {
+          return a - b;
         });
       },
       year() {
@@ -247,17 +246,12 @@
       },
       newBlackout(val) {
 
-        const dateObj = dt => {
-          let year = this.getDateFormat(dt, 'YYYY');
-          let month = this.getDateFormat(dt, 'M');
-          let date = this.getDateFormat(dt, 'D');
-          let hours = this.getDateFormat(dt, 'H');
-          let minutes = this.getDateFormat(dt, 'm');
-          return { year: parseInt(year), month: parseInt(month), date: parseInt(date), hours: parseInt(hours), minutes: parseInt(minutes) };
-        };
-
-        this.form.blackoutDates.unshift({ start: dateObj(val.start), end: dateObj(val.end) });
+        this.form.blackoutDates.unshift({ start: val.start, end: val.end, recurrence: val.recurrence });
         this.addingBlackout = defaultBlackout();
+      },
+      editBlackout(val){
+        this.addingBlackout = Object.assign({}, val);
+        this.blackoutDialog = true;
       },
       selectAll(index) {
         this.$lset(this.form, ['days', index, 'all'], !this.lget(this.form, ['days', index, 'all']));

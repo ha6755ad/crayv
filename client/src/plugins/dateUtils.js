@@ -1,11 +1,15 @@
 import Vue from 'vue';
 import  { date } from 'quasar';
-const { getDateDiff, formatDate, adjustDate, extractDate  } = date;
+const { getDateDiff, formatDate, adjustDate, extractDate, isSameDate  } = date;
 
 
 export default async () => {
   Vue.prototype.extractDate = (date, format) => {
     return extractDate(date, format);
+  };
+
+  Vue.prototype.isSameDate = (date, date2, unit) => {
+    return isSameDate(date, date2, unit);
   };
 
   Vue.prototype.genDateHour = (h, m) => {
