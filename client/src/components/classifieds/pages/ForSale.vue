@@ -7,8 +7,7 @@
         behavior="dialog"
         flat
         flex
-        :km="km"
-        @km="km = $event"
+        v-model="km"
         color="primary"
         :text-limit="25"
       ></boundary-filter>

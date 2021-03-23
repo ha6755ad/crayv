@@ -15,7 +15,7 @@
         :outlined="outlined"
         :hint="hint"
         clearable
-        @clear="normalizedAddress = null"
+        @clear="normalizedAddress = null, $emit('clear')"
         :dark="dark"
         use-input
         :value="normalizedAddress ? normalizedAddress[displayPath] : null"
@@ -181,7 +181,7 @@
             },
           }).then(res => {
             // console.log('tom-tom-res', res)
-            if (res && res.data?.length) {
+            if (this.lget(res, 'data[0]')) {
               this.options = res.data;
             }
           }).catch(err => {

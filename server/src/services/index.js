@@ -37,6 +37,8 @@ const iyEvents = require('./iy-events/iy-events.service.js');
 
 const crayvCrowdBuys = require('./crayv-crowd-buys/crayv-crowd-buys.service.js');
 
+const nearmapTile = require('./nearmap-tile/nearmap-tile.service.js');
+
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
   app.configure(crayvProducts);
@@ -69,4 +71,5 @@ module.exports = function (app) {
   app.configure(boundaryFilter);
   app.configure(iyEvents);
   app.configure(crayvCrowdBuys);
+  app.configure(nearmapTile);
 };

@@ -11,6 +11,11 @@ export default function ({store, ssrContext}) {
           component: () => import('pages/Index.vue')
         },
         {
+          path: 'map-buy',
+          name: 'map-buy',
+          component: () => import('components/map-buy/CrowdBuy')
+        },
+        {
           path: 'demo',
           name: 'demo',
           component: () => import('../pages/dumbs')

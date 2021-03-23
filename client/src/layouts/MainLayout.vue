@@ -4,7 +4,6 @@
       <q-toolbar class="bg-primary-secondary">
         <div class="row items-center" style="width: 100%">
           <q-btn
-            v-show="user && user._id"
             flat
             dense
             round
@@ -46,7 +45,6 @@
 
     <q-drawer
       v-model="leftDrawerOpen"
-      show-if-above
       bordered
       content-class="bg-grey-1"
     >
@@ -84,12 +82,11 @@
       </q-list>
     </q-drawer>
 
-    <div class="__cart" :style="{transform: cartDrawer ? 'none' : 'translate(100%, 0)'}"
-         v-if="user && user._id">
-      <checkout-drawer @close="cartDrawer = false"/>
-    </div>
-
     <q-page-container>
+      <div class="__cart" :style="{transform: cartDrawer ? 'none' : 'translate(100%, 0)'}"
+           v-if="user && user._id">
+        <checkout-drawer @close="cartDrawer = false"/>
+      </div>
       <router-view v-bind="attrs"/>
     </q-page-container>
 
@@ -206,17 +203,17 @@
       };
     },
     watch: {
-      user: {
-        immediate: true,
-        handler(newVal, oldVal) {
-          if ((newVal?._id) && (!oldVal?._id)) {
-            this.leftDrawerOpen = true;
-          } else if (oldVal?._id && !newVal?._id) {
-            // this.$router.push('/')
-            this.leftDrawerOpen = false;
-          }
-        }
-      },
+      // user: {
+      // immediate: true,
+      // handler(newVal, oldVal) {
+      //   if ((newVal?._id) && (!oldVal?._id)) {
+      //     this.leftDrawerOpen = true;
+      //   } else if (oldVal?._id && !newVal?._id) {
+      //     // this.$router.push('/')
+      //     this.leftDrawerOpen = false;
+      //   }
+      // }
+      // },
       stateVendor: {
         immediate: true,
         deep: true,
@@ -239,8 +236,8 @@
       },
       attrs() {
         return {
-          appId: 'follow-something',
-          appName: 'follow',
+          appId: 'crayv',
+          appName: 'crayv',
           groupsIn: [],
           currVendor: this.currVendor
         };

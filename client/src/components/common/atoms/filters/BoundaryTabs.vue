@@ -2,12 +2,12 @@
   <div style="width: 100%" class="q-pa-md">
     <div class="row justify-center">
       <div class="text-xs text-mb-xs text-weight-bold pointer">
-        <div class="inline">{{ km }}km <q-icon name="mdi-menu-down" class="q-mx-xs"></q-icon></div>
+        <div class="inline">{{ value * factor }}{{uom}} <q-icon name="mdi-menu-down" class="q-mx-xs"></q-icon></div>
         <q-menu>
           <q-list>
             <q-item v-for="i in 10" :key="`level-${i}`" clickable @click="setKm(i * 10)">
               <q-item-section>
-                <q-item-label class="text-center text-xs text-mb-xs text-weight-bold">{{ i * 10 }}km</q-item-label>
+                <q-item-label class="text-center text-xs text-mb-xs text-weight-bold">{{ i * 10 }}{{uom}}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
@@ -33,11 +33,11 @@
     <div class="row justify-center">
       <q-card style="border-radius: 10px; height: 400px; max-height: 90vw; width: 550px; max-width: 100%">
         <mapbox
-          :zoom="km / 6"
           marker-drag
-          :center="coordinates"
-          :markers-in="[coordinates]"
-          :geo-in="lget($createGeoJSONCircle(coordinates, km), 'data')"
+          :center="[longitude, latitude]"
+          :markers-in="[[longitude, latitude]]"
+          :geo-in="longitude && latitude ? geoCircle : []"
+          :auto-zoom="false"
           @pin="setLocation"
         ></mapbox>
       </q-card>
@@ -56,8 +56,10 @@
     components: { TomtomAutocomplete, Mapbox },
     mixins: [LocationMixin],
     props: {
-      km: { type: Number, default: 40 },
-      color: String
+      factor: { type: Number, default: 1 },
+      value: { type: Number, default: 40 },
+      color: String,
+      uom: String
     },
     data() {
       return {
@@ -66,6 +68,9 @@
     },
     computed: {
       ...mapGetters({ coordinates: 'coordinates' }),
+      geoCircle(){
+        return this.$createGeoJSONCircle([this.longitude, this.latitude], this.value);
+      }
     },
     methods: {
       addAddress(val) {
@@ -78,7 +83,7 @@
       },
       setKm(val){
         console.log('set in tabs', val);
-        this.$emit('km', val);
+        this.$emit('input', val);
       }
     }
   };

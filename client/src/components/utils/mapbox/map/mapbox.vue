@@ -1,5 +1,5 @@
 <template>
-  <div style="position: absolute; top: 0; left: 0; height: 100%; width: 100%">
+  <div style="position: absolute; top: 0; left: 0; height: 100%; width: 100%; border-radius: inherit; overflow: hidden">
     <div :id="id" :class="id" style="height: 100%; width: 100%; position: absolute; top: 0; left: 0">
 
     </div>
@@ -35,7 +35,7 @@
         default: 10
       },
       //TODO: make custom marker a config object
-      customMarker: Boolean,
+      customMarker: { required: false },
       fill_color: {
         type: String,
         default: '#ff4577'
@@ -44,6 +44,7 @@
         type: Boolean,
         default: true,
       },
+      styleId: { type: String, default: 'mapbox://styles/mapbox/streets-v11' },
       markerDrag: Boolean,
       geoIn: Object,
       markersIn: Array,
@@ -59,16 +60,26 @@
     mounted() {
       mapboxgl.accessToken = process.env.VUE_APP_MAPBOX_API;
 
+
       this.map = new mapboxgl.Map({
         container: this.id,
-        style: 'mapbox://styles/mapbox/streets-v11',
+        style: this.styleId,
         center: this.center,
         zoom: this.zoom,
         maxZoom: this.maxZoom
       });
+
+      this.map.on('click', (e) => {
+        console.log('map click');
+        this.$emit('mapTouch', e);
+      });
+
       setTimeout(() => {
         if (this.fullScreen) {
           this.map.addControl(new mapboxgl.FullscreenControl());
+        }
+        if (this.polygons && this.geoIn) {
+          this.showPolygons(this.geoIn);
         }
         if (this.drawing) {
           this.draw = new MapboxDraw({
@@ -83,12 +94,13 @@
           this.map.on('draw.delete', this.updateArea);
           this.map.on('draw.update', this.updateArea);
         }
-      }, 500);
+      }, 10);
       // .scrollZoom.disable()
     },
     data() {
       return {
         mountTries: 0,
+        layerTry: 0,
         draw: null,
         map: null,
         markers: [],
@@ -102,10 +114,10 @@
       geoIn: {
         deep: true,
         immediate: true,
-        handler(newVal) {
-          if (this.polygons && newVal && lget(newVal, 'features', []).length) {
-            this.showPolygons(newVal);
-          }
+        handler(newVal, oldVal) {
+          let rmv = !!this.polygons &&
+            !!lget(newVal, 'features[0]') && !!oldVal;
+          this.showPolygons(newVal, rmv);
         }
       },
       activeItem: {
@@ -125,10 +137,14 @@
         immediate: true,
         handler(newVal) {
           console.log('flat points change');
-          if (newVal && newVal.length > 0 && this.autoZoom) {
+          if (this.lget(newVal, [0])) {
             // eslint-disable-next-line no-console
             // console.log('setting view', newVal);
-            setTimeout(() => this.setBoundingView(newVal), 300);
+            setTimeout(() => {
+              if (this.autoZoom) {
+                this.setBoundingView(newVal);
+              }
+            }, 300);
             if (this.pointList && this.pointList.length) {
               this.setMapMarkers(newVal);
             }
@@ -143,7 +159,8 @@
           }
         }
       },
-    },
+    }
+    ,
     computed: {
       pointList() {
         if (this.markersIn) return this.markersIn;
@@ -151,7 +168,8 @@
           let geo = lget(this.geoIn, 'features', []).map(a => a.geometry).filter(b => b.type === 'Point');
           return geo;
         }
-      },
+      }
+      ,
       flatPoints() {
         if (this.markersIn) return this.markersIn;
         else {
@@ -172,48 +190,66 @@
           return list;
         }
       }
-    },
+    }
+    ,
     methods: {
-      showPolygons(a) {
-        // eslint-disable-next-line no-console
-        lget(a, 'features', []).forEach((f, i) => {
-          f.id = i;
-        });
-        console.log('show', a);
-        this.layerName = lget(a, 'name', 'poly');
-        // if (a.geometry.type === 'Polygon') {
-        //interactive features require id, so add one if there isn't one
-        // eslint-disable-next-line no-console
-        // console.log('got poly', a);
-        this.map.addSource(`src-${this.layerName}`, {
-          'type': 'geojson',
-          'data': a
-        });
-        this.map.addLayer({
-          'id': this.layerName,
-          'type': 'fill',
-          'source': `src-${this.layerName}`,
-          'layout': {},
-          'paint': {
-            'fill-color': this.fill_color,
-            'fill-opacity': [
-              'case',
-              ['boolean', ['feature-state', 'hover'], false],
-              .7,
-              0.5
-            ]
+      showPolygons(a, rmv) {
+        if (rmv && this.layerName) {
+          setTimeout(() => {
+            this.map.removeLayer(this.layerName);
+          }, 200);
+        } else {
+          // eslint-disable-next-line no-console
+          lget(a, 'features', []).forEach((f, i) => {
+            f.id = i;
+          });
+          console.log('show', a);
+          this.layerName = lget(a, 'name', 'poly');
+          // if (a.geometry.type === 'Polygon') {
+          //interactive features require id, so add one if there isn't one
+          // eslint-disable-next-line no-console
+          // console.log('got poly', a);
+          console.log('map', this.map);
+          if (this.map) {
+            this.map.addSource(`src-${this.layerName}`, {
+              'type': 'geojson',
+              'data': a
+            });
+            this.map.addLayer({
+              'id': this.layerName,
+              'type': 'fill',
+              'source': `src-${this.layerName}`,
+              'layout': {},
+              'paint': {
+                'fill-color': this.fill_color,
+                'fill-opacity': [
+                  'case',
+                  ['boolean', ['feature-state', 'hover'], false],
+                  .7,
+                  0.5
+                ]
+              }
+            });
+            this.addTouchListener(this.layerName);
+            // }
+          } else {
+            if (this.layerTry < 10) {
+              setTimeout(() => {
+                this.showPolygons(a);
+              }, 300);
+              this.layerTry++;
+            }
           }
-        });
-        this.addTouchListener(this.layerName);
-        // }
-      },
+        }
+      }
+      ,
       addTouchListener(id) {
         const addListener = (listenerOn, listenerOff, srcId) => {
           this.map.on(listenerOn, srcId, e => {
             if (e.features.length > 0) {
               let sendId = lget(e, `features[${0}].id`, 0);
               this.hoverid = sendId;
-              console.log('hover id', sendId);
+              // console.log('hover id', sendId);
               this.toggleHover(sendId, true);
             }
           });
@@ -228,14 +264,15 @@
         addListener('touchstart', 'touchend', id);
         addListener('mousemove', 'mouseleave', id);
         this.map.on('click', id, e => {
-          console.log('map click', e);
+          // console.log('map click', e);
           this.$emit('mapClick', e);
         });
-      },
+      }
+      ,
       toggleHover(srcId, val) {
         if (val) {
           if (this.hoverId || this.hoverId === 0) {
-            console.log('toggle hover', srcId, val);
+            // console.log('toggle hover', srcId, val);
             this.map.setFeatureState(
               { source: `src-${this.layerName}`, id: this.hoverId },
               { hover: false }
@@ -252,12 +289,14 @@
             { hover: false }
           );
         }
-      },
+      }
+      ,
       updateArea() {
         let data = this.draw.getAll();
         // eslint-disable-next-line no-console
         this.$emit('poly', data);
-      },
+      }
+      ,
       setMapCenter(val) {
         if (this.map && typeof this.map !== 'undefined') {
           this.map.setCenter(val);
@@ -269,13 +308,15 @@
         } else {
           setTimeout(() => this.setMapCenter(val), 200);
         }
-      },
+      }
+      ,
       markerDragEnd(marker) {
         let lngLat = marker.getLngLat();
         this.$emit('pin', lngLat);
-      },
+      }
+      ,
       async setMapMarkers(val) {
-        console.log('setting map markers', val, this.customMarker);
+        // console.log('setting map markers', val, this.customMarker);
         let map = this.map;
         if (this.map && typeof this.map !== 'undefined') {
           await this.markers.forEach(m => {
@@ -284,16 +325,22 @@
           let list = [];
           val.forEach((a, i) => {
             // eslint-disable-next-line no-console
-            console.log('setting marker', a, map);
+            // console.log('setting marker', a, map);
             let obj = { color: 'var(--q-color-nice', id: `marker-${i}`, draggable: this.markerDrag };
             if (this.customMarker) {
               let el = document.createElement('div');
-              el.style.background = 'rgba(0,0,0,.2)';
-              el.style.border = 'solid 5px var(--q-color-primary)';
-              el.style.width = '150px';
-              el.style.height = '150px';
-              el.style.borderRadius = '50%';
               el.draggable = this.markerDrag;
+              if (typeof this.customMarker !== 'object') {
+                el.style.background = 'rgba(0,0,0,.2)';
+                el.style.border = 'solid 5px var(--q-color-primary)';
+                el.style.width = '150px';
+                el.style.height = '150px';
+                el.style.borderRadius = '50%';
+              } else {
+                Object.keys(this.customMarker).forEach(k => {
+                  el.style[k] = this.customMarker[k];
+                });
+              }
               obj = el;
             }
             let marker = new mapboxgl.Marker(obj)
@@ -314,7 +361,8 @@
             setTimeout(() => this.setMapMarkers(val), 200);
           } else this.$quickNotify('Unable to display map');
         }
-      },
+      }
+      ,
       setBoundingView(val) {
         // eslint-disable-next-line no-console
         console.log('fitting bounds', val);
@@ -323,13 +371,17 @@
           return bounds.extend(coord);
         }, new mapboxgl.LngLatBounds(val[0], val[0]));
 
-        this.map.fitBounds(bounds, {
-          padding: 20,
-          maxZoom: this.maxZoom,
-        });
-      },
+        setTimeout(() => {
+          this.map.fitBounds(bounds, {
+            padding: 100,
+            maxZoom: this.maxZoom
+          });
+        }, 50);
+      }
+      ,
     }
-  };
+  }
+  ;
 </script>
 
 <style scoped lang="scss">

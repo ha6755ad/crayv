@@ -59,6 +59,7 @@ module.exports = function (/* ctx */) {
       transpileDependencies: ['feathers-vuex'],
 
       env: {
+        VUE_APP_GCP_PLACES_API_KEY: JSON.stringify(process.env.VUE_APP_GCP_PLACES_API_KEY),
         VUE_APP_FEATHERS_URL: JSON.stringify(process.env.VUE_APP_FEATHERS_URL),
       },
 

@@ -2,12 +2,12 @@
   <q-card :flat="flat">
     <div :class="`${flex ? 'flex items-center justify-center' : ''} text-${size} text-mb-${size} text-weight-medium`" style="width: 100%;">
       <div style="cursor:pointer">
-        {{ km }}km
+        {{ value }}{{uom}}
         <q-menu>
           <q-list>
             <q-item v-for="i in 10" :key="`level-${i}`" clickable @click="setKm(i * 10)">
               <q-item-section>
-                <q-item-label class="text-center text-xs text-mb-xs text-weight-bold">{{ i * 10 }}km</q-item-label>
+                <q-item-label class="text-center text-xs text-mb-xs text-weight-bold">{{ i * 10 }}{{uom}}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
@@ -25,8 +25,9 @@
       <q-slide-transition>
         <template v-if="changing">
           <boundary-tabs
-            @km="setKm"
-            :km="km"
+            @input="setKm"
+            :value="value / factor"
+            :factor="factor"
             :color="color"
           ></boundary-tabs>
         </template>
@@ -37,8 +38,9 @@
         <q-card style="border-radius: 10px; width: 600px; max-width: 100vw; min-height: 250px">
           <q-btn class="t-r-f bg-dark text-light" dense flat size="sm" icon="mdi-close" @click="changing = false"/>
           <boundary-tabs
-            @km="setKm"
-            :km="km"
+            @input="setKm"
+            :value="value / factor"
+            :factor="factor"
             :color="color"
           ></boundary-tabs>
         </q-card>
@@ -57,12 +59,14 @@
     mixins: [LocationMixin],
     components: { BoundaryTabs },
     props: {
+      uom: { type: String, default: 'km' },
+      factor: { type: Number, default: 1 },
       size: { type: String, default: 'xs' },
       behavior: { type: String, default: 'dialog' },
       flex: Boolean,
       flat: Boolean,
       textLimit: { type: Number, default: 40 },
-      km: { type: Number, default: 40 },
+      value: { type: Number, default: 40 },
       color: String,
       padding: { type: String, default: 'sm' }
     },
@@ -74,6 +78,15 @@
         estimateAddress: true,
       };
     },
+    watch: {
+      value: {
+        immediate: true,
+        handler(newVal){
+          console.log('see change', newVal);
+          if(newVal) this.$emit('input', newVal);
+        }
+      }
+    },
     computed: {
       defaultAddress() {
         return this.lget(this.user, 'addresses[0]');
@@ -84,8 +97,7 @@
     },
     methods: {
       setKm(val) {
-        console.log('set in filter', val);
-        this.$emit('km', val);
+        this.$emit('input', val);
       }
     }
   };

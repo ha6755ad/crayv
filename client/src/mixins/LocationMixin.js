@@ -37,19 +37,29 @@ export const LocationMixin = {
     }
   },
   computed: {
-    ...mapGetters({ coordinates: 'coordinates', address: 'address' }),
+    ...mapGetters({ coordinates: 'coordinates', stateAddress: 'address' }),
+    ...mapGetters('auth', { authUser: 'user' }),
+    ...mapGetters('users', { getUser: 'get' }),
+    user(){
+      let id = this.lget(this.authUser, '_id');
+      if(id) return this.getUser(id);
+      else return null;
+    },
+    address(){
+      return this.activeAddress ? this.activeAddress :  this.stateAddress ? this.stateAddress : this.lget(this.user, 'addresses[0]');
+    },
     latitude(){
-      return lget(this.coordinates, [1]);
+      return this.lget(this.activeAddress, 'latitude', this.lget(this.coordinates, [1], this.lget(this.user, 'addresses[0].latitude')));
     },
     longitude(){
-      return lget(this.coordinates, [0]);
+      return this.lget(this.activeAddress, 'longitude', this.lget(this.coordinates, [0], this.lget(this.user, 'addresses[0].longitude')));
     },
     addressLat(){
-      let address = this.address ? this.address : this.defaultAddress;
+      let address = this.address ? this.address : this.lget(this.user, 'address', this.defaultAddress);
       return this.lget(address, 'latitude');
     },
     addressLng(){
-      let address = this.address ? this.address : this.defaultAddress;
+      let address = this.address ? this.address : this.lget(this.user, 'address', this.defaultAddress);
       return this.lget(address, 'longitude');
     },
     defaultCountry(){

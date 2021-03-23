@@ -2,7 +2,7 @@
   <q-btn icon="mdi-map-marker-radius" v-bind="btnProps" icon-right="mdi-menu-down">
     <div class="q-mx-xs text-xxs text-mb-xxs text-weight-bold text-uppercase">{{ locationText ? $limitStr(locationText, textLimit) : 'Checking Location...' }}</div>
     <q-popup-proxy>
-      <boundary-filter :color="btnProps.color" :km="km" @km="km = $event"></boundary-filter>
+      <boundary-filter :color="btnProps.color" v-model="km"></boundary-filter>
     </q-popup-proxy>
   </q-btn>
 

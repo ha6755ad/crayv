@@ -13,7 +13,7 @@
           <tomtom-autocomplete
             item_text="formatted"
             outlined
-            @input="addressInput"
+            @input="handleInput"
             @error="searchInput = ''"
             v-model="selectedSuggestion"
             @clear="selectedSuggestion = null"
@@ -23,7 +23,7 @@
     </q-slide-transition>
     <q-card-section>
       <default-list
-        :items="form[this.path]"
+        :items="form[path]"
         title="address"
         default-path="uuid"
         :default-id="lget(form, 'settings.defaults.address.uuid', null)"

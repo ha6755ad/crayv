@@ -73,9 +73,7 @@
       visible: false
     }),
     watch: {
-      loadingAuth(newVal) {
-        this.$isLoading(newVal);
-      },
+
     },
     mounted() {
 
@@ -123,6 +121,7 @@
             this.$vErrNotify(err);
           });
         } else {
+          this.$isLoading(true);
           this.authenticate({ ...this.form, strategy: 'local' })
             // eslint-disable-next-line no-unused-vars
             .then(res => {

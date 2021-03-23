@@ -194,7 +194,8 @@
         return listeners;
       },
       myFiles() {
-        let path = this.lget(this.$attrs, 'attrs.imageTransformVariantsOriginalName', 'raw');
+        let attrs = this.$attrs;
+        let path = this.lget(attrs, 'attrs.imageTransformVariantsOriginalName', 'raw');
         let images = [];
         if (typeof this.value === 'string') {
           images.push({
