@@ -21,14 +21,7 @@
               <div class="text-0-9 q-ml-sm text-weight-medium text-uppercase pointer" @click="login(true)">Signup</div>
               <q-dialog v-model="loginDialog">
                 <q-card style="width: 600px; max-width: 100vw">
-                  <q-btn v-show="!registering" size="sm" flat label="sign up" class="t-r" @click="registering=true"/>
-                  <q-btn v-show="registering" size="sm" flat label="login" class="t-r" @click="registering=false"/>
-                  <template v-if="registering">
-                    <register></register>
-                  </template>
-                  <template v-else>
-                    <login></login>
-                  </template>
+                  <login-or-register :register="registering"></login-or-register>
                 </q-card>
               </q-dialog>
             </template>
@@ -103,16 +96,14 @@
   import {mapGetters} from 'vuex';
   import VendorPicker from 'components/common/pickers/VendorPicker';
   import CheckoutDrawer from 'components/checkout/CheckoutDrawer';
-  import Register from 'components/auth/Register';
-  import Login from 'components/auth/Login';
+  import LoginOrRegister from 'components/auth/LoginOrRegister';
 
   export default {
     name: 'MainLayout',
 
     components: {
-      Register,
+      LoginOrRegister,
       CheckoutDrawer,
-      Login,
       VendorPicker,
       EssentialLink
     },

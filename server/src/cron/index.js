@@ -33,7 +33,7 @@ const genCron = ({second = null, minute = null, hour = null, daysOfMonth = null,
 
 const cron = async (app) => {
 
-  // TODO: should be configurable
+  // TODO: service should be configurable
   const jobs = await app.service('iy-cron-tasks').find({
     query: {
       deleted: { $ne: true },

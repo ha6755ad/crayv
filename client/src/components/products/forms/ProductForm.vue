@@ -127,7 +127,7 @@
   import {models} from 'feathers-vuex';
   import {mapGetters} from 'vuex';
   import ProductVariantForm from './ProductVariantForm';
-  import PricePicker from '../../common/atoms/pickers/PricePicker';
+  import PricePicker from '../../common/atoms/price/PricePicker';
   import VendorPicker from 'components/common/pickers/VendorPicker';
   import {vCheck} from 'src/mixins/ir-validate';
   import MultiImageUpload from 'components/common/substance/images/MultiImageUpload';

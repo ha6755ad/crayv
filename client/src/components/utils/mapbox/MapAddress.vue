@@ -22,7 +22,7 @@
     </div>
 
     <div class="google_box">
-      <mapbox :features-in="featureList" :center="mapCenter" fit-bounds></mapbox>
+      <mapbox :geo-in="featureList" :center="mapCenter" fit-bounds></mapbox>
     </div>
 
   </div>

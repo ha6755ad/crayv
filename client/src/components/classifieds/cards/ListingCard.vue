@@ -121,7 +121,7 @@
 <script>
   import {mapGetters, mapState} from 'vuex';
   import ImageForm from 'components/family-pod/personal/ImageForm';
-  import PricePicker from 'components/common/atoms/pickers/PricePicker';
+  import PricePicker from 'components/common/atoms/price/PricePicker';
   import TagPicker from 'components/common/atoms/pickers/TagPicker';
   import AddressForm from 'components/family-pod/personal/AddressForm';
   import {models} from 'feathers-vuex';

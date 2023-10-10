@@ -71,6 +71,34 @@ export default function ({store, ssrContext}) {
       ]
     },
     {
+      path: '/t',
+      name: 'marketplace',
+      component: () => import('../layouts/MarketplaceLayout'),
+      children: [
+        {
+          path: '',
+          component: () => import('../components/classifieds/pages/CrayvClassifieds'),
+          children: [
+            {
+              path: '',
+              name: 'classifieds',
+              component: () => import('../components/classifieds/pages/ForSale')
+            },
+            {
+              path: 'my-listings',
+              name: 'my-listings',
+              component: () => import('../components/classifieds/pages/MyListings')
+            },
+            {
+              path: 'my-offers',
+              name: 'my-offers',
+              component: () => import('../components/offers/pages/MyOffers')
+            }
+          ]
+        }
+        ]
+    },
+    {
       path: '/shop/:marketplace',
       name: 'marketplace',
       component: () => import('../layouts/MarketplaceLayout'),
@@ -103,27 +131,6 @@ export default function ({store, ssrContext}) {
               path: 'my-crowd-offers',
               name: 'my-crowd-offers',
               component: () => import('../components/crowd-buy/pages/MyCrowdOffers')
-            }
-          ]
-        },
-        {
-          path: 'classifieds',
-          component: () => import('../components/classifieds/pages/CrayvClassifieds'),
-          children: [
-            {
-              path: '',
-              name: 'classifieds',
-              component: () => import('../components/classifieds/pages/ForSale')
-            },
-            {
-              path: 'my-listings',
-              name: 'my-listings',
-              component: () => import('../components/classifieds/pages/MyListings')
-            },
-            {
-              path: 'my-offers',
-              name: 'my-offers',
-              component: () => import('../components/offers/pages/MyOffers')
             }
           ]
         }

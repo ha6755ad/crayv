@@ -135,24 +135,25 @@ module.exports = {
       UPLOAD_PUBLIC_FILE_KEY: Symbol.for('public-file')
     }
   },
-  mongo: {
-    mongodb: process.env.MONGO_DB_URI,
-    MONGO_DB_USERNAME: process.env.MONGO_DB_USERNAME,
-    MONGO_DB_PASSWORD: process.env.MONGO_DB_PASSWORD,
-    MONGO_DB_DATABASE: process.env.MONGO_DB_DATABASE,
-    MONGO_DB_KEEPALIVE: process.env.MONGO_DB_KEEPALIVE,
-    MONGO_DB_KEEPALIVE_DELAY: process.env.MONGO_DB_KEEPALIVE_DELAY,
-    sshTunnelConfig: {
-      agent: process.env.SSH_AUTH_SOCK,
-      username: process.env.SSH_USERNAME,
-      privateKey: process.env.SSH_PRIVATE_KEY,
-      passphrase: process.env.SSH_KEY_PASSPHRASE,
-      host: process.env.SSH_HOST,
-      port: process.env.SSH_PORT,
-      dstHost: process.env.SSH_DST_HOST,
-      dstPort: process.env.SSH_DST_PORT,
-      localHost: process.env.MONGO_DB_HOST,
-      localPort: process.env.MONGO_DB_PORT
+  'mongo': {
+    'mongodb': process.env.MONGO_DB_URI || 'MONGO_DB_URI',
+    'MONGO_DNS_CONSTRUCTED_SEED_LIST': (process.env.MONGO_DNS_CONSTRUCTED_SEED_LIST === 'true'),
+    'MONGO_DB_USERNAME': process.env.MONGO_DB_USERNAME || 'MONGO_DB_USERNAME',
+    'MONGO_DB_PASSWORD': process.env.MONGO_DB_PASSWORD || 'MONGO_DB_PASSWORD',
+    'MONGO_DB_DATABASE': process.env.MONGO_DB_DATABASE || 'MONGO_DB_DATABASE',
+    'MONGO_DB_KEEPALIVE': process.env.MONGO_DB_KEEPALIVE || 'MONGO_DB_KEEPALIVE',
+    'MONGO_DB_KEEPALIVE_DELAY': process.env.MONGO_DB_KEEPALIVE_DELAY || 'MONGO_DB_KEEPALIVE_DELAY',
+    'sshTunnelConfig': {
+      'agent': process.env.SSH_AUTH_SOCK || 'SSH_AUTH_SOCK',
+      'username': process.env.SSH_USERNAME || 'SSH_USERNAME',
+      'privateKey': process.env.SSH_PRIVATE_KEY || 'SSH_PRIVATE_KEY',
+      'passphrase': process.env.SSH_KEY_PASSPHRASE || 'SSH_KEY_PASSPHRASE',
+      'host': process.env.SSH_HOST || 'SSH_HOST',
+      'port': process.env.SSH_PORT || 'SSH_PORT',
+      'dstHost': process.env.SSH_DST_HOST || 'SSH_DST_HOST',
+      'dstPort': process.env.SSH_DST_PORT || 'SSH_DST_PORT',
+      'localHost': process.env.MONGO_DB_HOST || 'MONGO_DB_HOST',
+      'localPort': process.env.MONGO_DB_PORT || 'MONGO_DB_PORT'
     }
   },
 };

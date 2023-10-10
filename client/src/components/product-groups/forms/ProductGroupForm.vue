@@ -132,7 +132,7 @@
   import SchedulePicker from '../../common/atoms/pickers/SchedulePicker';
   import MultiImageUpload from 'components/common/substance/images/MultiImageUpload';
   import ProductList from 'components/products/lists/ProductList';
-  import PricePicker from 'components/common/atoms/pickers/PricePicker';
+  import PricePicker from 'components/common/atoms/price/PricePicker';
   import {vCheck} from 'src/mixins/ir-validate';
   import ProductItem from 'components/products/card/ProductItem';
   import DefaultProductSettings from 'components/products/settings/DefaultProductSettings';

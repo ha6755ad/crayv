@@ -14,7 +14,11 @@ module.exports = function (app) {
 
   const TUNNEL = JSON.parse(String(process.env.TUNNEL_MONGO || false).toLowerCase());
 
-  mongoConfig.mongodb = process.env.MONGO_DB_URI || `mongodb://${mongoConfig.MONGO_DB_USERNAME}:${mongoConfig.MONGO_DB_PASSWORD}@${mongoConfig.sshTunnelConfig.localHost}:${mongoConfig.sshTunnelConfig.localPort}/${mongoConfig.MONGO_DB_DATABASE}`;
+  if (mongoConfig.MONGO_DNS_CONSTRUCTED_SEED_LIST) {
+    mongoConfig.mongodb = process.env.MONGO_DB_URI || `mongodb+srv://${mongoConfig.MONGO_DB_USERNAME}:${mongoConfig.MONGO_DB_PASSWORD}@${mongoConfig.sshTunnelConfig.localHost}/${mongoConfig.MONGO_DB_DATABASE}`;
+  } else {
+    mongoConfig.mongodb = process.env.MONGO_DB_URI || `mongodb://${mongoConfig.MONGO_DB_USERNAME}:${mongoConfig.MONGO_DB_PASSWORD}@${mongoConfig.sshTunnelConfig.localHost}:${mongoConfig.sshTunnelConfig.localPort}/${mongoConfig.MONGO_DB_DATABASE}`;
+  }
   let mongoStartOptions = {useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true};
   if (mongoConfig.MONGO_DB_KEEPALIVE) {
     const KEEPALIVE = {keepAlive: mongoConfig.MONGO_DB_KEEPALIVE};

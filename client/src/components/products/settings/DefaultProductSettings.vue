@@ -39,7 +39,10 @@
 
         <div class="q-my-md q-pa-sm" style="max-height: 600px; overflow-y: scroll" v-if="!scheduleOff">
           <div class="text-xs text-mb-xs">Hours of Operation</div>
-          <schedule-picker v-model="form.schedule" @input="update('schedule', ...arguments)"></schedule-picker>
+          <schedule-picker
+            v-model="form.schedule"
+            @input="update('schedule', ...arguments)"
+          ></schedule-picker>
         </div>
       </div>
     </q-slide-transition>

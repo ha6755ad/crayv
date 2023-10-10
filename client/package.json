@@ -6,7 +6,7 @@
   "author": "IonRev Development <dev@ionrev.com>",
   "private": true,
   "scripts": {
-    "dev": "QENV=development /usr/local/bin/npx --always-spawn quasar dev",
+    "dev": "QENV=development /opt/homebrew/bin/npx --always-spawn quasar dev",
     "build": "QENV=production quasar build",
     "build:pwa": "QENV=production quasar build -m pwa",
     "lint": "eslint --fix --ext .js,.vue ./",

@@ -1,6 +1,6 @@
 <template>
   <q-layout view="HHh LpR FFF">
-    <template v-if="latitude">
+    <template v-if="true">
       <q-header>
         <q-toolbar style="box-shadow: 0 0 10px rgba(0,0,0,.15)" class="bg-white">
           <div style="height: 60px; width: 100vw" class="row items-center">

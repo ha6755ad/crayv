@@ -27,7 +27,7 @@
 </template>
 
 <script>
-  import PricePicker from '../../common/atoms/pickers/PricePicker';
+  import PricePicker from '../../common/atoms/price/PricePicker';
   import common from '../../../store/schemas/common';
   import {vCheck} from 'src/mixins/ir-validate';
   import MultiImageUpload from 'components/common/substance/images/MultiImageUpload';

@@ -104,7 +104,6 @@
 </template>
 
 <script>
-  import {mapGetters} from 'vuex';
   import {date} from 'quasar';
   // eslint-disable-next-line no-unused-vars
 
@@ -182,10 +181,6 @@
       }
     },
     computed: {
-      ...mapGetters('communities', { getCommunity: 'get' }),
-      community() {
-        return this.$route.params.id ? this.getCommunity(this.$route.params.id) : null;
-      },
       months() {
         return months;
       },
@@ -292,13 +287,6 @@
       }
     },
     methods: {
-      setRul() {
-        let r = this.form;
-        let c = this.community.clone();
-        c.governance.votingRules.recurrence = r;
-        c.save()
-          .then(res => console.log('res', res));
-      },
       recurrenceDisplay(rule) {
         let str = `Set to repeat ${this.getSelectItemLabel(rule.FREQ, this.frequency)} \xB7 ${this.getSelectItemLabel(rule.INTERVAL, this.interval)} \xB7 ${rule.BYMONTH ? 'in ' + this.byMonthNames : ''} \xB7 on ${rule.BYMONTHDAY ? 'the ' + this.displayDayList(rule.BYMONTHDAY, this.byMonthDay) : rule.BYDAY ? this.displayDayList(rule.BYDAY, this.byDay) : ''}`;
         this.$emit('display', str);

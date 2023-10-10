@@ -37,7 +37,11 @@ app.use('/', express.static(app.get('public')));
 
 // Set up Plugins and providers
 app.configure(express.rest());
-app.configure(socketio());
+app.configure(socketio(function(io) {
+  io.sockets.setMaxListeners(512);
+}));
+
+
 
 app.configure(mongoose);
 

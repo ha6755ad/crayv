@@ -89,7 +89,7 @@
 <script>
   import {models} from 'feathers-vuex';
   import RemoveButton from 'components/common/atoms/buttons/RemoveButton';
-  import PricePicker from 'components/common/atoms/pickers/PricePicker';
+  import PricePicker from 'components/common/atoms/price/PricePicker';
   import TagPicker from 'components/common/atoms/pickers/TagPicker';
   import AddressForm from 'components/family-pod/personal/AddressForm';
   import {mapGetters} from 'vuex';

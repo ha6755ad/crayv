@@ -11,7 +11,7 @@
 
 <script>
   import {models} from 'feathers-vuex';
-  import PricePicker from 'components/common/atoms/pickers/PricePicker';
+  import PricePicker from 'components/common/atoms/price/PricePicker';
   import EmojiInput from 'components/common/atoms/messaging/EmojiInput';
   import {vCheck} from 'src/mixins/ir-validate';
 

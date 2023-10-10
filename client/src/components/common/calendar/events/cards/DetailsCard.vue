@@ -103,7 +103,7 @@
               </div>
               <div class="row justify-center">
                 <q-card class="__halfs">
-                  <mapbox :features-in="featureList" :center="mapCenter" fit-bounds></mapbox>
+                  <mapbox :geo-in="featureList" :center="mapCenter" fit-bounds></mapbox>
                 </q-card>
               </div>
             </q-tab-panel>
